@@ -29,7 +29,7 @@ function parseErrorMessage(raw: string): ParsedError {
 
     return {
       code,
-      message: (code && friendly[code]) ?? truncate(message, 120),
+      message: (code ? friendly[code] : undefined) ?? truncate(message, 120),
     };
   } catch {
     // Plain string fallback
