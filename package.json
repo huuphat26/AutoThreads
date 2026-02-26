@@ -9,9 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.43.0",
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.5",
-    "groq-sdk": "^0.37.0",
     "next": "16.1.6",
     "node-cron": "^4.2.1",
     "openai": "^6.25.0",

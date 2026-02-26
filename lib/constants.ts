@@ -1,0 +1,54 @@
+// ============================================
+// Constants — labels, config dùng chung toàn app
+// ============================================
+import type { PostSlot, ContentTopic } from "@/types";
+import {
+  CheckCircleIcon,
+  ClockIcon,
+  XCircleIcon,
+  PencilIcon,
+} from "@/components/ui/icons";
+import type { FC } from "react";
+
+export const SLOT_LABELS: Record<PostSlot, { label: string }> = {
+  morning: { label: "7:30 Sáng" },
+  noon: { label: "12:00 Trưa" },
+  evening: { label: "18:00 Tối" },
+};
+
+export const TOPIC_LABELS: Record<ContentTopic, string> = {
+  detox: "Detox & Thanh lọc",
+  beauty: "Làm đẹp & Sắc vóc",
+  recipe: "Công thức nước ép",
+  sales: "Sản phẩm Detox",
+  community: "Cộng đồng Detox",
+};
+
+type StatusConfig = {
+  label: string;
+  colorClass: string;
+  icon: FC<{ className?: string }>;
+};
+
+export const STATUS_CONFIG: Record<string, StatusConfig> = {
+  posted: {
+    label: "Đã đăng",
+    colorClass: "bg-slate-100 text-slate-600 border-slate-200",
+    icon: CheckCircleIcon,
+  },
+  pending: {
+    label: "Đang chờ",
+    colorClass: "bg-stone-100 text-stone-500 border-stone-200",
+    icon: ClockIcon,
+  },
+  failed: {
+    label: "Thất bại",
+    colorClass: "bg-rose-50 text-rose-500 border-rose-200",
+    icon: XCircleIcon,
+  },
+  draft: {
+    label: "Nháp",
+    colorClass: "bg-zinc-100 text-zinc-400 border-zinc-200",
+    icon: PencilIcon,
+  },
+};

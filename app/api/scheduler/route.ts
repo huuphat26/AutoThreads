@@ -2,11 +2,17 @@
 // API Route: /api/scheduler - Quản lý Scheduler
 // ============================================
 import { NextRequest, NextResponse } from "next/server";
-import { getSchedulerStatus, triggerManualPost } from "@/lib/scheduler";
+import {
+  getSchedulerStatus,
+  startScheduler,
+  triggerManualPost,
+} from "@/lib/scheduler";
 import type { PostSlot } from "@/types";
 
-// GET: Lấy trạng thái scheduler
+// GET: Lấy trạng thái scheduler (tự động start nếu chưa chạy)
 export async function GET() {
+  // Đảm bảo scheduler luôn được khởi động
+  startScheduler();
   const status = getSchedulerStatus();
   return NextResponse.json({ success: true, data: status });
 }

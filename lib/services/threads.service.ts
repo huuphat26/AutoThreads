@@ -6,7 +6,6 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import type {
   ThreadsUser,
   ThreadsContainerStatusResult,
-  ThreadsContainerStatus,
   ThreadsPost,
   ThreadsPostInsights,
   ThreadsPublishingLimit,
@@ -438,9 +437,7 @@ class ThreadsService {
    *
    * @param limit - Số bài lấy (mặc định 10, tối đa 100)
    */
-  async getMyPosts(
-    limit = 10,
-  ): Promise<{
+  async getMyPosts(limit = 10): Promise<{
     data: ThreadsPost[];
     paging?: { cursors: { before: string; after: string }; next?: string };
   }> {
