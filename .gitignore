@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# AutoThreads: Lịch sử bài đăng (dữ liệu cá nhân)
+/data/post-history.json
 
 # vercel
 .vercel
