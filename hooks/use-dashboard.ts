@@ -33,6 +33,7 @@ export function useDashboard() {
   const [topic, setTopic] = useState<ContentTopic>("detox");
   const [content, setContent] = useState("");
   const [keywords, setKeywords] = useState("");
+  const [topicLabel, setTopicLabel] = useState<string | undefined>(undefined);
 
   // ── Fetch history ──
   const fetchHistory = useCallback(async () => {
@@ -72,8 +73,10 @@ export function useDashboard() {
         }),
       });
       const json = await res.json();
-      if (json.success) setContent(json.data.fullPost);
-      else setError(json.error || "Lỗi tạo nội dung");
+      if (json.success) {
+        setContent(json.data.fullPost);
+        setTopicLabel(json.data.topicLabel || undefined);
+      } else setError(json.error || "Lỗi tạo nội dung");
     } catch {
       setError("Không thể kết nối server");
     } finally {
@@ -94,7 +97,7 @@ export function useDashboard() {
       const res = await fetch("/api/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, slot, topic }),
+        body: JSON.stringify({ content, slot, topic, topicLabel }),
       });
       const json = await res.json();
       if (json.success) {

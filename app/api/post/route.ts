@@ -9,10 +9,11 @@ import type { PostSlot, ContentTopic } from "@/types";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { content, slot, topic } = body as {
+    const { content, slot, topic, topicLabel } = body as {
       content: string;
       slot: PostSlot;
       topic: ContentTopic;
+      topicLabel?: string;
     };
 
     if (!content) {
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
       slot: slot || "morning",
       scheduledAt: now,
       status: "pending",
+      topicLabel,
     });
 
     // Đăng lên Threads
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
       postedAt: new Date().toISOString(),
       threadsPostId,
       status: "posted",
+      topicLabel,
     });
 
     return NextResponse.json({

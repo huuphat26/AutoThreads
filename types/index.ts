@@ -129,6 +129,7 @@ export interface ScheduledPost {
   threadsPostId?: string;
   status: PostStatus;
   errorMessage?: string;
+  topicLabel?: string; // Chủ đề cụ thể AI đã chọn để viết
 }
 
 export interface PostHistory {
@@ -147,6 +148,7 @@ export interface GenerateContentResponse {
   content: string;
   hashtags: string[];
   fullPost: string;
+  topicLabel?: string; // Chủ đề cụ thể AI đã chọn để viết
 }
 
 export interface ApiResponse<T = unknown> {

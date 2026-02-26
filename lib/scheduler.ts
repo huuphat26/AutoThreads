@@ -69,6 +69,7 @@ async function executePost(slot: PostSlot): Promise<void> {
       threadsPostId,
       postedAt: new Date().toISOString(),
       status: "posted",
+      topicLabel: generated.topicLabel,
     });
 
     console.log(
