@@ -6,12 +6,8 @@ export type PostStatus = "pending" | "posted" | "failed" | "draft";
 
 export type PostSlot = "morning" | "noon" | "evening";
 
-export type ContentTopic =
-  | "detox" // Detox & thanh lọc cơ thể
-  | "beauty" // Làm đẹp & sắc vóc
-  | "recipe" // Công thức nước ép
-  | "sales" // Bán hàng & giới thiệu sản phẩm
-  | "community"; // Cộng đồng & tương tác
+/** Dynamic topic ID — không còn hardcode, xem lib/topics.ts để thêm/sửa chủ đề */
+export type ContentTopic = string;
 
 // ---- Threads Media Types ----
 export type ThreadsMediaType = "TEXT" | "IMAGE" | "VIDEO" | "CAROUSEL";
@@ -138,8 +134,10 @@ export interface PostHistory {
 }
 
 export interface GenerateContentRequest {
-  topic: ContentTopic;
-  slot: PostSlot;
+  topic?: ContentTopic; // nếu không truyền sẽ random từ TOPICS
+  slot?: PostSlot; // không còn bắt buộc, chỉ dùng cho scheduler
+  lastTopic?: string; // id của chủ đề vừa đăng — để AI tránh lặp
+  ctaStyle?: string; // "hoi-gap-khong" | "ru-thu-3-ngay" | "goi-hoi-thuc-don"
   keywords?: string[];
   customPrompt?: string;
 }
@@ -160,11 +158,22 @@ export interface ApiResponse<T = unknown> {
 export interface SchedulerStatus {
   enabled: boolean;
   running: boolean;
+  testMode: boolean;
+  testIntervalMin: number | null;
   jobs: {
-    slot: PostSlot;
+    slot: PostSlot | "test";
     cronExpression: string;
     label: string;
   }[];
   timezone: string;
   jobCount: number;
+}
+
+/** Thông tin một AI provider — an toàn để dùng cả client lẫn server */
+export interface ProviderInfo {
+  id: string;
+  label: string;
+  model: string; // model đang được chọn
+  models: string[]; // danh sách model có sẵn
+  available: boolean; // API key có hay không
 }

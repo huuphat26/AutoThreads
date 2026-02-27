@@ -3,8 +3,15 @@
 // ============================================
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { PostSlot, ContentTopic, ScheduledPost } from "@/types";
+import { useState, useEffect, useCallback, useRef } from "react";
+import type {
+  PostSlot,
+  ContentTopic,
+  ScheduledPost,
+  ProviderInfo,
+  SchedulerStatus,
+} from "@/types";
+import { TOPICS } from "@/lib/topics";
 
 export type DashboardStats = {
   total: number;
@@ -30,10 +37,101 @@ export function useDashboard() {
 
   // Compose form state
   const [slot, setSlot] = useState<PostSlot>("morning");
-  const [topic, setTopic] = useState<ContentTopic>("detox");
+  const [topic, setTopic] = useState<ContentTopic>(TOPICS[0]?.id ?? "detox");
   const [content, setContent] = useState("");
   const [keywords, setKeywords] = useState("");
   const [topicLabel, setTopicLabel] = useState<string | undefined>(undefined);
+
+  // AI Provider state
+  const [aiProvider, setAIProvider] = useState<ProviderInfo>({
+    id: "gemini",
+    label: "Google Gemini",
+    model: "gemini-2.0-flash",
+    models: ["gemini-2.0-flash"],
+    available: true,
+  });
+  const [aiProviders, setAIProviders] = useState<ProviderInfo[]>([]);
+
+  // Scheduler state
+  const [schedulerStatus, setSchedulerStatus] =
+    useState<SchedulerStatus | null>(null);
+
+  // Live refresh state
+  const REFRESH_INTERVAL = 15;
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [countdown, setCountdown] = useState(REFRESH_INTERVAL);
+  const countdownRef = useRef(REFRESH_INTERVAL);
+
+  // ── Fetch AI config ──
+  const fetchAIConfig = useCallback(async () => {
+    try {
+      const res = await fetch("/api/ai-config");
+      const json = await res.json();
+      if (json.success) {
+        setAIProvider(json.data.current as ProviderInfo);
+        setAIProviders(json.data.providers as ProviderInfo[]);
+      }
+    } catch {
+      /* silent */
+    }
+  }, []);
+
+  // ── Fetch scheduler status ──
+  const fetchSchedulerStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/scheduler");
+      const json = await res.json();
+      if (json.success) {
+        setSchedulerStatus(json.data as SchedulerStatus);
+      }
+    } catch {
+      /* silent */
+    }
+  }, []);
+
+  // ── Switch AI provider ──
+  const handleProviderChange = useCallback(
+    async (providerId: string) => {
+      try {
+        const res = await fetch("/api/ai-config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider: providerId }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          await fetchAIConfig();
+        } else {
+          setError(json.error || "Không thể đổi AI provider");
+        }
+      } catch {
+        setError("Không thể kết nối server");
+      }
+    },
+    [fetchAIConfig],
+  );
+
+  // ── Switch model within a provider ──
+  const handleModelChange = useCallback(
+    async (providerId: string, model: string) => {
+      try {
+        const res = await fetch("/api/ai-config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider: providerId, model }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          await fetchAIConfig();
+        } else {
+          setError(json.error || "Không thể đổi model");
+        }
+      } catch {
+        setError("Không thể kết nối server");
+      }
+    },
+    [fetchAIConfig],
+  );
 
   // ── Fetch history ──
   const fetchHistory = useCallback(async () => {
@@ -50,10 +148,28 @@ export function useDashboard() {
   }, []);
 
   useEffect(() => {
-    fetchHistory();
-    const id = setInterval(fetchHistory, 15_000);
-    return () => clearInterval(id);
-  }, [fetchHistory]);
+    const doRefresh = async () => {
+      await Promise.all([
+        fetchHistory(),
+        fetchSchedulerStatus(),
+        fetchAIConfig(),
+      ]);
+      setLastRefreshed(new Date());
+      countdownRef.current = REFRESH_INTERVAL;
+      setCountdown(REFRESH_INTERVAL);
+    };
+
+    doRefresh();
+    const refreshId = setInterval(doRefresh, REFRESH_INTERVAL * 1000);
+    const tickId = setInterval(() => {
+      countdownRef.current = Math.max(0, countdownRef.current - 1);
+      setCountdown(countdownRef.current);
+    }, 1000);
+    return () => {
+      clearInterval(refreshId);
+      clearInterval(tickId);
+    };
+  }, [fetchHistory, fetchSchedulerStatus, fetchAIConfig]);
 
   // ── Tạo nội dung AI ──
   const handleGenerate = async () => {
@@ -128,6 +244,16 @@ export function useDashboard() {
     setContent,
     keywords,
     setKeywords,
+    // AI provider
+    aiProvider,
+    aiProviders,
+    handleProviderChange,
+    handleModelChange,
+    // Scheduler
+    schedulerStatus,
+    // Live refresh
+    lastRefreshed,
+    countdown,
     // actions
     handleGenerate,
     handlePost,

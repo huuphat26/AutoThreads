@@ -1,0 +1,8 @@
+{
+  "provider": "gemini",
+  "models": {
+    "gemini": "gemini-3-flash-preview",
+    "openai": "gpt-4"
+  },
+  "updatedAt": "2026-02-27T04:14:38.064Z"
+}

@@ -1,8 +1,9 @@
 // ComposeForm — khu vực tạo & đăng bài
 "use client";
 
-import type { PostSlot, ContentTopic } from "@/types";
-import { SLOT_LABELS, TOPIC_LABELS } from "@/lib/constants";
+import type { PostSlot } from "@/types";
+import { SLOT_LABELS } from "@/lib/constants";
+import { TOPICS } from "@/lib/topics";
 import {
   SparklesIcon,
   SendIcon,
@@ -13,7 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 type Props = {
   slot: PostSlot;
-  topic: ContentTopic;
+  topic: string;
   content: string;
   keywords: string;
   generating: boolean;
@@ -21,7 +22,7 @@ type Props = {
   error: string;
   success: string;
   onSlotChange: (v: PostSlot) => void;
-  onTopicChange: (v: ContentTopic) => void;
+  onTopicChange: (v: string) => void;
   onContentChange: (v: string) => void;
   onKeywordsChange: (v: string) => void;
   onGenerate: () => void;
@@ -62,7 +63,7 @@ export function ComposeForm({
         <button
           onClick={onGenerate}
           disabled={generating}
-          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap shrink-0"
         >
           {generating ? <Spinner /> : <SparklesIcon />}
           {generating ? "Đang tạo..." : "Tạo bằng AI"}
@@ -96,16 +97,14 @@ export function ComposeForm({
             </label>
             <select
               value={topic}
-              onChange={(e) => onTopicChange(e.target.value as ContentTopic)}
+              onChange={(e) => onTopicChange(e.target.value)}
               className={inputClass}
             >
-              {(Object.entries(TOPIC_LABELS) as [ContentTopic, string][]).map(
-                ([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ),
-              )}
+              {TOPICS.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
             </select>
           </div>
         </div>

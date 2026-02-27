@@ -1,7 +1,8 @@
 // ============================================
 // Constants — labels, config dùng chung toàn app
 // ============================================
-import type { PostSlot, ContentTopic } from "@/types";
+import type { PostSlot } from "@/types";
+import { TOPICS } from "@/lib/topics";
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -16,13 +17,10 @@ export const SLOT_LABELS: Record<PostSlot, { label: string }> = {
   evening: { label: "18:00 Tối" },
 };
 
-export const TOPIC_LABELS: Record<ContentTopic, string> = {
-  detox: "Detox & Thanh lọc",
-  beauty: "Làm đẹp & Sắc vóc",
-  recipe: "Công thức nước ép",
-  sales: "Sản phẩm Detox",
-  community: "Cộng đồng Detox",
-};
+/** Chủ đề dẫn xuất từ nguồn TOPICS — thêm/sửa tại lib/topics.ts */
+export const TOPIC_LABELS: Record<string, string> = Object.fromEntries(
+  TOPICS.map((t) => [t.id, t.label]),
+);
 
 type StatusConfig = {
   label: string;

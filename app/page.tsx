@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { Header } from "@/components/layout/header";
+import { SchedulerMonitor } from "@/components/dashboard/scheduler-monitor";
 import { ComposeForm } from "@/components/dashboard/compose-form";
 import { StatsSection } from "@/components/dashboard/stats-section";
 import { HistoryList } from "@/components/dashboard/history-list";
@@ -26,6 +27,13 @@ export default function DashboardPage() {
     setContent,
     keywords,
     setKeywords,
+    aiProvider,
+    aiProviders,
+    handleProviderChange,
+    handleModelChange,
+    schedulerStatus,
+    lastRefreshed,
+    countdown,
     handleGenerate,
     handlePost,
     loading,
@@ -38,10 +46,27 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
-      <Header />
+      <Header aiProvider={aiProvider} schedulerStatus={schedulerStatus} />
       <main className="max-w-2xl mx-auto px-5 py-6 space-y-10">
         {/* Monitoring Section Top */}
-        <StatsSection stats={stats} />
+        <SchedulerMonitor
+          status={schedulerStatus}
+          lastRefreshed={lastRefreshed}
+          countdown={countdown}
+          posts={posts}
+          aiProvider={aiProvider}
+          aiProviders={aiProviders}
+          onProviderChange={handleProviderChange}
+          onModelChange={handleModelChange}
+        />
+
+        {/* Aggregate stats */}
+        <section className="space-y-3">
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+            Thống kê tổng hợp
+          </h2>
+          <StatsSection stats={stats} />
+        </section>
 
         <HistoryList posts={posts} onRefresh={fetchHistory} />
 

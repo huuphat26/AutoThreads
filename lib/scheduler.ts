@@ -2,7 +2,8 @@
 // AUTO THREADS - Scheduler (node-cron)
 // ============================================
 import cron, { ScheduledTask } from "node-cron";
-import { generateContent, getTopicForSlot } from "./content-generator";
+import { generateContent } from "./content-generator";
+import { resolveTopicOrRandom } from "./topics";
 import { postToThreads } from "./threads-api";
 import { upsertPost, generateId } from "./store";
 import type { PostSlot, ScheduledPost } from "@/types";
@@ -36,12 +37,13 @@ let scheduledJobs: ScheduledTask[] = [];
 async function executePost(slot: PostSlot): Promise<void> {
   const postId = generateId();
   const scheduledAt = new Date().toISOString();
+  const topic = resolveTopicOrRandom(); // random topic mỗi lần đăng
 
   // Lưu trạng thái pending
   const pendingPost: ScheduledPost = {
     id: postId,
     content: "",
-    topic: getTopicForSlot(slot),
+    topic: topic.id,
     slot,
     scheduledAt,
     status: "pending",
@@ -53,11 +55,8 @@ async function executePost(slot: PostSlot): Promise<void> {
   );
 
   try {
-    // Bước 1: Tạo nội dung bằng AI
-    const generated = await generateContent({
-      topic: pendingPost.topic,
-      slot,
-    });
+    // Bước 1: Tạo nội dung bằng AI (topic đã chọn, không truyền slot)
+    const generated = await generateContent({ topic: topic.id });
 
     // Bước 2: Đăng lên Threads
     const threadsPostId = await postToThreads(generated.fullPost);
