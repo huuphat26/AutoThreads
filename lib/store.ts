@@ -1,35 +1,25 @@
 // ============================================
-// AUTO THREADS - Post Store (File-based Storage)
+// AUTO THREADS - Post Store (In-memory Storage)
+// Dùng in-memory store để tương thích với Vercel serverless.
+// Lưu ý: data sẽ reset khi serverless instance khởi động lại.
 // ============================================
-import fs from "fs";
-import path from "path";
 import type { PostHistory, ScheduledPost } from "@/types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const HISTORY_FILE = path.join(DATA_DIR, "post-history.json");
+// ─── In-memory store ──────────────────────────────────────────────────────────
 
-// Đảm bảo thư mục data tồn tại
-function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-}
+let _history: PostHistory = {
+  posts: [],
+  lastUpdated: new Date().toISOString(),
+};
 
-// Đọc lịch sử bài đăng từ file
+// Đọc lịch sử bài đăng
 export function readHistory(): PostHistory {
-  ensureDataDir();
-  if (!fs.existsSync(HISTORY_FILE)) {
-    return { posts: [], lastUpdated: new Date().toISOString() };
-  }
-  const raw = fs.readFileSync(HISTORY_FILE, "utf-8");
-  return JSON.parse(raw) as PostHistory;
+  return { ..._history, posts: [..._history.posts] };
 }
 
-// Ghi lịch sử bài đăng vào file
+// Ghi lịch sử bài đăng
 export function writeHistory(history: PostHistory): void {
-  ensureDataDir();
-  history.lastUpdated = new Date().toISOString();
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+  _history = { ...history, lastUpdated: new Date().toISOString() };
 }
 
 // Thêm hoặc cập nhật một bài đăng

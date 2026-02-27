@@ -1,14 +1,10 @@
 // ============================================
 // AUTO THREADS — Runtime AI Config
-// Lưu lựa chọn provider/model vào data/ai-config.json
-// để có thể đổi model từ UI mà không cần restart.
+// Lưu lựa chọn provider/model trong bộ nhớ (in-memory).
+// Giá trị mặc định lấy từ environment variables.
 // ============================================
 
-import fs from "fs";
-import path from "path";
 import type { ProviderInfo } from "@/types";
-
-const CONFIG_FILE = path.join(process.cwd(), "data", "ai-config.json");
 
 // ─── Model Catalog ────────────────────────────────────────────────────────────
 
@@ -57,29 +53,18 @@ const DEFAULT_CONFIG: AIRuntimeConfig = {
   updatedAt: new Date().toISOString(),
 };
 
+// ─── In-memory store (works on Vercel serverless) ────────────────────────────
+
+let _runtimeConfig: AIRuntimeConfig = { ...DEFAULT_CONFIG };
+
 // ─── Read / Write ─────────────────────────────────────────────────────────────
 
 export function readAIConfig(): AIRuntimeConfig {
-  try {
-    if (fs.existsSync(CONFIG_FILE)) {
-      const raw = fs.readFileSync(CONFIG_FILE, "utf-8");
-      const parsed = JSON.parse(raw) as Partial<AIRuntimeConfig>;
-      return {
-        provider: parsed.provider ?? DEFAULT_CONFIG.provider,
-        models: parsed.models ?? {},
-        updatedAt: parsed.updatedAt ?? new Date().toISOString(),
-      };
-    }
-  } catch {
-    // file corrupt → dùng default
-  }
-  return { ...DEFAULT_CONFIG };
+  return { ..._runtimeConfig };
 }
 
 export function writeAIConfig(config: AIRuntimeConfig): void {
-  const dataDir = path.dirname(CONFIG_FILE);
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), "utf-8");
+  _runtimeConfig = { ...config };
 }
 
 export function setRuntimeProvider(provider: string): AIRuntimeConfig {
