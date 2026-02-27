@@ -53,6 +53,18 @@ export function getPostsByStatus(
     .slice(0, limit);
 }
 
+// Xóa bài theo ID
+export function removePost(id: string): boolean {
+  const history = readHistory();
+  const before = history.posts.length;
+  history.posts = history.posts.filter((p) => p.id !== id);
+  if (history.posts.length < before) {
+    writeHistory(history);
+    return true;
+  }
+  return false;
+}
+
 // Lấy thống kê tổng hợp
 export function getStats() {
   const history = readHistory();

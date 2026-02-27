@@ -1,12 +1,3 @@
-// ============================================
-// AUTO THREADS — Content Generator
-// Orchestrator mỏng: ghép prompt + AI provider + parser.
-//
-// Muốn đổi model?  → lib/ai/provider.ts (AI_PROVIDER env)
-// Muốn sửa prompt? → lib/prompts/system.ts  |  lib/prompts/user.ts
-// Muốn thêm chủ đề?→ lib/topics.ts
-// ============================================
-
 import type { GenerateContentRequest, GenerateContentResponse } from "@/types";
 import { resolveTopicOrRandom, getRandomTopic } from "@/lib/topics";
 import { createProvider } from "@/lib/ai/provider";
@@ -20,8 +11,6 @@ import {
   buildUserPromptOpenAI,
   type PromptContext,
 } from "@/lib/prompts/user";
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const DAY_MAP: Record<number, string> = {
   0: "Chủ Nhật",
@@ -43,13 +32,6 @@ function getNowContext(): { currentTime: string; dayOfWeek: string } {
   return { currentTime, dayOfWeek };
 }
 
-// ─── generateContent ─────────────────────────────────────────────────────────
-
-/**
- * Tạo một bài đăng Threads hoàn chỉnh.
- * `topic` không bắt buộc — nếu bỏ trống sẽ random từ TOPICS.
- */
-/** Chọn đúng bộ prompt theo provider variant */
 function buildPrompts(
   variant: "gemini" | "openai",
   ctx: PromptContext,
@@ -61,7 +43,7 @@ function buildPrompts(
     };
   }
   return {
-    systemPrompt: buildSystemPromptGemini(), // không cần time params nữa
+    systemPrompt: buildSystemPromptGemini(),
     userPrompt: buildUserPromptGemini(ctx),
   };
 }
@@ -96,12 +78,6 @@ export async function generateContent(
   return result;
 }
 
-// ─── generateContentStream ───────────────────────────────────────────────────
-
-/**
- * Streaming: yield từng chunk text từ AI.
- * Dùng cho SSE endpoint — không parse giữa chừng.
- */
 export async function* generateContentStream(
   req: GenerateContentRequest = {},
 ): AsyncGenerator<string> {
@@ -128,12 +104,6 @@ export async function* generateContentStream(
   yield* provider.stream(userPrompt, systemPrompt);
 }
 
-// ─── Helpers (backward-compat + convenience) ─────────────────────────────────
-
-/**
- * Trả về id của một topic ngẫu nhiên.
- * Các route cũ truyền `slot` — ta bỏ qua slot và random thật sự.
- */
 export function getTopicForSlot(): string {
   return getRandomTopic().id;
 }

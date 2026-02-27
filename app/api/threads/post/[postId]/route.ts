@@ -8,11 +8,13 @@ import { threadsService } from "@/lib/services/threads.service";
 type Params = { params: Promise<{ postId: string }> };
 
 // GET /api/threads/post/:postId
-// Query: ?insights=true để lấy thêm số liệu
+// Query: ?insights=true  → lấy thêm insights (views, likes, replies...)
+//        ?detail=true    → gộp cả post + insights (dùng getPostDetail)
 export async function GET(req: NextRequest, { params }: Params) {
   try {
     const { postId } = await params;
-    const withInsights = req.nextUrl.searchParams.get("insights") === "true";
+    const wantDetail = req.nextUrl.searchParams.get("detail") === "true";
+    const wantInsights = req.nextUrl.searchParams.get("insights") === "true";
 
     if (!postId) {
       return NextResponse.json(
@@ -21,16 +23,21 @@ export async function GET(req: NextRequest, { params }: Params) {
       );
     }
 
-    // Lấy chi tiết bài đăng
+    // ── detail=true: trả về post + insights gộp (gọi song song) ──
+    if (wantDetail) {
+      const detail = await threadsService.getPostDetail(postId);
+      return NextResponse.json({ success: true, data: detail });
+    }
+
+    // ── Mặc định: lấy chi tiết bài đăng ──
     const post = await threadsService.getPost(postId);
 
-    // Nếu có query ?insights=true thì lấy thêm số liệu
+    // insights=true → lấy thêm số liệu
     let insights = undefined;
-    if (withInsights) {
+    if (wantInsights) {
       try {
-        insights = await threadsService.getPostInsights(postId);
+        insights = await threadsService.getMediaInsights(postId);
       } catch {
-        // Insights có thể thất bại nếu thiếu quyền threads_manage_insights
         insights = {
           error: "Không thể lấy insights (cần quyền threads_manage_insights)",
         };

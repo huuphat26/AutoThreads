@@ -1,9 +1,7 @@
-// StatsSection — 4 thẻ thống kê
 import { StatCard } from "@/components/ui/stat-card";
 import {
   DocumentIcon,
   CheckCircleIcon,
-  ClockIcon,
   XCircleIcon,
 } from "@/components/ui/icons";
 import type { DashboardStats } from "@/hooks/use-dashboard";
@@ -12,7 +10,7 @@ type Props = { stats: DashboardStats };
 
 export function StatsSection({ stats }: Props) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 item">
       <StatCard
         label="Tổng bài"
         value={stats.total}
@@ -24,12 +22,6 @@ export function StatsSection({ stats }: Props) {
         value={stats.posted}
         icon={CheckCircleIcon}
         accent="bg-white text-emerald-600 shadow-sm border border-slate-100"
-      />
-      <StatCard
-        label="Đang chờ"
-        value={stats.pending}
-        icon={ClockIcon}
-        accent="bg-white text-amber-500 shadow-sm border border-slate-100"
       />
       <StatCard
         label="Thất bại"

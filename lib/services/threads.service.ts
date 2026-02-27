@@ -12,6 +12,10 @@ import type {
   ThreadsTokenInfo,
   ThreadsTokenResult,
   ThreadsPublishFlow,
+  ThreadsMediaInsights,
+  ThreadsPostDetail,
+  CreateImageContainerParams,
+  CreateVideoContainerParams,
 } from "@/types";
 
 // ─── Constants ────────────────────────────────────────────────
@@ -164,7 +168,7 @@ class ThreadsService {
         {
           params: {
             input_token: this.token,
-            access_token: `${this.appId}|${this.appSecret}`,
+            access_token: this.token,
           },
         },
       );
@@ -222,10 +226,11 @@ class ThreadsService {
       const res = await this.http.get<ThreadsUser>("/me", {
         params: {
           fields:
-            "id,username,name,biography,followers_count,threads_profile_picture_url",
+            "id,username,name,threads_biography,threads_profile_picture_url",
           access_token: this.token,
         },
       });
+
       return res.data;
     } catch (err) {
       throw parseMetaError(err);
@@ -277,6 +282,65 @@ class ThreadsService {
             access_token: this.token,
           },
         },
+      );
+      return res.data.id;
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Bước 1 (IMAGE): Tạo IMAGE media container
+   * image_url phải là URL công khai (HTTPS), hỗ trợ JPEG/PNG/WebP
+   * Meta sẽ tải ảnh về server của họ để xử lý
+   *
+   * @param params.imageUrl - URL ảnh công khai (bắt buộc)
+   * @param params.text - Caption / chú thích (đến 500 ký tự, tùy chọn)
+   */
+  async createImageContainer(
+    params: CreateImageContainerParams,
+  ): Promise<string> {
+    try {
+      const queryParams: Record<string, string> = {
+        media_type: "IMAGE",
+        image_url: params.imageUrl,
+        access_token: this.token,
+      };
+      if (params.text) queryParams.text = params.text;
+
+      const res = await this.http.post<{ id: string }>(
+        `/${this.userId}/threads`,
+        null,
+        { params: queryParams },
+      );
+      return res.data.id;
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Bước 1 (VIDEO): Tạo VIDEO media container
+   * video_url phải là URL công khai (HTTPS), tối đa 5 phút, MP4
+   *
+   * @param params.videoUrl - URL video công khai (bắt buộc)
+   * @param params.text - Caption / chú thích (đến 500 ký tự, tùy chọn)
+   */
+  async createVideoContainer(
+    params: CreateVideoContainerParams,
+  ): Promise<string> {
+    try {
+      const queryParams: Record<string, string> = {
+        media_type: "VIDEO",
+        video_url: params.videoUrl,
+        access_token: this.token,
+      };
+      if (params.text) queryParams.text = params.text;
+
+      const res = await this.http.post<{ id: string }>(
+        `/${this.userId}/threads`,
+        null,
+        { params: queryParams },
       );
       return res.data.id;
     } catch (err) {
@@ -407,6 +471,103 @@ class ThreadsService {
       quotaUsed: updatedLimit.quota_usage,
       quotaRemaining:
         updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "TEXT",
+    };
+  }
+
+  /**
+   * **Full publish flow cho IMAGE** — đăng bài có hình ảnh lên Threads
+   * Flow: kiểm tra quota → tạo image container → poll status → publish
+   *
+   * @param imageUrl - URL ảnh công khai (HTTPS, JPEG/PNG/WebP)
+   * @param text - Caption (đến 500 ký tự, tùy chọn)
+   */
+  async publishImagePost(
+    imageUrl: string,
+    text?: string,
+  ): Promise<ThreadsPublishFlow> {
+    // [0] Kiểm tra quota
+    const limit = await this.getPublishingLimit();
+    const remaining = limit.config.quota_total - limit.quota_usage;
+
+    if (remaining <= 0) {
+      throw new ThreadsApiError(
+        32,
+        0,
+        `Rate limit: đã dùng ${limit.quota_usage}/${limit.config.quota_total} bài trong 24h. Vui lòng thử lại sau.`,
+      );
+    }
+
+    // [1] Tạo image container
+    const containerId = await this.createImageContainer({ imageUrl, text });
+    console.log(`[ThreadsService] Image container tạo: ${containerId}`);
+
+    // [2] Đợi container FINISHED (image có thể mất lâu hơn text)
+    await this.waitForContainerReady(containerId);
+    console.log(`[ThreadsService] Image container sẵn sàng: ${containerId}`);
+
+    // [3] Publish
+    const postId = await this.publishContainer(containerId);
+    const postedAt = new Date().toISOString();
+    console.log(`[ThreadsService] ✅ Đăng ảnh thành công! Post ID: ${postId}`);
+
+    // [4] Lấy lại quota
+    const updatedLimit = await this.getPublishingLimit();
+
+    return {
+      containerId,
+      postId,
+      postedAt,
+      quotaUsed: updatedLimit.quota_usage,
+      quotaRemaining:
+        updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "IMAGE",
+    };
+  }
+
+  /**
+   * **Full publish flow cho VIDEO** — đăng bài có video lên Threads
+   *
+   * @param videoUrl - URL video công khai (HTTPS, MP4, tối đa 5 phút)
+   * @param text - Caption (đến 500 ký tự, tùy chọn)
+   */
+  async publishVideoPost(
+    videoUrl: string,
+    text?: string,
+  ): Promise<ThreadsPublishFlow> {
+    const limit = await this.getPublishingLimit();
+    const remaining = limit.config.quota_total - limit.quota_usage;
+
+    if (remaining <= 0) {
+      throw new ThreadsApiError(
+        32,
+        0,
+        `Rate limit: đã dùng ${limit.quota_usage}/${limit.config.quota_total} bài trong 24h. Vui lòng thử lại sau.`,
+      );
+    }
+
+    const containerId = await this.createVideoContainer({ videoUrl, text });
+    console.log(`[ThreadsService] Video container tạo: ${containerId}`);
+
+    await this.waitForContainerReady(containerId);
+    console.log(`[ThreadsService] Video container sẵn sàng: ${containerId}`);
+
+    const postId = await this.publishContainer(containerId);
+    const postedAt = new Date().toISOString();
+    console.log(
+      `[ThreadsService] ✅ Đăng video thành công! Post ID: ${postId}`,
+    );
+
+    const updatedLimit = await this.getPublishingLimit();
+
+    return {
+      containerId,
+      postId,
+      postedAt,
+      quotaUsed: updatedLimit.quota_usage,
+      quotaRemaining:
+        updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "VIDEO",
     };
   }
 
@@ -521,6 +682,65 @@ class ThreadsService {
     } catch (err) {
       throw parseMetaError(err);
     }
+  }
+
+  /**
+   * Lấy chi tiết insights đầy đủ của một bài đăng
+   * GET /{media-id}/insights?metric=views,likes,replies,reposts,quotes
+   *
+   * Trả về đầy đủ thông tin: name, period, values, title, description, id
+   * Cần quyền threads_manage_insights
+   */
+  async getMediaInsights(mediaId: string): Promise<ThreadsMediaInsights> {
+    try {
+      const res = await this.http.get<{
+        data: Array<{
+          name: string;
+          period: string;
+          values: Array<{ value: number }>;
+          title: string;
+          description: string;
+          id: string;
+        }>;
+      }>(`/${mediaId}/insights`, {
+        params: {
+          metric: "views,likes,replies,reposts,quotes",
+          access_token: this.token,
+        },
+      });
+
+      const metrics = res.data.data;
+      const get = (name: string) =>
+        metrics.find((m) => m.name === name)?.values?.[0]?.value ?? 0;
+
+      return {
+        views: get("views"),
+        likes: get("likes"),
+        replies: get("replies"),
+        reposts: get("reposts"),
+        quotes: get("quotes"),
+        reach: get("reach"),
+        shares: get("shares"),
+        _raw: metrics,
+      };
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Lấy thông tin chi tiết bài đăng: post metadata + insights gộp lại
+   * Gọi song song getPost + getMediaInsights để tối ưu tốc độ
+   *
+   * @param mediaId - Threads media/post ID
+   * @returns { post, insights } — insights = null nếu không có quyền
+   */
+  async getPostDetail(mediaId: string): Promise<ThreadsPostDetail> {
+    const [post, insights] = await Promise.all([
+      this.getPost(mediaId),
+      this.getMediaInsights(mediaId).catch(() => null),
+    ]);
+    return { post, insights };
   }
 
   /**

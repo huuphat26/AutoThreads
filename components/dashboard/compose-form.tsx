@@ -1,8 +1,6 @@
-// ComposeForm — khu vực tạo & đăng bài
+// ComposeForm — khu vực tạo & đăng bài (hỗ trợ text + image)
 "use client";
 
-import type { PostSlot } from "@/types";
-import { SLOT_LABELS } from "@/lib/constants";
 import { TOPICS } from "@/lib/topics";
 import {
   SparklesIcon,
@@ -11,9 +9,9 @@ import {
   XCircleIcon,
 } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
+import type { ThreadsMediaType } from "@/types";
 
 type Props = {
-  slot: PostSlot;
   topic: string;
   content: string;
   keywords: string;
@@ -21,10 +19,13 @@ type Props = {
   loading: boolean;
   error: string;
   success: string;
-  onSlotChange: (v: PostSlot) => void;
+  mediaType?: ThreadsMediaType;
+  imageUrl?: string;
   onTopicChange: (v: string) => void;
   onContentChange: (v: string) => void;
   onKeywordsChange: (v: string) => void;
+  onMediaTypeChange?: (v: ThreadsMediaType) => void;
+  onImageUrlChange?: (v: string) => void;
   onGenerate: () => void;
   onPost: () => void;
 };
@@ -33,7 +34,6 @@ const inputClass =
   "w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-slate-50 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent";
 
 export function ComposeForm({
-  slot,
   topic,
   content,
   keywords,
@@ -41,10 +41,13 @@ export function ComposeForm({
   loading,
   error,
   success,
-  onSlotChange,
+  mediaType = "TEXT",
+  imageUrl = "",
   onTopicChange,
   onContentChange,
   onKeywordsChange,
+  onMediaTypeChange,
+  onImageUrlChange,
   onGenerate,
   onPost,
 }: Props) {
@@ -71,42 +74,22 @@ export function ComposeForm({
       </div>
 
       <div className="px-6 py-5 space-y-4">
-        {/* Slot + Topic */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              Khung giờ
-            </label>
-            <select
-              value={slot}
-              onChange={(e) => onSlotChange(e.target.value as PostSlot)}
-              className={inputClass}
-            >
-              {(
-                Object.entries(SLOT_LABELS) as [PostSlot, { label: string }][]
-              ).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              Chủ đề
-            </label>
-            <select
-              value={topic}
-              onChange={(e) => onTopicChange(e.target.value)}
-              className={inputClass}
-            >
-              {TOPICS.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Topic */}
+        <div>
+          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+            Chủ đề
+          </label>
+          <select
+            value={topic}
+            onChange={(e) => onTopicChange(e.target.value)}
+            className={inputClass}
+          >
+            {TOPICS.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Keywords */}
@@ -123,11 +106,66 @@ export function ComposeForm({
           />
         </div>
 
+        {/* Media Type selector */}
+        <div>
+          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+            Loại bài đăng
+          </label>
+          <div className="flex gap-2">
+            {(["TEXT", "IMAGE"] as const).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => onMediaTypeChange?.(type)}
+                className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
+                  mediaType === type
+                    ? "bg-slate-800 text-white border-slate-800"
+                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                {type === "TEXT" ? "📝 Chỉ văn bản" : "🖼️ Có hình ảnh"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Image URL input — chỉ hiện khi chọn IMAGE */}
+        {mediaType === "IMAGE" && (
+          <div>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+              URL hình ảnh (công khai, HTTPS)
+            </label>
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => onImageUrlChange?.(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className={inputClass}
+            />
+            <p className="text-[10px] text-slate-400 mt-1">
+              Hỗ trợ JPEG, PNG, WebP. URL phải truy cập được công khai.
+            </p>
+            {imageUrl && (
+              <div className="mt-2 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full max-h-48 object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Content textarea */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-medium text-slate-500">
-              Nội dung
+              {mediaType === "IMAGE" ? "Caption (tùy chọn)" : "Nội dung"}
             </label>
             <span className="text-xs text-slate-300">
               {content.length} ký tự
@@ -136,8 +174,12 @@ export function ComposeForm({
           <textarea
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
-            rows={7}
-            placeholder='Nhấn "Tạo bằng AI" để tự động tạo nội dung, hoặc nhập thủ công...'
+            rows={mediaType === "IMAGE" ? 4 : 7}
+            placeholder={
+              mediaType === "IMAGE"
+                ? "Nhập caption cho ảnh (tùy chọn)..."
+                : 'Nhấn "Tạo bằng AI" để tự động tạo nội dung, hoặc nhập thủ công...'
+            }
             className={`${inputClass} resize-none leading-relaxed`}
           />
         </div>
@@ -159,11 +201,18 @@ export function ComposeForm({
         {/* Post button */}
         <button
           onClick={onPost}
-          disabled={loading || !content.trim()}
+          disabled={
+            loading ||
+            (mediaType === "IMAGE" ? !imageUrl?.trim() : !content.trim())
+          }
           className="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
         >
           {loading ? <Spinner /> : <SendIcon />}
-          {loading ? "Đang đăng..." : "Đăng lên Threads"}
+          {loading
+            ? "Đang đăng..."
+            : mediaType === "IMAGE"
+              ? "Đăng ảnh lên Threads"
+              : "Đăng lên Threads"}
         </button>
       </div>
     </section>

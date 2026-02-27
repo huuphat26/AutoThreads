@@ -15,8 +15,6 @@ export function buildSystemPromptGemini(): string {
 
 BẮT BUỘC
 - Chỉ tiếng Việt.
-- Chỉ trả về JSON hợp lệ đúng dạng: {"content":"..."} và không thêm gì khác.
-- Nội dung tối đa 480 ký tự (tính cả xuống dòng/emoji/khoảng trắng).
 - Tối đa 2 emoji. Không hashtag.
 - Không blog, không liệt kê dài dòng, không giảng bài, không thuật ngữ y khoa.
 - Không dùng các cụm: "mua ngay", "giá chỉ", "chốt đơn", "khuyến mãi", "đặt hàng", "inbox đặt hàng".

@@ -10,21 +10,14 @@ import type { ProviderInfo } from "@/types";
 
 export const MODEL_CATALOG: Record<string, string[]> = {
   gemini: [
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-exp",
-    "gemini-2.0-pro-exp",
-    "gemini-2.5-pro-exp-03-25",
-    "gemini-3-flash-preview",
-    "gemini-3.0-pro",
+    // "gemini-2.0-flash", // Bản ổn định, tốc độ cao
+    // "gemini-2.0-pro", // Bản ổn định, suy luận chuyên sâu thay cho 2.0-pro-exp
+    // "gemini-3-flash", // Model thế hệ mới nhất, cực nhanh
+    "gemini-3-flash-preview", // Bản xem trước của dòng 3 (nếu bạn muốn trải nghiệm sớm)
+    // "gemini-3-pro", // Model mạnh nhất hiện tại thay cho 3.0-pro
+    // "gemini-1.5-pro", // Bản ổn định kinh điển với cửa sổ ngữ cảnh cực lớn
   ],
-  openai: [
-    "gpt-4o-mini",
-    "gpt-4o",
-    "gpt-4-turbo",
-    "gpt-4",
-    "o1-mini",
-    "o3-mini",
-  ],
+  openai: ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-4", "o3-mini"],
 };
 
 // ─── Config Schema ────────────────────────────────────────────────────────────

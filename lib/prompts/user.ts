@@ -30,7 +30,7 @@ export function buildUserPromptGemini(ctx: PromptContext): string {
 LastTopic (nếu có): ${lastTopicStr}
 CTA kiểu: ${ctaStr}  (chọn 1: hoi-gap-khong | ru-thu-3-ngay | goi-hoi-thuc-don)${customStr}
 
-Hãy tạo 1 bài Threads đúng HOOK → MẸO → CTA, tối đa 480 ký tự, tối đa 2 emoji, giọng nữ chủ tiệm chia sẻ thật.`;
+Hãy tạo 1 bài Threads đúng HOOK → MẸO → CTA, giọng nữ chủ tiệm chia sẻ thật.`;
 }
 
 // ─── OpenAI ──────────────────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ export function buildUserPromptOpenAI(ctx: PromptContext): string {
 THỨ: ${ctx.dayOfWeek}
 LastTopic: ${lastTopicStr}${customStr}
 
-Yêu cầu: Viết 1 bài Threads cho Ép Xanh theo đúng HOOK → MẸO → CTA, tối đa 480 ký tự, tối đa 2 emoji.
+Yêu cầu: Viết 1 bài Threads cho Ép Xanh theo đúng HOOK → MẸO → CTA.
 CTA chọn 1: (1) hỏi người đọc có gặp không (2) rủ thử 3 ngày (3) gợi nhắn hỏi thực đơn.
 Nếu cần "mùi Ép Xanh" thì chỉ nhắc rất nhẹ, kiểu tình cờ, không bán hàng.`;
 }

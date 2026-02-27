@@ -4,8 +4,6 @@
 
 export type PostStatus = "pending" | "posted" | "failed" | "draft";
 
-export type PostSlot = "morning" | "noon" | "evening";
-
 /** Dynamic topic ID — không còn hardcode, xem lib/topics.ts để thêm/sửa chủ đề */
 export type ContentTopic = string;
 
@@ -26,8 +24,7 @@ export interface ThreadsUser {
   id: string;
   username: string;
   name: string;
-  biography?: string;
-  followers_count?: number;
+  threads_biography?: string;
   threads_profile_picture_url?: string;
 }
 
@@ -74,6 +71,33 @@ export interface ThreadsPostInsights {
   engagement?: number;
 }
 
+/**
+ * Kết quả chi tiết từ GET /{media-id}/insights
+ * Bao gồm đầy đủ tất cả metrics mà Meta API hỗ trợ
+ */
+export interface ThreadsMediaInsights {
+  views: number;
+  likes: number;
+  replies: number;
+  reposts: number;
+  quotes: number;
+  reach: number;
+  shares: number;
+  /** Raw data từ API — dùng khi cần truy cập metric chưa map */
+  _raw?: Array<{
+    name: string;
+    title: string;
+    description: string;
+    values: Array<{ value: number }>;
+  }>;
+}
+
+/** Kết quả tổng hợp: thông tin bài đăng + insights */
+export interface ThreadsPostDetail {
+  post: ThreadsPost;
+  insights: ThreadsMediaInsights | null;
+}
+
 /** Giới hạn đăng bài (rate limit) */
 export interface ThreadsPublishingLimit {
   config: {
@@ -104,6 +128,18 @@ export interface ThreadsTokenResult {
   expires_in: number; // seconds
 }
 
+/** Params để tạo image container */
+export interface CreateImageContainerParams {
+  imageUrl: string;
+  text?: string; // caption (tùy chọn, tối đa 500 ký tự)
+}
+
+/** Params để tạo video container */
+export interface CreateVideoContainerParams {
+  videoUrl: string;
+  text?: string;
+}
+
 /** Kết quả full publish flow (internal) */
 export interface ThreadsPublishFlow {
   containerId: string;
@@ -111,6 +147,7 @@ export interface ThreadsPublishFlow {
   postedAt: string;
   quotaUsed: number;
   quotaRemaining: number;
+  mediaType: ThreadsMediaType;
 }
 
 // ---- App Internal Types ----
@@ -119,13 +156,15 @@ export interface ScheduledPost {
   id: string;
   content: string;
   topic: ContentTopic;
-  slot: PostSlot;
+  slot?: string;
   scheduledAt: string;
   postedAt?: string;
   threadsPostId?: string;
   status: PostStatus;
   errorMessage?: string;
   topicLabel?: string; // Chủ đề cụ thể AI đã chọn để viết
+  mediaType?: ThreadsMediaType; // TEXT | IMAGE | VIDEO | CAROUSEL
+  imageUrl?: string; // URL ảnh công khai (nếu đăng ảnh)
 }
 
 export interface PostHistory {
@@ -135,7 +174,7 @@ export interface PostHistory {
 
 export interface GenerateContentRequest {
   topic?: ContentTopic; // nếu không truyền sẽ random từ TOPICS
-  slot?: PostSlot; // không còn bắt buộc, chỉ dùng cho scheduler
+  slot?: string;
   lastTopic?: string; // id của chủ đề vừa đăng — để AI tránh lặp
   ctaStyle?: string; // "hoi-gap-khong" | "ru-thu-3-ngay" | "goi-hoi-thuc-don"
   keywords?: string[];
@@ -158,10 +197,11 @@ export interface ApiResponse<T = unknown> {
 export interface SchedulerStatus {
   enabled: boolean;
   running: boolean;
+  paused: boolean;
   testMode: boolean;
   testIntervalMin: number | null;
   jobs: {
-    slot: PostSlot | "test";
+    id: string;
     cronExpression: string;
     label: string;
   }[];

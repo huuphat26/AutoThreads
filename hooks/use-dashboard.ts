@@ -5,7 +5,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import type {
-  PostSlot,
   ContentTopic,
   ScheduledPost,
   ProviderInfo,
@@ -36,7 +35,6 @@ export function useDashboard() {
   const [success, setSuccess] = useState("");
 
   // Compose form state
-  const [slot, setSlot] = useState<PostSlot>("morning");
   const [topic, setTopic] = useState<ContentTopic>(TOPICS[0]?.id ?? "detox");
   const [content, setContent] = useState("");
   const [keywords, setKeywords] = useState("");
@@ -171,6 +169,41 @@ export function useDashboard() {
     };
   }, [fetchHistory, fetchSchedulerStatus, fetchAIConfig]);
 
+  // ── Tạm dừng / tiếp tục scheduler ──
+  const handleTogglePause = useCallback(async () => {
+    if (!schedulerStatus) return;
+    const action = schedulerStatus.paused ? "resume" : "pause";
+    try {
+      const res = await fetch("/api/scheduler", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSchedulerStatus(json.data as SchedulerStatus);
+      }
+    } catch {
+      /* silent */
+    }
+  }, [schedulerStatus]);
+
+  // ── Xóa bài ──
+  const handleDeletePost = useCallback(
+    async (postId: string, threadsPostId?: string) => {
+      try {
+        const url = threadsPostId
+          ? `/api/post/${postId}?threadsId=${encodeURIComponent(threadsPostId)}`
+          : `/api/post/${postId}`;
+        await fetch(url, { method: "DELETE" });
+        await fetchHistory();
+      } catch {
+        /* silent */
+      }
+    },
+    [fetchHistory],
+  );
+
   // ── Tạo nội dung AI ──
   const handleGenerate = async () => {
     setGenerating(true);
@@ -180,7 +213,6 @@ export function useDashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          slot,
           topic,
           keywords: keywords
             .split(",")
@@ -213,7 +245,7 @@ export function useDashboard() {
       const res = await fetch("/api/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, slot, topic, topicLabel }),
+        body: JSON.stringify({ content, topic, topicLabel }),
       });
       const json = await res.json();
       if (json.success) {
@@ -236,8 +268,6 @@ export function useDashboard() {
     posts,
     fetchHistory,
     // compose state
-    slot,
-    setSlot,
     topic,
     setTopic,
     content,
@@ -251,12 +281,14 @@ export function useDashboard() {
     handleModelChange,
     // Scheduler
     schedulerStatus,
+    handleTogglePause,
     // Live refresh
     lastRefreshed,
     countdown,
     // actions
     handleGenerate,
     handlePost,
+    handleDeletePost,
     // loading flags
     loading,
     generating,

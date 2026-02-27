@@ -2,12 +2,12 @@
 // API Route: /api/threads/user - Profile + Token status + Quota
 // ============================================================
 import { NextResponse } from "next/server";
-import { threadsService } from "@/lib/services/threads.service";
+import { getThreadsUser, threadsService } from "@/lib/threads-api";
 
 export async function GET() {
   try {
     const [profile, tokenStatus, quota] = await Promise.allSettled([
-      threadsService.getMyProfile(),
+      getThreadsUser(),
       threadsService.getTokenStatus(),
       threadsService.getRemainingQuota(),
     ]);

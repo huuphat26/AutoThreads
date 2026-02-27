@@ -11,6 +11,7 @@ const INITIAL_PER_DAY = 3;
 type Props = {
   posts: ScheduledPost[];
   onRefresh: () => void;
+  onDelete: (postId: string, threadsPostId?: string) => void;
 };
 
 function formatDayLabel(dateKey: string): string {
@@ -34,7 +35,7 @@ function getDateKey(post: ScheduledPost): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function HistoryList({ posts, onRefresh }: Props) {
+export function HistoryList({ posts, onRefresh, onDelete }: Props) {
   // dateKey → expanded state
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
 
@@ -106,7 +107,11 @@ export function HistoryList({ posts, onRefresh }: Props) {
                 {/* Posts for this day */}
                 <div className="space-y-2.5">
                   {visible.map((post) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onDelete={() => onDelete(post.id, post.threadsPostId)}
+                    />
                   ))}
                 </div>
 

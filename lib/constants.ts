@@ -1,7 +1,6 @@
 // ============================================
 // Constants — labels, config dùng chung toàn app
 // ============================================
-import type { PostSlot } from "@/types";
 import { TOPICS } from "@/lib/topics";
 import {
   CheckCircleIcon,
@@ -10,12 +9,6 @@ import {
   PencilIcon,
 } from "@/components/ui/icons";
 import type { FC } from "react";
-
-export const SLOT_LABELS: Record<PostSlot, { label: string }> = {
-  morning: { label: "7:30 Sáng" },
-  noon: { label: "12:00 Trưa" },
-  evening: { label: "18:00 Tối" },
-};
 
 /** Chủ đề dẫn xuất từ nguồn TOPICS — thêm/sửa tại lib/topics.ts */
 export const TOPIC_LABELS: Record<string, string> = Object.fromEntries(

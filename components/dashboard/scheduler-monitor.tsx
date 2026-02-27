@@ -12,6 +12,7 @@ type Props = {
   aiProviders: ProviderInfo[];
   onProviderChange: (id: string) => void;
   onModelChange: (providerId: string, model: string) => void;
+  onTogglePause: () => void;
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -32,14 +33,6 @@ function vnClock(): string {
   });
 }
 
-function minutesUntilLabel(mins: number): string {
-  if (mins < 1) return "Ngay bây giờ";
-  if (mins < 60) return `${mins} phút`;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return m > 0 ? `${h}g ${m}p` : `${h} giờ`;
-}
-
 function relativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const s = Math.floor(diffMs / 1000);
@@ -49,41 +42,6 @@ function relativeTime(iso: string): string {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h} giờ trước`;
   return `${Math.floor(h / 24)} ngày trước`;
-}
-
-interface FireInfo {
-  label: string; // e.g. "07:30 Sáng"
-  minutesUntil: number;
-  isNext: boolean;
-  isPast: boolean;
-}
-
-function computeFireTimes(jobs: SchedulerStatus["jobs"]): FireInfo[] {
-  const now = vnNow();
-  const nowMins = now.getHours() * 60 + now.getMinutes();
-
-  const infos = jobs.flatMap((job) => {
-    const m = job.label.match(/(\d{1,2}):(\d{2})/);
-    if (!m) return [];
-    const jobMins = parseInt(m[1]) * 60 + parseInt(m[2]);
-    let until = jobMins - nowMins;
-    const isPast = until <= 0;
-    if (isPast) until += 24 * 60;
-    return [{ label: job.label, minutesUntil: until, isNext: false, isPast }];
-  });
-
-  // Mark the next one (smallest minutesUntil, not past)
-  const nextIdx = infos.reduce(
-    (best, cur, i) =>
-      !cur.isPast &&
-      (best === -1 || cur.minutesUntil < infos[best].minutesUntil)
-        ? i
-        : best,
-    -1,
-  );
-  if (nextIdx !== -1) infos[nextIdx].isNext = true;
-
-  return infos;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -151,6 +109,7 @@ export function SchedulerMonitor({
   aiProviders,
   onProviderChange,
   onModelChange,
+  onTogglePause,
 }: Props) {
   // Latest posted post
   const lastPost =
@@ -178,9 +137,6 @@ export function SchedulerMonitor({
         timeZone: "Asia/Ho_Chi_Minh",
       }) === todayKey,
   ).length;
-
-  const fireTimes =
-    status && !status.testMode ? computeFireTimes(status.jobs) : [];
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -220,6 +176,30 @@ export function SchedulerMonitor({
             testMode={status?.testMode ?? false}
             intervalMin={status?.testIntervalMin ?? null}
           />
+
+          {/* Pause / Resume button — only shown when scheduler is running */}
+          {status?.enabled && status?.running && (
+            <button
+              onClick={onTogglePause}
+              title={status.paused ? "Tiếp tục chạy" : "Tạm dừng"}
+              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${
+                status.paused
+                  ? "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+                  : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
+              }`}
+            >
+              {status.paused ? (
+                <>
+                  <span>▶</span> Tiếp tục
+                </>
+              ) : (
+                <>
+                  <span>⏸</span> Tạm dừng
+                </>
+              )}
+            </button>
+          )}
+
           <span className="ml-auto text-xs font-mono text-slate-400 tabular-nums">
             🕐 {vnClock()} (VN)
           </span>
@@ -283,53 +263,10 @@ export function SchedulerMonitor({
           </div>
         </div>
 
-        {/* Schedule grid (production only) */}
-        {status && !status.testMode && fireTimes.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {fireTimes.map((fire) => (
-              <div
-                key={fire.label}
-                className={`rounded-xl border px-3 py-2.5 text-center transition-all ${
-                  fire.isNext
-                    ? "bg-slate-800 border-slate-700 text-white"
-                    : fire.isPast
-                      ? "bg-slate-50 border-slate-100 text-slate-400"
-                      : "bg-white border-slate-100 text-slate-600"
-                }`}
-              >
-                <div
-                  className={`text-sm font-bold tabular-nums ${fire.isNext ? "text-white" : ""}`}
-                >
-                  {fire.label.match(/\d{1,2}:\d{2}/)?.[0] ?? fire.label}
-                </div>
-                <div
-                  className={`text-[10px] mt-0.5 ${
-                    fire.isNext
-                      ? "text-slate-300"
-                      : fire.isPast
-                        ? "text-slate-300"
-                        : "text-slate-400"
-                  }`}
-                >
-                  {fire.isPast && !fire.isNext
-                    ? "Đã qua"
-                    : minutesUntilLabel(fire.minutesUntil)}
-                </div>
-                {fire.isNext && (
-                  <div className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider mt-0.5">
-                    Tiếp theo
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Test mode: no schedule grid, just interval note */}
         {status?.testMode && (
           <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3 text-xs text-amber-700">
-            Tự động đăng mỗi <strong>{status.testIntervalMin} phút</strong> ·
-            Xoay vòng 3 khung giờ
+            Tự động đăng mỗi <strong>{status.testIntervalMin} phút</strong>
           </div>
         )}
 
