@@ -1,101 +1,146 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { Header } from "@/components/layout/header";
-import { SchedulerMonitor } from "@/components/dashboard/scheduler-monitor";
-import { StatsSection } from "@/components/dashboard/stats-section";
-import { HistoryList } from "@/components/dashboard/history-list";
-import { ThreadsProfileCard } from "@/components/dashboard/threads-profile";
+import {
+  PlatformTabBar,
+  type Platform,
+} from "@/components/dashboard/platform-tab-bar";
+import { ThreadsMonitorBlock } from "@/components/dashboard/threads-monitor-block";
+import { FacebookMonitorBlock } from "@/components/platforms/facebook/monitor";
+import { InstagramMonitorBlock } from "@/components/platforms/instagram/monitor";
+import { AIConfigCard } from "@/components/shared/ai-config-card";
 
 export default function DashboardPage() {
+  const [activePlatform, setActivePlatform] = useState<Platform>("threads");
+
   const {
     stats,
     posts,
-    fetchHistory,
+    content,
+    setContent,
+    keywords,
+    setKeywords,
+    handleGenerate,
+    handlePost,
     aiProvider,
     aiProviders,
     handleProviderChange,
     handleModelChange,
     schedulerStatus,
     handleTogglePause,
+    handleRunMissedSlot,
+    handleSkipSlot,
     lastRefreshed,
     countdown,
 
-    handleDeletePost,
+    generating,
+    loading,
+    error,
+    success,
+    // compose extras
+    mediaType,
+    setMediaType,
+    imageUrl,
+    setImageUrl,
+    isScheduled,
+    setIsScheduled,
+    scheduledTime,
+    setScheduledTime,
+    // manual scheduled posts
+    manualPosts,
+    manualPostsStats,
+    manualPostsLoading,
+    manualPostsError,
+    fetchManualPosts,
+    ensureManualFetched,
+    handleCancelManualPost,
+    // threads api posts
+    threadsPosts,
+    threadsTotal,
+    threadsLoading,
+    threadsError,
+    fetchThreadsPosts,
   } = useDashboard();
+
+  // Ensure manual posts are fetched when switching to threads tab
+  useEffect(() => {
+    if (activePlatform === "threads") {
+      ensureManualFetched();
+    }
+  }, [activePlatform, ensureManualFetched]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
-      <Header aiProvider={aiProvider} schedulerStatus={schedulerStatus} />
+      <Header aiProvider={aiProvider} />
 
-      <main className="max-w-2xl mx-auto px-5 py-6 space-y-8">
-        <ThreadsProfileCard />
-        <section className="space-y-3 ">
-          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            Thống kê tổng hợp
-          </h2>
-          <StatsSection stats={stats} />
-        </section>
-
-        <SchedulerMonitor
-          status={schedulerStatus}
-          lastRefreshed={lastRefreshed}
-          countdown={countdown}
-          posts={posts}
+      <main className="max-w-2xl mx-auto px-5 py-6 space-y-6">
+        <AIConfigCard
           aiProvider={aiProvider}
           aiProviders={aiProviders}
           onProviderChange={handleProviderChange}
           onModelChange={handleModelChange}
-          onTogglePause={handleTogglePause}
         />
 
-        <HistoryList
-          posts={posts}
-          onRefresh={fetchHistory}
-          onDelete={handleDeletePost}
-        />
+        <PlatformTabBar active={activePlatform} onChange={setActivePlatform} />
+
+        {activePlatform === "facebook" && (
+          <FacebookMonitorBlock
+            aiProviderId={aiProvider.id}
+            aiModel={aiProvider.model}
+          />
+        )}
+
+        {activePlatform === "threads" && (
+          <ThreadsMonitorBlock
+            stats={stats}
+            posts={posts}
+            schedulerStatus={schedulerStatus}
+            lastRefreshed={lastRefreshed}
+            countdown={countdown}
+            onTogglePause={handleTogglePause}
+            onRunMissedSlot={handleRunMissedSlot}
+            onSkipSlot={handleSkipSlot}
+            content={content}
+            keywords={keywords}
+            generating={generating}
+            loading={loading}
+            error={error}
+            success={success}
+            mediaType={mediaType}
+            imageUrl={imageUrl}
+            isScheduled={isScheduled}
+            scheduledTime={scheduledTime}
+            onContentChange={setContent}
+            onKeywordsChange={setKeywords}
+            onMediaTypeChange={setMediaType}
+            onImageUrlChange={setImageUrl}
+            onIsScheduledChange={setIsScheduled}
+            onScheduledTimeChange={setScheduledTime}
+            onGenerate={handleGenerate}
+            onPost={handlePost}
+            manualPosts={manualPosts}
+            manualPostsStats={manualPostsStats}
+            manualPostsLoading={manualPostsLoading}
+            manualPostsError={manualPostsError}
+            onFetchManualPosts={fetchManualPosts}
+            onCancelManualPost={handleCancelManualPost}
+            threadsPosts={threadsPosts}
+            threadsTotal={threadsTotal}
+            threadsLoading={threadsLoading}
+            threadsError={threadsError}
+            fetchThreadsPosts={fetchThreadsPosts}
+          />
+        )}
+
+        {activePlatform === "instagram" && (
+          <InstagramMonitorBlock
+            aiProviderId={aiProvider.id}
+            aiModel={aiProvider.model}
+          />
+        )}
       </main>
     </div>
   );
 }
-
-//  <section className="pt-6 border-t border-slate-200">
-//           <button
-//             onClick={() => setShowCompose(!showCompose)}
-//             className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-slate-300 transition-all text-slate-600 group"
-//           >
-//             <div className="flex items-center gap-3">
-//               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
-//                 <PlusIcon className="w-4 h-4" />
-//               </div>
-//               <span className="font-semibold text-sm">
-//                 Tạo bài đăng thủ công
-//               </span>
-//             </div>
-//             {showCompose ? (
-//               <ChevronUpIcon className="w-4 h-4" />
-//             ) : (
-//               <ChevronDownIcon className="w-4 h-4" />
-//             )}
-//           </button>
-
-//           {showCompose && (
-//             <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-//               <ComposeForm
-//                 topic={topic}
-//                 content={content}
-//                 keywords={keywords}
-//                 generating={generating}
-//                 loading={loading}
-//                 error={error}
-//                 success={success}
-//                 onTopicChange={setTopic}
-//                 onContentChange={setContent}
-//                 onKeywordsChange={setKeywords}
-//                 onGenerate={handleGenerate}
-//                 onPost={handlePost}
-//               />
-//             </div>
-//           )}
-//         </section>

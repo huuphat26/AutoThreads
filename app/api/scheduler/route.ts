@@ -4,16 +4,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   getSchedulerStatus,
-  startScheduler,
   triggerManualPost,
   pauseScheduler,
   resumeScheduler,
+  skipSchedulerSlot,
 } from "@/lib/scheduler";
 
-// GET: Lấy trạng thái scheduler (tự động start nếu chưa chạy)
+// GET: Lấy trạng thái scheduler
+// Lưu ý: startScheduler() KHÔNG gọi ở đây vì instrumentation.ts đã xử lý.
+// Gọi lại ở đây sẽ gây re-register cron jobs trên mỗi cold start serverless.
 export async function GET() {
-  // Đảm bảo scheduler luôn được khởi động
-  startScheduler();
   const status = getSchedulerStatus();
   return NextResponse.json({ success: true, data: status });
 }
@@ -38,19 +38,31 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH: Tạm dừng hoặc tiếp tục scheduler
+// PATCH: Tạm dừng, tiếp tục, hoặc bỏ qua slot
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const action: "pause" | "resume" = body.action;
+    const action: "pause" | "resume" | "skip" = body.action;
 
     if (action === "pause") {
       pauseScheduler();
     } else if (action === "resume") {
       resumeScheduler();
+    } else if (action === "skip") {
+      const slotId: string | undefined = body.slotId;
+      if (!slotId) {
+        return NextResponse.json(
+          { success: false, error: "Thiếu slotId" },
+          { status: 400 },
+        );
+      }
+      skipSchedulerSlot(slotId);
     } else {
       return NextResponse.json(
-        { success: false, error: "action phải là 'pause' hoặc 'resume'" },
+        {
+          success: false,
+          error: "action phải là 'pause', 'resume' hoặc 'skip'",
+        },
         { status: 400 },
       );
     }

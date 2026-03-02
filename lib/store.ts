@@ -12,6 +12,50 @@ let _history: PostHistory = {
   lastUpdated: new Date().toISOString(),
 };
 
+// ─── Scheduler state (shared trong cùng process/instance) ─────────────────────
+// Lưu ý: biến này reset khi serverless cold start. Đây là giới hạn của in-memory.
+let _schedulerPaused = false;
+
+export function isSchedulerPaused(): boolean {
+  return _schedulerPaused;
+}
+
+export function setSchedulerPaused(paused: boolean): void {
+  _schedulerPaused = paused;
+}
+
+// ─── Skipped slots: lưu các slot bị bỏ qua trong ngày ────────────────────────
+// Key format: "YYYY-MM-DD_slotId" (theo timezone TIMEZONE env)
+const _skippedSlots = new Set<string>();
+
+function todayKey(tz: string): string {
+  return new Date().toLocaleDateString("sv", { timeZone: tz });
+}
+
+export function skipSlot(slotId: string, tz = "Asia/Ho_Chi_Minh"): void {
+  // Xoá các entry cũ (ngày khác) để tránh tích tụ
+  const today = todayKey(tz);
+  for (const key of _skippedSlots) {
+    if (!key.startsWith(today)) _skippedSlots.delete(key);
+  }
+  _skippedSlots.add(`${today}_${slotId}`);
+}
+
+export function isSlotSkipped(
+  slotId: string,
+  tz = "Asia/Ho_Chi_Minh",
+): boolean {
+  return _skippedSlots.has(`${todayKey(tz)}_${slotId}`);
+}
+
+/** Danh sách slotId đã bị skip hôm nay */
+export function getSkippedSlotIds(tz = "Asia/Ho_Chi_Minh"): string[] {
+  const prefix = `${todayKey(tz)}_`;
+  return [..._skippedSlots]
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => k.slice(prefix.length));
+}
+
 // Đọc lịch sử bài đăng
 export function readHistory(): PostHistory {
   return { ..._history, posts: [..._history.posts] };

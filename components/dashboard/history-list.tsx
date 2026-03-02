@@ -1,4 +1,3 @@
-// HistoryList — danh sách lịch sử bài đăng (nhóm theo ngày)
 "use client";
 
 import { useState, useMemo } from "react";

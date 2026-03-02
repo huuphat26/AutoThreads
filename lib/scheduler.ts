@@ -2,16 +2,23 @@ import cron, { ScheduledTask } from "node-cron";
 import { generateContent } from "./content-generator";
 import { resolveTopicOrRandom } from "./topics";
 import { postToThreads } from "./threads-api";
-import { upsertPost, generateId } from "./store";
+import {
+  upsertPost,
+  generateId,
+  isSchedulerPaused,
+  setSchedulerPaused,
+  readHistory,
+  skipSlot,
+  getSkippedSlotIds,
+} from "./store";
 import type { ScheduledPost } from "@/types";
 
-// ─── Chế độ TEST: đăng mỗi N phút ─────────────────────────────
-// Đặt TEST_MODE_INTERVAL_MIN trong .env để bật (ví dụ: 10)
-// Nếu không set hoặc = 0 → dùng lịch production (CRON_SCHEDULES)
-const TEST_INTERVAL_MIN = parseInt(
-  process.env.TEST_MODE_INTERVAL_MIN || "0",
-  10,
-);
+const DEFAULT_SCHEDULES: Array<{ id: string; label: string; cron: string }> = [
+  { id: "noon", label: "Buổi trưa (12:00)", cron: "0 12 * * *" },
+  { id: "evening", label: "Buổi tối  (18:00)", cron: "0 18 * * *" },
+];
+
+const DAILY_POST_LIMIT = 2;
 
 function parseProductionSchedules(): Array<{
   id: string;
@@ -19,7 +26,7 @@ function parseProductionSchedules(): Array<{
   cron: string;
 }> {
   const raw = process.env.CRON_SCHEDULES || "";
-  if (!raw.trim()) return [];
+  if (!raw.trim()) return DEFAULT_SCHEDULES;
   return raw
     .split(";")
     .map((entry, i) => {
@@ -31,15 +38,38 @@ function parseProductionSchedules(): Array<{
     .filter((x): x is NonNullable<typeof x> => x !== null);
 }
 
+function getTodayPostedCount(): number {
+  const history = readHistory();
+  const todayKey = new Date().toLocaleDateString("sv", { timeZone: TIMEZONE });
+  return history.posts.filter(
+    (p) =>
+      p.status === "posted" &&
+      p.postedAt &&
+      new Date(p.postedAt).toLocaleDateString("sv", { timeZone: TIMEZONE }) ===
+        todayKey,
+  ).length;
+}
+
 const TIMEZONE = process.env.TIMEZONE || "Asia/Ho_Chi_Minh";
 
 let scheduledJobs: ScheduledTask[] = [];
-let schedulerPaused = false;
+let serverStartedAt: string | undefined;
 
 /**
  * Thực hiện đăng bài
+ * @param manual - true = đăng thủ công (bỏ qua giới hạn ngày)
  */
-async function executePost(): Promise<void> {
+async function executePost(manual = false): Promise<void> {
+  // Kiểm tra giới hạn bài / ngày (chỉ áp dụng cho lịch tự động)
+  if (!manual) {
+    const todayCount = getTodayPostedCount();
+    if (todayCount >= DAILY_POST_LIMIT) {
+      console.log(
+        `[AutoThreads] ⛔ Đã đăng ${todayCount}/${DAILY_POST_LIMIT} bài hôm nay, bỏ qua.`,
+      );
+      return;
+    }
+  }
   const postId = generateId();
   const scheduledAt = new Date().toISOString();
   const topic = resolveTopicOrRandom(); // random topic mỗi lần đăng
@@ -51,6 +81,7 @@ async function executePost(): Promise<void> {
     topic: topic.id,
     scheduledAt,
     status: "pending",
+    source: "auto",
   };
   upsertPost(pendingPost);
 
@@ -85,8 +116,6 @@ async function executePost(): Promise<void> {
       status: "failed",
       errorMessage: errMsg,
     });
-
-    console.error(`[AutoThreads] ❌ Đăng thất bại: ${errMsg}`);
   }
 }
 
@@ -94,49 +123,20 @@ async function executePost(): Promise<void> {
  * Khởi động tất cả cron jobs
  */
 export function startScheduler(): void {
-  if (scheduledJobs.length > 0) {
-    console.log("[AutoThreads] Scheduler đã chạy rồi, bỏ qua.");
-    return;
-  }
-
   const enabled = process.env.SCHEDULER_ENABLED === "true";
   if (!enabled) {
     console.log("[AutoThreads] Scheduler bị tắt (SCHEDULER_ENABLED=false).");
     return;
   }
 
+  serverStartedAt = new Date().toISOString();
   console.log(`[AutoThreads] ⏰ Khởi động Scheduler (Timezone: ${TIMEZONE})`);
 
-  // ─── TEST MODE: đăng mỗi N phút ───────────────────────────
-  if (TEST_INTERVAL_MIN > 0) {
-    const cronExpr = `0 */${TEST_INTERVAL_MIN} * * * *`; // mỗi N phút
-    const task = cron.schedule(
-      cronExpr,
-      () => {
-        console.log(`[AutoThreads] 🧪 TEST MODE — Đăng bài`);
-        executePost();
-      },
-      { timezone: TIMEZONE },
-    );
-    scheduledJobs.push(task);
-    console.log(
-      `[AutoThreads] 🧪 TEST MODE: đăng mỗi ${TEST_INTERVAL_MIN} phút (${cronExpr})`,
-    );
-    return;
-  }
-
   const schedules = parseProductionSchedules();
-  if (schedules.length === 0) {
-    console.log(
-      "[AutoThreads] ⚠ Không có lịch nào. Hãy thêm biến môi trường CRON_SCHEDULES.",
-    );
-    return;
-  }
   for (const schedule of schedules) {
     const task = cron.schedule(
       schedule.cron,
       () => {
-        console.log(`[AutoThreads] 🔔 Đăng bài theo lịch: ${schedule.label}`);
         executePost();
       },
       { timezone: TIMEZONE },
@@ -154,7 +154,7 @@ export function startScheduler(): void {
 export function stopScheduler(): void {
   scheduledJobs.forEach((job) => job.stop());
   scheduledJobs = [];
-  schedulerPaused = false;
+  setSchedulerPaused(false);
   console.log("[AutoThreads] Scheduler đã dừng.");
 }
 
@@ -162,9 +162,9 @@ export function stopScheduler(): void {
  * Tạm dừng tất cả cron jobs (giữ nguyên lịch, chỉ suspend)
  */
 export function pauseScheduler(): void {
-  if (schedulerPaused) return;
+  if (isSchedulerPaused()) return;
   scheduledJobs.forEach((job) => job.stop());
-  schedulerPaused = true;
+  setSchedulerPaused(true);
   console.log("[AutoThreads] ⏸ Scheduler đã tạm dừng.");
 }
 
@@ -172,46 +172,46 @@ export function pauseScheduler(): void {
  * Tiếp tục các cron jobs sau khi tạm dừng
  */
 export function resumeScheduler(): void {
-  if (!schedulerPaused) return;
+  if (!isSchedulerPaused()) return;
   scheduledJobs.forEach((job) => job.start());
-  schedulerPaused = false;
+  setSchedulerPaused(false);
   console.log("[AutoThreads] ▶ Scheduler tiếp tục chạy.");
 }
 
 /**
  * Đăng bài thủ công ngay lập tức (cho mục đích test)
+ * Bỏ qua giới hạn số bài / ngày.
  */
 export async function triggerManualPost(): Promise<string> {
-  await executePost();
+  await executePost(true);
   return "Đã kích hoạt đăng bài thủ công";
 }
 
 /**
  * Lấy thông tin trạng thái scheduler
  */
+/** Đánh dấu slot bị bỏ qua trong ngày hôm nay */
+export function skipSchedulerSlot(slotId: string): void {
+  skipSlot(slotId, TIMEZONE);
+}
+
 export function getSchedulerStatus() {
-  const isTestMode = TEST_INTERVAL_MIN > 0;
-  const schedules = isTestMode ? [] : parseProductionSchedules();
+  const schedules = parseProductionSchedules();
+  const todayPosted = getTodayPostedCount();
   return {
     enabled: process.env.SCHEDULER_ENABLED === "true",
     running: scheduledJobs.length > 0,
-    paused: schedulerPaused,
-    testMode: isTestMode,
-    testIntervalMin: isTestMode ? TEST_INTERVAL_MIN : null,
-    jobs: isTestMode
-      ? [
-          {
-            id: "test",
-            cronExpression: `*/${TEST_INTERVAL_MIN} * * * *`,
-            label: `Test: mỗi ${TEST_INTERVAL_MIN} phút`,
-          },
-        ]
-      : schedules.map((s) => ({
-          id: s.id,
-          cronExpression: s.cron,
-          label: s.label,
-        })),
+    paused: isSchedulerPaused(),
+    dailyPostLimit: DAILY_POST_LIMIT,
+    todayPosted,
+    skippedSlots: getSkippedSlotIds(TIMEZONE),
+    jobs: schedules.map((s) => ({
+      id: s.id,
+      cronExpression: s.cron,
+      label: s.label,
+    })),
     timezone: TIMEZONE,
     jobCount: scheduledJobs.length,
+    serverStartedAt,
   };
 }

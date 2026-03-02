@@ -22,15 +22,21 @@ export interface PromptContext {
  * Thông tin chủ đề được mô tả rõ để bổ sung cho responseSchema.
  */
 export function buildUserPromptGemini(ctx: PromptContext): string {
-  const lastTopicStr = ctx.lastTopic ?? "(chưa có)";
-  const ctaStr = ctx.ctaStyle ?? "hoi-gap-khong";
-  const customStr = ctx.customPrompt ? `\n${ctx.customPrompt}` : "";
-
-  return `THỜI GIAN HIỆN TẠI: ${ctx.currentTime} — ${ctx.dayOfWeek}
-LastTopic (nếu có): ${lastTopicStr}
-CTA kiểu: ${ctaStr}  (chọn 1: hoi-gap-khong | ru-thu-3-ngay | goi-hoi-thuc-don)${customStr}
-
-Hãy tạo 1 bài Threads đúng HOOK → MẸO → CTA, giọng nữ chủ tiệm chia sẻ thật.`;
+  return `
+  Bạn là người viết nội dung mạng xã hội chuyên đăng series “Mỗi ngày 1 công thức nước ép”.
+Mục tiêu: người đọc lướt thấy → hiểu công thức trong vài giây → muốn lưu bài để làm thử.
+  Viết 1 bài cho series “Mỗi ngày 1 công thức nước ép”.
+Thông tin (có thể trống):
+TenCongThuc:
+NguyenLieuChinh:
+DungCu: ép chậm hoặc xay
+Yêu cầu:
+Công thức là trung tâm.
+Không kể chuyện.
+Không nói detox, giảm cân, trị mụn.
+Không chèn thời gian/ngày.
+Không dùng ký hiệu in đậm.
+Đọc là làm được ngay.`;
 }
 
 // ─── OpenAI ──────────────────────────────────────────────────────────────────
@@ -40,14 +46,20 @@ Hãy tạo 1 bài Threads đúng HOOK → MẸO → CTA, giọng nữ chủ ti�
  * Cấu trúc tối giản — system prompt đã chứa toàn bộ quy tắc.
  */
 export function buildUserPromptOpenAI(ctx: PromptContext): string {
-  const lastTopicStr = ctx.lastTopic ? ctx.lastTopic : "(chưa có)";
-  const customStr = ctx.customPrompt ? `\n${ctx.customPrompt}` : "";
-
-  return `THỜI GIAN HIỆN TẠI: ${ctx.currentTime}
-THỨ: ${ctx.dayOfWeek}
-LastTopic: ${lastTopicStr}${customStr}
-
-Yêu cầu: Viết 1 bài Threads cho Ép Xanh theo đúng HOOK → MẸO → CTA.
-CTA chọn 1: (1) hỏi người đọc có gặp không (2) rủ thử 3 ngày (3) gợi nhắn hỏi thực đơn.
-Nếu cần "mùi Ép Xanh" thì chỉ nhắc rất nhẹ, kiểu tình cờ, không bán hàng.`;
+  return `
+  Bạn là người viết nội dung mạng xã hội chuyên đăng series “Mỗi ngày 1 công thức nước ép”.
+Mục tiêu: người đọc lướt thấy → hiểu công thức trong vài giây → muốn lưu bài để làm thử.
+  Viết 1 bài cho series “Mỗi ngày 1 công thức nước ép”.
+Thông tin (có thể trống):
+TenCongThuc:
+NguyenLieuChinh:
+DungCu: ép chậm hoặc xay
+Yêu cầu:
+Công thức là trung tâm.
+Không kể chuyện.
+Không nói detox, giảm cân, trị mụn.
+Không chèn thời gian/ngày.
+Không dùng ký hiệu in đậm.
+Đọc là làm được ngay.
+`;
 }

@@ -95,6 +95,17 @@ export function PostCard({ post, onDelete }: Props) {
             <StatusIcon className="w-3 h-3" />
             {st.label}
           </span>
+          {/* Nguồn: tự động / thủ công */}
+          {post.source === "auto" && (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold bg-violet-50 text-violet-500 border-violet-100">
+              🤖 Tự động
+            </span>
+          )}
+          {post.source === "manual" && (
+            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold bg-sky-50 text-sky-500 border-sky-100">
+              ✍️ Thủ công
+            </span>
+          )}
           <span className="text-xs text-slate-300">
             {post.topicLabel ?? TOPIC_LABELS[post.topic]}
           </span>

@@ -168,7 +168,8 @@ class ThreadsService {
         {
           params: {
             input_token: this.token,
-            access_token: this.token,
+            // access_token phải dùng app access token: app_id|app_secret
+            access_token: `${this.appId}|${this.appSecret}`,
           },
         },
       );
@@ -615,6 +616,83 @@ class ThreadsService {
     } catch (err) {
       throw parseMetaError(err);
     }
+  }
+
+  /**
+   * Kéo toàn bộ bài đăng của user bằng của phân trang cursor
+   * GET /me/threads?fields=...&limit=50&after=<cursor>
+   *
+   * @param opts.pageSize   - Số bài mỗi trang (mặc định 50, tối đa 100)
+   * @param opts.maxPages   - Số trang tối đa để tránh loop vô hạn (mặc định 20)
+   * @param opts.afterCursor - Bắt đầu từ cursor này (để tiếp tục phân trang)
+   * @returns tất cả bài + cursor cuối cùng (nếu còn trang tiếp)
+   */
+  async getAllMyThreads(
+    opts: {
+      pageSize?: number;
+      maxPages?: number;
+      afterCursor?: string;
+    } = {},
+  ): Promise<{
+    posts: ThreadsPost[];
+    total: number;
+    hasMore: boolean;
+    nextCursor: string | null;
+  }> {
+    const { pageSize = 50, maxPages = 20, afterCursor } = opts;
+    const fields =
+      "id,text,timestamp,media_type,permalink,shortcode,has_replies,hide_status";
+
+    const allPosts: ThreadsPost[] = [];
+    let cursor: string | undefined = afterCursor;
+    let pagesFetched = 0;
+    let nextCursor: string | null = null;
+
+    while (pagesFetched < maxPages) {
+      try {
+        const res = await this.http.get<{
+          data: ThreadsPost[];
+          paging?: {
+            cursors?: { before: string; after: string };
+            next?: string;
+          };
+        }>(`/${this.userId}/threads`, {
+          params: {
+            fields,
+            limit: Math.min(pageSize, 100),
+            ...(cursor ? { after: cursor } : {}),
+            access_token: this.token,
+          },
+        });
+
+        const page = res.data;
+        if (!page.data || page.data.length === 0) break;
+
+        allPosts.push(...page.data);
+        pagesFetched++;
+
+        // Kiểm tra có trang tiếp không
+        const afterNext = page.paging?.cursors?.after;
+        const hasNext = !!page.paging?.next && !!afterNext;
+
+        if (hasNext && afterNext) {
+          cursor = afterNext;
+          nextCursor = afterNext;
+        } else {
+          nextCursor = null;
+          break;
+        }
+      } catch (err) {
+        throw parseMetaError(err);
+      }
+    }
+
+    return {
+      posts: allPosts,
+      total: allPosts.length,
+      hasMore: nextCursor !== null,
+      nextCursor,
+    };
   }
 
   /**

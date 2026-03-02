@@ -5,29 +5,24 @@
 // ============================================
 
 import type { ProviderInfo } from "@/types";
+import {
+  PUTER_PROVIDER_ID,
+  PUTER_MODELS,
+  PUTER_DEFAULT_MODEL,
+  buildPuterProviderInfo,
+} from "./puter/config";
 
 // ─── Model Catalog ────────────────────────────────────────────────────────────
 
 export const MODEL_CATALOG: Record<string, string[]> = {
-  gemini: [
-    // "gemini-2.0-flash", // Bản ổn định, tốc độ cao
-    // "gemini-2.0-pro", // Bản ổn định, suy luận chuyên sâu thay cho 2.0-pro-exp
-    // "gemini-3-flash", // Model thế hệ mới nhất, cực nhanh
-    "gemini-3-flash-preview", // Bản xem trước của dòng 3 (nếu bạn muốn trải nghiệm sớm)
-    // "gemini-3-pro", // Model mạnh nhất hiện tại thay cho 3.0-pro
-    // "gemini-1.5-pro", // Bản ổn định kinh điển với cửa sổ ngữ cảnh cực lớn
-  ],
-  openai: ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-4", "o3-mini"],
+  gemini: ["gemini-3-flash-preview", "gemini-2.5-flash-lite"],
+  openai: ["gpt-4o-mini", "gpt-4-turbo"],
+  [PUTER_PROVIDER_ID]: PUTER_MODELS,
 };
 
-// ─── Config Schema ────────────────────────────────────────────────────────────
-
 export interface AIRuntimeConfig {
-  /** provider đang được chọn: "gemini" | "openai" | ... */
   provider: string;
-  /** model cụ thể đang được chọn cho từng provider */
   models: Record<string, string>;
-  /** Unix timestamp lần cuối đổi */
   updatedAt: string;
 }
 
@@ -36,21 +31,18 @@ function defaultModel(providerId: string): string {
   const envModels: Record<string, string | undefined> = {
     gemini: process.env.GEMINI_MODEL,
     openai: process.env.OPENAI_MODEL,
+    [PUTER_PROVIDER_ID]: process.env.PUTER_MODEL ?? PUTER_DEFAULT_MODEL,
   };
   return envModels[providerId] ?? MODEL_CATALOG[providerId]?.[0] ?? providerId;
 }
 
 const DEFAULT_CONFIG: AIRuntimeConfig = {
-  provider: (process.env.AI_PROVIDER ?? "").toLowerCase() || "gemini",
-  models: {},
+  provider: (process.env.AI_PROVIDER ?? "").toLowerCase() || PUTER_PROVIDER_ID,
+  models: { [PUTER_PROVIDER_ID]: "gpt-5.2" },
   updatedAt: new Date().toISOString(),
 };
 
-// ─── In-memory store (works on Vercel serverless) ────────────────────────────
-
 let _runtimeConfig: AIRuntimeConfig = { ...DEFAULT_CONFIG };
-
-// ─── Read / Write ─────────────────────────────────────────────────────────────
 
 export function readAIConfig(): AIRuntimeConfig {
   return { ..._runtimeConfig };
@@ -78,7 +70,6 @@ export function setRuntimeModel(
   const current = readAIConfig();
   const config: AIRuntimeConfig = {
     ...current,
-    // Also switch active provider to this one
     provider: providerId.toLowerCase(),
     models: { ...current.models, [providerId.toLowerCase()]: model },
     updatedAt: new Date().toISOString(),
@@ -115,10 +106,12 @@ export function getAvailableProviders(): ProviderInfo[] {
       models: MODEL_CATALOG["openai"],
       available: Boolean(process.env.OPENAI_API_KEY),
     },
+    buildPuterProviderInfo(
+      config.models[PUTER_PROVIDER_ID] ?? defaultModel(PUTER_PROVIDER_ID),
+    ),
   ];
 }
 
-/** Lấy thông tin provider hiện tại đang được chọn */
 export function getCurrentProviderInfo(): ProviderInfo {
   const config = readAIConfig();
   const providers = getAvailableProviders();

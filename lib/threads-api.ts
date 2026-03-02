@@ -103,6 +103,20 @@ export async function getRecentPosts(limit = 10) {
 }
 
 /**
+ * Kéo toàn bộ bài đăng của user bằng cursor pagination
+ * @param opts.pageSize   - Số bài mỗi trang (mặc định 50)
+ * @param opts.maxPages   - Tối đa số trang (mặc định 20 = ~1000 bài)
+ * @param opts.afterCursor - Cursor để tiếp tục phân trang
+ */
+export async function getAllThreadsPosts(opts?: {
+  pageSize?: number;
+  maxPages?: number;
+  afterCursor?: string;
+}) {
+  return threadsService.getAllMyThreads(opts);
+}
+
+/**
  * Lấy insights chi tiết của một bài đăng từ Threads API
  * GET /{media-id}/insights?metric=views,likes,replies,reposts,quotes
  */

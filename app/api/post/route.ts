@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
       topicLabel,
       mediaType: mediaType || "TEXT",
       imageUrl,
+      source: "manual",
     });
 
     // Đăng lên Threads (tự chọn flow theo mediaType)
@@ -76,6 +77,7 @@ export async function POST(req: NextRequest) {
       topicLabel,
       mediaType: mediaType || "TEXT",
       imageUrl,
+      source: "manual",
     });
 
     return NextResponse.json({
