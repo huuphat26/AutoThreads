@@ -100,9 +100,6 @@ export function ScheduleGrid({
   const doneCount = autoToday.length;
   const allDone = doneCount >= limit;
 
-  const dismissSlot = (id: string) =>
-    setDismissedSlots((prev) => new Set(prev).add(id));
-
   return (
     <div className="rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
       {/* Header */}
