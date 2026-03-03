@@ -1,5 +1,6 @@
 // ============================================================
 // AutoSchedulerMonitor — Theo dõi đăng bài tự động 3 nền tảng
+// Hiển thị lịch hôm nay (mỗi slot × 3 nền tảng) + lịch sử
 // ============================================================
 "use client";
 
@@ -8,7 +9,7 @@ import { RefreshIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
 import type { AutoPostRecord, AutoPostPlatformStatus } from "@/types";
 
-// ─── Types API response ───────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────
 
 type SchedulerStatus = {
   enabled: boolean;
@@ -17,7 +18,7 @@ type SchedulerStatus = {
   slots: { id: string; label: string; cron: string }[];
   platformDelayMinutes: number;
   totalRuns: number;
-  lastRun: {
+  lastRun: null | {
     id: string;
     triggeredAt: string;
     slot: string;
@@ -26,8 +27,21 @@ type SchedulerStatus = {
     facebook: string;
     threads: string;
     instagram: string;
-  } | null;
+  };
 };
+
+// ─── Constants ───────────────────────────────────────────────
+
+const SLOT_HOURS: Record<string, { h: number; m: number }> = {
+  noon:    { h: 12, m: 0 },
+  evening: { h: 18, m: 0 },
+};
+const DELAY_MINUTES = 2;
+const PLATFORMS = [
+  { key: "facebook",  label: "Facebook",  delayMin: 0 },
+  { key: "threads",   label: "Threads",   delayMin: DELAY_MINUTES },
+  { key: "instagram", label: "Instagram", delayMin: DELAY_MINUTES * 2 },
+] as const;
 
 // ─── Helpers ─────────────────────────────────────────────────
 
@@ -50,76 +64,182 @@ function fmtTime(iso: string): string {
   });
 }
 
-function relativeTime(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime();
-  const s = Math.floor(diffMs / 1000);
-  if (s < 60) return `${s}s trước`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m} phút trước`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} giờ trước`;
-  return `${Math.floor(h / 24)} ngày trước`;
+function slotDateToday(slotId: string, extraMinutes = 0): Date {
+  const { h, m } = SLOT_HOURS[slotId] ?? { h: 12, m: 0 };
+  const now = new Date();
+  const vnNow = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }),
+  );
+  vnNow.setHours(h, m + extraMinutes, 0, 0);
+  const offset =
+    now.getTime() -
+    new Date(
+      now.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }),
+    ).getTime();
+  return new Date(vnNow.getTime() + offset);
 }
 
-// ─── Status dot + badge ───────────────────────────────────────
+function slotTimeLabel(slotId: string, extraMinutes: number): string {
+  const { h, m } = SLOT_HOURS[slotId] ?? { h: 12, m: 0 };
+  const totalMin = m + extraMinutes;
+  const hh = String(h + Math.floor(totalMin / 60)).padStart(2, "0");
+  const mm = String(totalMin % 60).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
 
-const STATUS_CONFIG: Record<
-  AutoPostPlatformStatus | "running" | "completed" | "partial" | "skipped",
-  { dot: string; text: string; label: string }
+function todayLabel(): string {
+  return new Date().toLocaleDateString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function isTodayVN(iso: string): boolean {
+  const todayKey = new Date().toLocaleDateString("sv", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  });
+  return (
+    new Date(iso).toLocaleDateString("sv", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }) === todayKey
+  );
+}
+
+// ─── Status config ────────────────────────────────────────────
+
+type StatusKey =
+  | AutoPostPlatformStatus
+  | "running"
+  | "completed"
+  | "partial"
+  | "scheduled"
+  | "waiting";
+
+const STATUS_CFG: Record<
+  StatusKey,
+  { dot: string; pill: string; label: string }
 > = {
-  pending:   { dot: "bg-amber-400",  text: "text-amber-600",  label: "Đang chờ" },
-  posted:    { dot: "bg-emerald-500", text: "text-emerald-600", label: "Đã đăng" },
-  failed:    { dot: "bg-rose-500",   text: "text-rose-600",   label: "Thất bại" },
-  skipped:   { dot: "bg-slate-300",  text: "text-slate-400",  label: "Bỏ qua"  },
-  running:   { dot: "bg-blue-400 animate-pulse", text: "text-blue-600", label: "Đang chạy" },
-  completed: { dot: "bg-emerald-500", text: "text-emerald-600", label: "Hoàn thành" },
-  partial:   { dot: "bg-amber-400",  text: "text-amber-600",  label: "Một phần" },
+  scheduled: {
+    dot: "bg-slate-300",
+    pill: "bg-slate-50 text-slate-500 border-slate-200",
+    label: "Đã lên lịch",
+  },
+  waiting: {
+    dot: "bg-slate-200",
+    pill: "bg-slate-50 text-slate-400 border-slate-100",
+    label: "Chờ lượt",
+  },
+  pending: {
+    dot: "bg-amber-400 animate-pulse",
+    pill: "bg-amber-50 text-amber-600 border-amber-200",
+    label: "Đang xử lý",
+  },
+  posted: {
+    dot: "bg-emerald-500",
+    pill: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    label: "Đã đăng",
+  },
+  failed: {
+    dot: "bg-rose-500",
+    pill: "bg-rose-50 text-rose-600 border-rose-200",
+    label: "Thất bại",
+  },
+  skipped: {
+    dot: "bg-slate-300",
+    pill: "bg-slate-100 text-slate-400 border-slate-200",
+    label: "Bỏ qua",
+  },
+  running: {
+    dot: "bg-blue-400 animate-pulse",
+    pill: "bg-blue-50 text-blue-600 border-blue-200",
+    label: "Đang chạy",
+  },
+  completed: {
+    dot: "bg-emerald-500",
+    pill: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    label: "Hoàn thành",
+  },
+  partial: {
+    dot: "bg-amber-400",
+    pill: "bg-amber-50 text-amber-600 border-amber-200",
+    label: "Một phần",
+  },
 };
 
-function StatusDot({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.skipped;
-  return <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />;
+function Dot({ status }: { status: string }) {
+  const cfg = STATUS_CFG[status as StatusKey] ?? STATUS_CFG.skipped;
+  return (
+    <span
+      className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`}
+    />
+  );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.skipped;
+function Pill({ status }: { status: string }) {
+  const cfg = STATUS_CFG[status as StatusKey] ?? STATUS_CFG.skipped;
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${cfg.text}`}>
+    <span
+      className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${cfg.pill}`}
+    >
       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
       {cfg.label}
     </span>
   );
 }
 
-// ─── Platform row in history card ────────────────────────────
+// ─── Today slot card ──────────────────────────────────────────
 
-function PlatformRow({
-  label,
+type PlatformResult = AutoPostRecord["facebook"];
+
+function PlatformScheduleRow({
+  platformLabel,
+  scheduledTime,
   result,
+  isPast,
 }: {
-  label: string;
-  result: AutoPostRecord["facebook"];
+  platformLabel: string;
+  scheduledTime: string;
+  result: PlatformResult | null;
+  isPast: boolean;
 }) {
   const [showError, setShowError] = useState(false);
+
+  const status = result
+    ? result.status
+    : isPast
+      ? "skipped"
+      : "scheduled";
+
   return (
-    <div className="flex items-center justify-between py-1">
-      <span className="text-xs text-slate-500 w-20 shrink-0">{label}</span>
-      <div className="flex items-center gap-2 flex-1 justify-end">
-        {result.postedAt && (
-          <span className="text-[10px] text-slate-400">{fmtTime(result.postedAt)}</span>
-        )}
-        <StatusBadge status={result.status} />
-        {result.status === "failed" && result.errorMessage && (
-          <button
-            onClick={() => setShowError((v) => !v)}
-            className="text-[10px] text-rose-400 hover:text-rose-600 underline underline-offset-2"
-          >
-            {showError ? "ẩn" : "lỗi"}
-          </button>
-        )}
+    <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-0">
+      <span className="text-xs font-medium text-slate-600 w-20 shrink-0">
+        {platformLabel}
+      </span>
+      <div className="flex items-center gap-1 shrink-0">
+        <span className="text-xs font-mono font-semibold text-slate-700">
+          {scheduledTime}
+        </span>
+        <span className="text-[10px] text-slate-400">{todayLabel()}</span>
       </div>
-      {showError && result.errorMessage && (
-        <div className="col-span-2 mt-0.5 text-[10px] text-rose-500 bg-rose-50 rounded px-2 py-1 leading-relaxed w-full">
+      <span className="flex-1" />
+      {result?.postedAt && (
+        <span className="text-[10px] text-slate-400 shrink-0">
+          thực tế {fmtTime(result.postedAt)}
+        </span>
+      )}
+      <Pill status={status} />
+      {result?.status === "failed" && result?.errorMessage && (
+        <button
+          onClick={() => setShowError((v) => !v)}
+          className="text-[10px] text-rose-400 hover:text-rose-600 underline underline-offset-2 shrink-0"
+        >
+          {showError ? "ẩn" : "lỗi"}
+        </button>
+      )}
+      {showError && result?.errorMessage && (
+        <div className="absolute left-4 right-4 mt-6 text-[10px] text-rose-500 bg-rose-50 border border-rose-100 rounded px-2 py-1 leading-relaxed z-10">
           {result.errorMessage}
         </div>
       )}
@@ -127,99 +247,156 @@ function PlatformRow({
   );
 }
 
-// ─── Single history record card ───────────────────────────────
+function TodaySlotCard({
+  slotId,
+  record,
+}: {
+  slotId: string;
+  record: AutoPostRecord | null;
+}) {
+  const { h } = SLOT_HOURS[slotId] ?? { h: 12 };
+  const slotName = slotId === "noon" ? "Buổi trưa" : "Buổi tối";
+  const baseTime = `${String(h).padStart(2, "0")}:00`;
+  const now = new Date();
+  const isRunning = record?.overallStatus === "running";
 
-function RecordCard({ record }: { record: AutoPostRecord }) {
-  const [open, setOpen] = useState(false);
-  const slotLabel = record.slot === "noon" ? "12:00" : "18:00";
+  const overallStatus =
+    record?.overallStatus ??
+    (now > slotDateToday(slotId, 4) ? "skipped" : "scheduled");
+
+  const overallPill = isRunning ? "running" : overallStatus;
 
   return (
-    <div className="border border-slate-100 rounded-xl overflow-hidden">
-      {/* Row header */}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left"
-      >
-        <StatusDot status={record.overallStatus} />
-
-        <span className="text-xs font-medium text-slate-500 shrink-0 w-11">
-          {slotLabel}
-        </span>
-
-        <span className="text-xs text-slate-600 flex-1 truncate">
-          {record.topicLabel ?? "—"}
-        </span>
-
-        <span className="text-[10px] text-slate-400 shrink-0">
-          {fmtDateTime(record.triggeredAt)}
-        </span>
-
-        {/* 3 platform dots */}
-        <div className="flex items-center gap-1 shrink-0">
-          <StatusDot status={record.facebook.status} />
-          <StatusDot status={record.threads.status} />
-          <StatusDot status={record.instagram.status} />
+    <div className="rounded-xl border border-slate-100 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-50/80 border-b border-slate-100">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-700">{slotName}</span>
+          <span className="text-xs font-mono text-slate-400">{baseTime}</span>
         </div>
-
-        <span className="text-slate-300 text-xs shrink-0">{open ? "▲" : "▼"}</span>
-      </button>
-
-      {/* Expanded detail */}
-      {open && (
-        <div className="border-t border-slate-100 px-3 pb-3 pt-2 space-y-0.5 bg-slate-50/40">
-          {record.content && (
-            <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-3 mb-2 italic">
-              {record.content.slice(0, 200)}{record.content.length > 200 ? "…" : ""}
-            </p>
+        <div className="flex items-center gap-2">
+          {record?.topicLabel && (
+            <span className="text-[10px] text-slate-400 truncate max-w-40">
+              {record.topicLabel}
+            </span>
           )}
-          <PlatformRow label="Facebook"  result={record.facebook} />
-          <PlatformRow label="Threads"   result={record.threads} />
-          <PlatformRow label="Instagram" result={record.instagram} />
-          {record.igImageUrl && (
-            <p className="text-[10px] text-slate-400 pt-1 truncate">
-              IG ảnh: {record.igImageUrl}
-            </p>
-          )}
+          <Pill status={overallPill} />
         </div>
+      </div>
+      <div className="relative">
+        {PLATFORMS.map((p) => {
+          const scheduledTime = slotTimeLabel(slotId, p.delayMin);
+          const slotDate = slotDateToday(slotId, p.delayMin);
+          const platformResult = record
+            ? (record[p.key as "facebook" | "threads" | "instagram"] ?? null)
+            : null;
+          return (
+            <PlatformScheduleRow
+              key={p.key}
+              platformLabel={p.label}
+              scheduledTime={scheduledTime}
+              result={platformResult}
+              isPast={now > slotDate}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── History row ──────────────────────────────────────────────
+
+function HistoryPlatformRow({
+  label,
+  result,
+}: {
+  label: string;
+  result: PlatformResult;
+}) {
+  const [showErr, setShowErr] = useState(false);
+  return (
+    <div className="px-3 py-1.5">
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] text-slate-500 w-20 shrink-0">
+          {label}
+        </span>
+        {result.postedAt && (
+          <span className="text-[10px] text-slate-400">
+            {fmtDateTime(result.postedAt)}
+          </span>
+        )}
+        <span className="flex-1" />
+        <Pill status={result.status} />
+        {result.status === "failed" && result.errorMessage && (
+          <button
+            onClick={() => setShowErr((v) => !v)}
+            className="text-[10px] text-rose-400 hover:text-rose-600 underline underline-offset-2"
+          >
+            {showErr ? "ẩn" : "lỗi"}
+          </button>
+        )}
+      </div>
+      {showErr && result.errorMessage && (
+        <p className="mt-1 text-[10px] text-rose-500 bg-rose-50 rounded px-2 py-1 leading-relaxed">
+          {result.errorMessage}
+        </p>
       )}
     </div>
   );
 }
 
-// ─── Status header row ────────────────────────────────────────
+function HistoryRow({ record }: { record: AutoPostRecord }) {
+  const [open, setOpen] = useState(false);
+  const slotTime = record.slot === "noon" ? "12:00" : "18:00";
 
-function SchedulerStatusRow({ status }: { status: SchedulerStatus }) {
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* Enabled indicator */}
-      <span
-        className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-          status.enabled && status.running
-            ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-            : "bg-slate-100 text-slate-400 border-slate-200"
-        }`}
+    <div className="border border-slate-100 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50 transition-colors text-left"
       >
-        <span
-          className={`w-1.5 h-1.5 rounded-full ${
-            status.enabled && status.running ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
-          }`}
-        />
-        {status.enabled && status.running ? "Đang hoạt động" : status.enabled ? "Đã bật, chờ chạy" : "Tắt"}
-      </span>
-
-      {/* Slots */}
-      {status.slots.map((s) => (
-        <span
-          key={s.id}
-          className="text-[10px] text-slate-500 bg-slate-50 border border-slate-100 rounded px-1.5 py-0.5 font-mono"
-        >
-          {s.id === "noon" ? "12:00" : "18:00"}
+        <Dot status={record.overallStatus} />
+        <span className="text-[10px] font-mono text-slate-500 shrink-0 w-9">
+          {slotTime}
         </span>
-      ))}
+        <span className="text-[10px] text-slate-400 shrink-0">
+          {fmtDateTime(record.triggeredAt)}
+        </span>
+        <span className="text-xs text-slate-600 flex-1 truncate">
+          {record.topicLabel ?? "—"}
+        </span>
+        <span
+          className="flex items-center gap-1 shrink-0"
+          title="Facebook · Threads · Instagram"
+        >
+          <Dot status={record.facebook.status} />
+          <Dot status={record.threads.status} />
+          <Dot status={record.instagram.status} />
+        </span>
+        <span className="text-slate-300 text-[10px] shrink-0">
+          {open ? "▲" : "▼"}
+        </span>
+      </button>
 
-      <span className="text-[10px] text-slate-400">
-        FB → +2 phút → Threads → +2 phút → IG
-      </span>
+      {open && (
+        <div className="border-t border-slate-100 bg-slate-50/40">
+          {record.content && (
+            <p className="px-3 pt-2 pb-1 text-[11px] text-slate-500 italic leading-relaxed line-clamp-2">
+              {record.content.slice(0, 180)}
+              {record.content.length > 180 ? "…" : ""}
+            </p>
+          )}
+          <div className="divide-y divide-slate-50">
+            {PLATFORMS.map((p) => {
+              const r =
+                record[p.key as "facebook" | "threads" | "instagram"];
+              return (
+                <HistoryPlatformRow key={p.key} label={p.label} result={r} />
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -231,23 +408,20 @@ export function AutoSchedulerMonitor() {
   const [records, setRecords] = useState<AutoPostRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showAll, setShowAll] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const [statusRes, historyRes] = await Promise.all([
-        fetch("/api/auto-scheduler"),
-        fetch("/api/auto-scheduler?view=history"),
+      const [s, h] = await Promise.all([
+        fetch("/api/auto-scheduler").then((r) => r.json()),
+        fetch("/api/auto-scheduler?view=history").then((r) => r.json()),
       ]);
-      const statusJson = await statusRes.json();
-      const historyJson = await historyRes.json();
-
-      if (statusJson.success) setStatus(statusJson.data);
-      if (historyJson.success) setRecords(historyJson.data as AutoPostRecord[]);
+      if (s.success) setStatus(s.data);
+      if (h.success) setRecords(h.data as AutoPostRecord[]);
     } catch {
-      setError("Không thể tải dữ liệu auto-scheduler");
+      setError("Không thể tải dữ liệu");
     } finally {
       setLoading(false);
     }
@@ -255,114 +429,123 @@ export function AutoSchedulerMonitor() {
 
   useEffect(() => {
     fetchData();
+    const timer = setInterval(fetchData, 60_000);
+    return () => clearInterval(timer);
   }, [fetchData]);
 
-  const displayedRecords = showAll ? records : records.slice(0, 7);
+  function todayRecord(slotId: string): AutoPostRecord | null {
+    return (
+      records.find((r) => r.slot === slotId && isTodayVN(r.triggeredAt)) ??
+      null
+    );
+  }
 
-  // Legend
-  const todayKey = new Date().toLocaleDateString("sv", { timeZone: "Asia/Ho_Chi_Minh" });
-  const todayRecords = records.filter(
-    (r) =>
-      new Date(r.triggeredAt).toLocaleDateString("sv", {
-        timeZone: "Asia/Ho_Chi_Minh",
-      }) === todayKey,
-  );
-  const todayCompleted = todayRecords.filter((r) => r.overallStatus === "completed").length;
-  const todayFailed    = todayRecords.filter((r) => r.overallStatus === "failed").length;
-  const todayPartial   = todayRecords.filter((r) => r.overallStatus === "partial").length;
+  const historyRecords = records.filter((r) => !isTodayVN(r.triggeredAt));
+  const schedulerActive = status?.enabled && status?.running;
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between">
-        <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-          Đăng tự động 3 nền tảng
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+            Đăng tự động 3 nền tảng
+          </h2>
+          <span
+            className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+              schedulerActive
+                ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                : "bg-slate-100 text-slate-400 border-slate-200"
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                schedulerActive
+                  ? "bg-emerald-500 animate-pulse"
+                  : "bg-slate-300"
+              }`}
+            />
+            {schedulerActive
+              ? "Đang hoạt động"
+              : status?.enabled
+                ? "Đã bật"
+                : "Tắt"}
+          </span>
+        </div>
         <button
           onClick={fetchData}
           disabled={loading}
           className="text-slate-300 hover:text-slate-500 transition-colors"
         >
-          {loading ? <Spinner className="w-3.5 h-3.5" /> : <RefreshIcon className="w-3.5 h-3.5" />}
+          {loading ? (
+            <Spinner className="w-3.5 h-3.5" />
+          ) : (
+            <RefreshIcon className="w-3.5 h-3.5" />
+          )}
         </button>
       </div>
 
-      <div className="px-5 py-3 space-y-3">
-        {/* Scheduler status */}
-        {status && <SchedulerStatusRow status={status} />}
+      <div className="px-5 py-4 space-y-4">
+        {error && <p className="text-xs text-rose-500">{error}</p>}
 
-        {error && (
-          <p className="text-xs text-rose-500">{error}</p>
-        )}
+        {/* Lịch hôm nay */}
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+            Lịch hôm nay — {todayLabel()}
+          </p>
+          {loading && records.length === 0 ? (
+            <div className="flex justify-center py-6">
+              <Spinner className="w-5 h-5 text-slate-300" />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <TodaySlotCard slotId="noon" record={todayRecord("noon")} />
+              <TodaySlotCard
+                slotId="evening"
+                record={todayRecord("evening")}
+              />
+            </div>
+          )}
+        </div>
 
-        {/* Today summary */}
-        {todayRecords.length > 0 && (
-          <div className="flex items-center gap-3 text-xs py-1 border-t border-slate-50">
-            <span className="text-slate-400 text-[11px]">Hôm nay</span>
-            {todayCompleted > 0 && (
-              <span className="text-emerald-600 font-semibold text-[11px]">
-                {todayCompleted} hoàn thành
-              </span>
+        {/* Lịch sử */}
+        {historyRecords.length > 0 && (
+          <div className="space-y-2">
+            <button
+              onClick={() => setShowHistory((v) => !v)}
+              className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-600 transition-colors"
+            >
+              <span>Lịch sử ({historyRecords.length})</span>
+              <span className="text-slate-300">{showHistory ? "▲" : "▼"}</span>
+            </button>
+            {showHistory && (
+              <div className="space-y-1.5">
+                {historyRecords.slice(0, 20).map((r) => (
+                  <HistoryRow key={r.id} record={r} />
+                ))}
+              </div>
             )}
-            {todayPartial > 0 && (
-              <span className="text-amber-600 font-semibold text-[11px]">
-                {todayPartial} một phần
-              </span>
-            )}
-            {todayFailed > 0 && (
-              <span className="text-rose-500 font-semibold text-[11px]">
-                {todayFailed} thất bại
-              </span>
-            )}
           </div>
         )}
 
-        {/* Column header */}
-        {records.length > 0 && (
-          <div className="flex items-center gap-3 px-3 text-[9px] font-semibold text-slate-300 uppercase tracking-wide">
-            <span className="w-2 shrink-0" />
-            <span className="w-11 shrink-0">Slot</span>
-            <span className="flex-1">Chủ đề</span>
-            <span className="w-28 text-right">Thời gian</span>
-            <span className="w-12 text-right">FB·T·IG</span>
-            <span className="w-4" />
-          </div>
-        )}
-
-        {/* History list */}
-        {loading && records.length === 0 ? (
-          <div className="flex justify-center py-6">
-            <Spinner className="w-5 h-5 text-slate-300" />
-          </div>
-        ) : records.length === 0 ? (
-          <div className="py-6 text-center text-xs text-slate-300">
-            Chưa có lần đăng tự động nào
-          </div>
-        ) : (
-          <div className="space-y-1.5">
-            {displayedRecords.map((record) => (
-              <RecordCard key={record.id} record={record} />
-            ))}
-          </div>
-        )}
-
-        {/* Show more / less */}
-        {records.length > 7 && (
-          <button
-            onClick={() => setShowAll((v) => !v)}
-            className="w-full text-center text-xs text-slate-400 hover:text-slate-600 py-1 transition-colors"
-          >
-            {showAll ? `Thu gọn` : `Xem thêm ${records.length - 7} lần nữa`}
-          </button>
-        )}
-
-        {/* Legend */}
+        {/* Chú thích */}
         <div className="flex items-center gap-3 pt-1 border-t border-slate-50 text-[9px] text-slate-300">
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />Đã đăng</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block" />Thất bại</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />Đang chờ</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block" />Bỏ qua</span>
-          <span className="ml-auto">3 chấm = FB · Threads · IG</span>
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+            Đã đăng
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block" />
+            Thất bại
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+            Đang xử lý
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block" />
+            Đã lên lịch
+          </span>
         </div>
       </div>
     </section>
