@@ -78,6 +78,34 @@ export async function generateContent(
   return result;
 }
 
+/**
+ * Tạo IG caption ngắn từ nội dung đã có.
+ * Caption IG: ≤ 300 ký tự + 5-8 hashtag liên quan.
+ * Thực chất wrap lại fullPost rồi yêu cầu AI rút gọn + thêm hashtag.
+ */
+export async function generateIGCaption(fullPost: string, topicLabel?: string): Promise<string> {
+  const provider = createProvider();
+
+  const systemPrompt = `Bạn là copywriter Instagram. Nhiệm vụ: rút gọn bài đăng thành IG caption ngắn gọn.
+QUY TẮC:
+- Tối đa 280 ký tự (không tính hashtag)
+- Giữ tên công thức + vài nguyên liệu chính + một câu kết
+- Câu văn tự nhiên, tươi vui
+- Thêm đúng 6 hashtag tiếng Việt liên quan ở cuối (dòng riêng)
+- Không dùng ký hiệu in đậm, không emoji quá nhiều (tối đa 2)
+- Trả về CHỈ caption + hashtag, không giải thích thêm`;
+
+  const userPrompt = `Rút gọn bài đăng sau thành IG caption (≤280 ký tự) + 6 hashtag:
+
+${fullPost}
+
+${topicLabel ? `Chủ đề: ${topicLabel}` : ""}`;
+
+  const raw = await provider.complete(userPrompt, systemPrompt);
+  // Trả về text thô (không parse JSON vì đây là plain text)
+  return raw.trim();
+}
+
 export async function* generateContentStream(
   req: GenerateContentRequest = {},
 ): AsyncGenerator<string> {

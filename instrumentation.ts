@@ -10,12 +10,14 @@ export async function register() {
     const { startIGScheduler } = await import("./lib/services/ig-scheduler");
     const { startThreadsManualScheduler } =
       await import("./lib/services/threads-manual-scheduler");
+    const { startAutoScheduler } = await import("./lib/services/auto-scheduler");
     startScheduler();
     startFBScheduler();
     startIGScheduler();
     startThreadsManualScheduler();
+    startAutoScheduler();
     console.log(
-      "[AutoThreads] 🟢 App khởi động - Threads, Facebook, Instagram & Threads Manual Scheduler đã được kích hoạt",
+      "[AutoThreads] 🟢 App khởi động - Threads, Facebook, Instagram, Threads Manual & Auto (3-platform) Scheduler đã được kích hoạt",
     );
   }
 }

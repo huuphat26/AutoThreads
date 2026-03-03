@@ -1,0 +1,46 @@
+{
+  "_comment": "Pool ảnh cho Instagram auto-post. Thêm URL ảnh công khai (HTTPS) vào mảng images. Auto-scheduler chọn round-robin theo index được lưu trong lastUsedIndex.",
+  "lastUsedIndex": -1,
+  "images": [
+    {
+      "url": "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=1080&q=85&fit=crop",
+      "label": "Nước cam tươi"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&q=85&fit=crop",
+      "label": "Smoothie xanh"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=1080&q=85&fit=crop",
+      "label": "Nước ép trái cây hỗn hợp"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1534353473418-4cfa0c96a8cf?w=1080&q=85&fit=crop",
+      "label": "Nước dưa hấu"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1622597467836-f3e8730b90f9?w=1080&q=85&fit=crop",
+      "label": "Sinh tố bơ"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=1080&q=85&fit=crop",
+      "label": "Nước ép táo xanh"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?w=1080&q=85&fit=crop",
+      "label": "Nước ép cà rốt gừng"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1080&q=85&fit=crop",
+      "label": "Bữa ăn lành mạnh"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1080&q=85&fit=crop",
+      "label": "Rau củ quả tươi"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1543362906-acfc16c67564?w=1080&q=85&fit=crop",
+      "label": "Nước ép củ dền"
+    }
+  ]
+}

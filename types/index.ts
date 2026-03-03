@@ -580,3 +580,50 @@ export interface ThreadsManualPostHistory {
   posts: ThreadsManualPost[];
   lastUpdated: string;
 }
+
+// ============================================
+// Auto-Scheduler — 3-platform sequential post (AI)
+// Chạy lúc 12:00 và 18:00 mỗi ngày:
+//   FB → 2 phút → Threads → 2 phút → IG
+// ============================================
+
+export type AutoPostSlot = "noon" | "evening";
+
+export type AutoPostPlatformStatus = "pending" | "posted" | "failed" | "skipped";
+
+/** Kết quả đăng bài trên một nền tảng cụ thể */
+export interface AutoPostPlatformResult {
+  status: AutoPostPlatformStatus;
+  postId?: string;
+  permalinkUrl?: string;
+  errorMessage?: string;
+  postedAt?: string;
+}
+
+/** Một lần chạy auto-post (1 slot = 3 nền tảng) */
+export interface AutoPostRecord {
+  id: string;
+  slot: AutoPostSlot;
+  /** ISO string — thời điểm bắt đầu chạy */
+  triggeredAt: string;
+  /** Chủ đề AI đã chọn */
+  topic: string;
+  topicLabel?: string;
+  /** Nội dung AI soạn (dùng cho FB + Threads) */
+  content: string;
+  /** Caption riêng cho Instagram */
+  igCaption: string;
+  /** URL ảnh đã dùng cho Instagram */
+  igImageUrl?: string;
+  /** Kết quả từng nền tảng */
+  facebook: AutoPostPlatformResult;
+  threads: AutoPostPlatformResult;
+  instagram: AutoPostPlatformResult;
+  /** Trạng thái tổng */
+  overallStatus: "running" | "completed" | "partial" | "failed";
+}
+
+export interface AutoPostHistory {
+  records: AutoPostRecord[];
+  lastUpdated: string;
+}
