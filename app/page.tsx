@@ -18,7 +18,6 @@ export default function DashboardPage() {
 
   const {
     stats,
-    posts,
     content,
     setContent,
     keywords,
@@ -29,13 +28,6 @@ export default function DashboardPage() {
     aiProviders,
     handleProviderChange,
     handleModelChange,
-    schedulerStatus,
-    handleTogglePause,
-    handleRunMissedSlot,
-    handleSkipSlot,
-    lastRefreshed,
-    countdown,
-
     generating,
     loading,
     error,
@@ -98,13 +90,6 @@ export default function DashboardPage() {
         {activePlatform === "threads" && (
           <ThreadsMonitorBlock
             stats={stats}
-            posts={posts}
-            schedulerStatus={schedulerStatus}
-            lastRefreshed={lastRefreshed}
-            countdown={countdown}
-            onTogglePause={handleTogglePause}
-            onRunMissedSlot={handleRunMissedSlot}
-            onSkipSlot={handleSkipSlot}
             content={content}
             keywords={keywords}
             generating={generating}
