@@ -274,7 +274,7 @@ class ThreadsService {
   async createTextContainer(text: string): Promise<string> {
     try {
       const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads`,
+        `/me/threads`,
         null,
         {
           params: {
@@ -310,7 +310,7 @@ class ThreadsService {
       if (params.text) queryParams.text = params.text;
 
       const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads`,
+        `/me/threads`,
         null,
         { params: queryParams },
       );
@@ -339,7 +339,7 @@ class ThreadsService {
       if (params.text) queryParams.text = params.text;
 
       const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads`,
+        `/me/threads`,
         null,
         { params: queryParams },
       );
@@ -412,7 +412,7 @@ class ThreadsService {
   async publishContainer(containerId: string): Promise<string> {
     try {
       const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads_publish`,
+        `/me/threads_publish`,
         null,
         {
           params: {
@@ -604,7 +604,7 @@ class ThreadsService {
     paging?: { cursors: { before: string; after: string }; next?: string };
   }> {
     try {
-      const res = await this.http.get(`/${this.userId}/threads`, {
+      const res = await this.http.get(`/me/threads`, {
         params: {
           fields:
             "id,text,timestamp,media_type,permalink,shortcode,has_replies",
@@ -656,7 +656,7 @@ class ThreadsService {
             cursors?: { before: string; after: string };
             next?: string;
           };
-        }>(`/${this.userId}/threads`, {
+        }>(`/me/threads`, {
           params: {
             fields,
             limit: Math.min(pageSize, 100),
@@ -830,7 +830,7 @@ class ThreadsService {
     try {
       const res = await this.http.get<{
         data: Array<{ name: string; values: Array<{ value: number }> }>;
-      }>(`/${this.userId}/threads_insights`, {
+      }>(`/me/threads_insights`, {
         params: {
           metric: "views,likes,replies,reposts,quotes,followers_count",
           period,
@@ -865,7 +865,7 @@ class ThreadsService {
           config: { quota_total: number; quota_duration: number };
           quota_usage: number;
         }>;
-      }>(`/${this.userId}/threads_publishing_limit`, {
+      }>(`/me/threads_publishing_limit`, {
         params: {
           fields: "config,quota_usage",
           access_token: this.token,
