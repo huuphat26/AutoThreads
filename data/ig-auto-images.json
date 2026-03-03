@@ -1,6 +1,6 @@
 {
   "_comment": "Pool ảnh cho Instagram auto-post. Thêm URL ảnh công khai (HTTPS) vào mảng images. Auto-scheduler chọn round-robin theo index được lưu trong lastUsedIndex.",
-  "lastUsedIndex": -1,
+  "lastUsedIndex": 0,
   "images": [
     {
       "url": "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=1080&q=85&fit=crop",

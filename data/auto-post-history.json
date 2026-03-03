@@ -1,4 +1,94 @@
 {
-  "records": [],
-  "lastUpdated": ""
+  "records": [
+    {
+      "id": "auto-1772522100037-1tpzd",
+      "slot": "noon",
+      "triggeredAt": "2026-03-03T07:15:00.037Z",
+      "topic": "",
+      "content": "Hôm nay thử ngay ly nước ép cà rốt táo siêu ngon và dễ làm nhé! Vị ngọt thanh hòa quyện với chút chua nhẹ rất dễ chịu.\n\nNguyên liệu bạn cần:\n- 2 củ cà rốt\n- 1 quả táo\n- 1 muỗng nước cốt chanh\n\nChỉ cần gọt vỏ cà rốt, cắt nhỏ táo rồi cho tất cả vào máy ép chậm hoặc xay. Nếu xay, đừng quên thêm một chút nước cho dễ nhé! \n\nThích vị ngọt hơn? Thêm một chút mật ong. Muốn mát lạnh hơn? Cho vào tủ lạnh trước khi uống hoặc thêm vài viên đá lạnh. \n\nChỉ cần vài phút là có ngay ly nước ép ngon lành, cùng thử nha!",
+      "igCaption": "Hôm nay thử ngay ly nước ép cà rốt táo siêu ngon và dễ làm nhé! Vị ngọt thanh hòa quyện với chút chua nhẹ rất dễ chịu.\n\nNguyên liệu bạn cần:\n- 2 củ cà rốt\n- 1 quả táo\n- 1 muỗng nước cốt chanh\n\nChỉ cần gọt vỏ cà rốt, cắt nhỏ táo rồi cho tất cả vào máy ép chậm hoặc xay. Nếu xay, đừ",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122097681009240014",
+        "postedAt": "2026-03-03T07:15:12.606Z"
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "[Meta 100] Param text must be at most 500 characters long."
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18113962660725430",
+        "permalinkUrl": "https://www.instagram.com/p/DVaeVJyAQkB/",
+        "postedAt": "2026-03-03T07:19:25.775Z"
+      },
+      "overallStatus": "partial",
+      "topicLabel": "Thói quen lành mạnh",
+      "igImageUrl": "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=1080&q=85&fit=crop"
+    },
+    {
+      "id": "auto-1772520900041-0ub3i",
+      "slot": "noon",
+      "triggeredAt": "2026-03-03T06:55:00.041Z",
+      "topic": "",
+      "content": "",
+      "igCaption": "",
+      "facebook": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}"
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}"
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}"
+      },
+      "overallStatus": "failed"
+    },
+    {
+      "id": "auto-1772520300035-x7wym",
+      "slot": "noon",
+      "triggeredAt": "2026-03-03T06:45:00.035Z",
+      "topic": "",
+      "content": "",
+      "igCaption": "",
+      "facebook": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: Puter API lỗi 403: Forbidden"
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: Puter API lỗi 403: Forbidden"
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: Puter API lỗi 403: Forbidden"
+      },
+      "overallStatus": "failed"
+    },
+    {
+      "id": "auto-1772518500019-96buj",
+      "slot": "noon",
+      "triggeredAt": "2026-03-03T06:15:00.019Z",
+      "topic": "",
+      "content": "",
+      "igCaption": "",
+      "facebook": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "AI thất bại: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+      },
+      "overallStatus": "failed"
+    }
+  ],
+  "lastUpdated": "2026-03-03T07:19:25.777Z"
 }

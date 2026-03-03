@@ -624,7 +624,12 @@ export interface AutoPostRecord {
   threads: AutoPostPlatformResult;
   instagram: AutoPostPlatformResult;
   /** Trạng thái tổng */
-  overallStatus: "running" | "completed" | "partial" | "failed";
+  overallStatus:
+    | "waiting_for_ai"
+    | "running"
+    | "completed"
+    | "partial"
+    | "failed";
 }
 
 export interface AutoPostHistory {

@@ -12,7 +12,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { resolveTopicOrRandom } from "@/lib/topics";
-import { buildSystemPromptOpenAI } from "@/lib/prompts/system";
+import {
+  buildSystemPromptOpenAI,
+  buildSystemPromptThreads,
+  buildSystemPromptIGCaption,
+} from "@/lib/prompts/system";
 import { buildUserPromptOpenAI, type PromptContext } from "@/lib/prompts/user";
 
 // Reuse DAY_MAP thay vì re-declare — giữ DRY với content-generator
@@ -51,9 +55,29 @@ export async function POST(req: NextRequest) {
       customPrompt: body.customPrompt,
     };
 
-    // Dùng OpenAI variant vì Puter proxy OpenAI API
-    const systemPrompt = buildSystemPromptOpenAI();
-    const userPrompt = buildUserPromptOpenAI(ctx);
+    // Dùng prompt phù hợp với từng platform
+    const platform = (body.platform ?? "facebook") as
+      | "facebook"
+      | "threads"
+      | "instagram";
+
+    let systemPrompt: string;
+    let userPrompt: string;
+
+    if (platform === "instagram") {
+      // IG: nhận bài FB đã soạn, viết lại thành caption ngắn
+      systemPrompt = buildSystemPromptIGCaption();
+      const fbContent = (body.fbContent as string) ?? "";
+      userPrompt = `Bài Facebook:\n${fbContent}\n\nViết caption Instagram theo yêu cầu.`;
+    } else if (platform === "threads") {
+      // Threads: cùng chủ đề nhưng tối đa 480 ký tự
+      systemPrompt = buildSystemPromptThreads();
+      userPrompt = buildUserPromptOpenAI(ctx);
+    } else {
+      // Facebook (default): giữ prompt hiện tại (550-850 ký tự)
+      systemPrompt = buildSystemPromptOpenAI();
+      userPrompt = buildUserPromptOpenAI(ctx);
+    }
 
     return NextResponse.json({
       success: true,

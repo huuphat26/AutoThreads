@@ -1,12 +1,11 @@
 // ============================================================
 // AUTO THREADS — Multi-Platform Auto Scheduler
-// Chạy lúc 12:00 và 18:00 mỗi ngày (Asia/Ho_Chi_Minh).
+// Chạy lúc 13:00 và 18:00 mỗi ngày (Asia/Ho_Chi_Minh).
 // Flow: AI soạn nội dung → FB → (2 phút) → Threads → (2 phút) → IG
 // Tách biệt hoàn toàn với Threads scheduler (lib/scheduler.ts)
 // và các FB/IG scheduler hẹn giờ thủ công.
 // ============================================================
 import cron from "node-cron";
-import { generateContent, generateIGCaption } from "@/lib/content-generator";
 import { facebookService } from "@/lib/services/facebook.service";
 import { threadsService } from "@/lib/services/threads.service";
 import { instagramService } from "@/lib/services/instagram.service";
@@ -14,6 +13,7 @@ import { getNextIGImage } from "@/lib/ig-image-pool";
 import {
   upsertAutoRecord,
   generateAutoId,
+  getAutoRecord,
   getAllAutoRecords,
 } from "@/lib/auto-post-store";
 import type { AutoPostRecord, AutoPostSlot } from "@/types";
@@ -26,8 +26,8 @@ const PLATFORM_DELAY_MS = 2 * 60 * 1000; // 2 phút
 const SLOTS = [
   {
     id: "noon" as AutoPostSlot,
-    label: "Buổi trưa (12:00)",
-    cron: "0 12 * * *",
+    label: "Buổi trưa (14:15)",
+    cron: "15 14 * * *",
   },
   {
     id: "evening" as AutoPostSlot,
@@ -45,24 +45,14 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 // ─── Core execution ───────────────────────────────────────────
 
 /**
- * Thực thi một lần auto-post đầy đủ (3 nền tảng tuần tự).
- * FB → 2 phút → Threads → 2 phút → IG
- *
- * @param slot - "noon" | "evening" (để phân biệt log)
+ * PHASE 1 — Tạo record chờ browser soạn AI.
+ * Gọi từ cron job — trả về ngay, không block.
+ * Browser sẽ detect trạng thái "waiting_for_ai" và soạn nội dung bằng Puter.js.
  */
-export async function executeAutoPost(
-  slot: AutoPostSlot = "noon",
-): Promise<AutoPostRecord> {
+export function startWaitingForAI(slot: AutoPostSlot = "noon"): AutoPostRecord {
   const recordId = generateAutoId();
   const triggeredAt = new Date().toISOString();
 
-  console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
-  console.log(
-    `[AutoScheduler] 🚀 Bắt đầu auto-post [${slot}] — ${triggeredAt}`,
-  );
-  console.log(`[AutoScheduler] ═══════════════════════════════════`);
-
-  // ── Khởi tạo record ──────────────────────────────────────────
   const record: AutoPostRecord = {
     id: recordId,
     slot,
@@ -75,47 +65,54 @@ export async function executeAutoPost(
     facebook: { status: "pending" },
     threads: { status: "pending" },
     instagram: { status: "pending" },
-    overallStatus: "running",
+    overallStatus: "waiting_for_ai",
   };
   upsertAutoRecord(record);
 
-  // ── Bước 1: AI soạn nội dung ─────────────────────────────────
-  let fullPost = "";
-  let topicLabel = "";
-  let topicId = "";
+  console.log(`\n[AutoScheduler] ⏳ Chờ AI từ browser [${slot}] — ${recordId}`);
+  return record;
+}
 
-  try {
-    console.log(`[AutoScheduler] 🤖 Đang soạn nội dung với AI...`);
-    const generated = await generateContent();
-    fullPost = generated.fullPost;
-    topicLabel = generated.topicLabel ?? "";
-    topicId = generated.topicLabel ?? "";
-
-    record.content = fullPost;
-    record.topic = topicId;
-    record.topicLabel = topicLabel;
-    upsertAutoRecord(record);
-
-    console.log(`[AutoScheduler] ✅ AI soạn xong — chủ đề: ${topicLabel}`);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`[AutoScheduler] ❌ AI thất bại: ${msg}`);
-
-    record.facebook = { status: "failed", errorMessage: `AI thất bại: ${msg}` };
-    record.threads = { status: "failed", errorMessage: `AI thất bại: ${msg}` };
-    record.instagram = {
-      status: "failed",
-      errorMessage: `AI thất bại: ${msg}`,
-    };
-    record.overallStatus = "failed";
-    upsertAutoRecord(record);
-    return record;
+/**
+ * PHASE 2 — Nhận content từ browser, tiến hành đăng lên 3 nền tảng.
+ * Gọi từ API route sau khi browser submit nội dung AI.
+ */
+export async function executePlatformPosts(
+  recordId: string,
+  fbContent: string,
+  threadsContent: string,
+  igCaption: string,
+  topicLabel = "",
+): Promise<AutoPostRecord> {
+  const existing = getAutoRecord(recordId);
+  if (!existing) throw new Error(`Record ${recordId} không tìm thấy`);
+  if (existing.overallStatus !== "waiting_for_ai") {
+    console.warn(
+      `[AutoScheduler] Record ${recordId} không ở trạng thái waiting_for_ai (${existing.overallStatus}), bỏ qua`,
+    );
+    return existing;
   }
 
-  // ── Bước 2: Đăng Facebook ─────────────────────────────────────
+  const record = { ...existing };
+  record.content = fbContent;
+  record.igCaption = igCaption;
+  record.topicLabel = topicLabel || record.topicLabel;
+  record.overallStatus = "running";
+  record.facebook = { status: "pending" };
+  record.threads = { status: "pending" };
+  record.instagram = { status: "pending" };
+  upsertAutoRecord(record);
+
+  console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
+  console.log(
+    `[AutoScheduler] 🚀 Bắt đầu đăng bài [${record.slot}] (content từ browser)`,
+  );
+  console.log(`[AutoScheduler] ═══════════════════════════════════`);
+
+  // ── Đăng Facebook ─────────────────────────────────────────────
   console.log(`\n[AutoScheduler] 📘 [1/3] Đăng lên Facebook...`);
   try {
-    const fbResult = await facebookService.publishText(fullPost);
+    const fbResult = await facebookService.publishText(fbContent);
     const fbPostId = fbResult.kind !== "video" ? fbResult.postId : undefined;
     const fbPermalink =
       fbResult.kind !== "video" ? (fbResult.permalink ?? undefined) : undefined;
@@ -143,7 +140,10 @@ export async function executeAutoPost(
   // ── Bước 3: Đăng Threads ──────────────────────────────────────
   console.log(`\n[AutoScheduler] 🧵 [2/3] Đăng lên Threads...`);
   try {
-    const tResult = await threadsService.publishTextPost(fullPost);
+    // Safety clamp: Threads hard-limits 500 chars
+    const tResult = await threadsService.publishTextPost(
+      threadsContent.slice(0, 480),
+    );
     record.threads = {
       status: "posted",
       postId: tResult.postId,
@@ -176,24 +176,10 @@ export async function executeAutoPost(
     console.error(`[AutoScheduler] ❌ Instagram thất bại: pool ảnh trống`);
   } else {
     record.igImageUrl = igImage.url;
+    // igCaption đã được browser soạn sẵn
+    console.log(`[AutoScheduler] 🤖 IG caption (${igCaption.length} chars)`);
 
-    // 4b. AI tạo IG caption ngắn
-    let igCaption = "";
-    try {
-      igCaption = await generateIGCaption(fullPost, topicLabel);
-      record.igCaption = igCaption;
-      upsertAutoRecord(record);
-      console.log(
-        `[AutoScheduler] 🤖 IG caption OK (${igCaption.length} chars)`,
-      );
-    } catch (err) {
-      // Fallback: dùng 280 ký tự đầu của fullPost
-      igCaption = fullPost.slice(0, 280);
-      record.igCaption = igCaption;
-      console.warn(`[AutoScheduler] ⚠️ IG caption AI thất bại, dùng fallback`);
-    }
-
-    // 4c. Đăng lên Instagram
+    // 4b. Đăng lên Instagram
     try {
       const igResult = await instagramService.publish({
         caption: igCaption,
@@ -237,7 +223,13 @@ export async function executeAutoPost(
 
   console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
   console.log(
-    `[AutoScheduler] ${record.overallStatus === "completed" ? "🎉" : record.overallStatus === "partial" ? "⚠️" : "❌"} Kết thúc [${slot}] — ${record.overallStatus.toUpperCase()}`,
+    `[AutoScheduler] ${
+      record.overallStatus === "completed"
+        ? "🎉"
+        : record.overallStatus === "partial"
+          ? "⚠️"
+          : "❌"
+    } Kết thúc [${record.slot}] — ${record.overallStatus.toUpperCase()}`,
   );
   console.log(`[AutoScheduler]   FB      : ${record.facebook.status}`);
   console.log(`[AutoScheduler]   Threads : ${record.threads.status}`);
@@ -245,6 +237,17 @@ export async function executeAutoPost(
   console.log(`[AutoScheduler] ═══════════════════════════════════\n`);
 
   return record;
+}
+
+/**
+ * Backward-compat: trigger thủ công đầy đủ (dùng cho UI test trigger).
+ * Vì đây là trigger thủ công (không phải cron), sẽ tạo waiting_for_ai
+ * thay vì gọi server-side AI.
+ */
+export async function executeAutoPost(
+  slot: AutoPostSlot = "noon",
+): Promise<AutoPostRecord> {
+  return startWaitingForAI(slot);
 }
 
 // ─── Scheduler lifecycle ──────────────────────────────────────
@@ -275,12 +278,8 @@ export function startAutoScheduler(): void {
     const job = cron.schedule(
       slot.cron,
       () => {
-        executeAutoPost(slot.id).catch((err) => {
-          console.error(
-            `[AutoScheduler] ❌ Lỗi không mong đợi [${slot.id}]:`,
-            err,
-          );
-        });
+        // Phase 1: tạo record waiting_for_ai — browser sẽ tiếp nhận và soạn AI
+        startWaitingForAI(slot.id);
       },
       { timezone: TIMEZONE },
     );

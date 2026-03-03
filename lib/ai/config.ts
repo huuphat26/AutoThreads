@@ -38,7 +38,7 @@ function defaultModel(providerId: string): string {
 
 const DEFAULT_CONFIG: AIRuntimeConfig = {
   provider: (process.env.AI_PROVIDER ?? "").toLowerCase() || PUTER_PROVIDER_ID,
-  models: { [PUTER_PROVIDER_ID]: "gpt-5.2" },
+  models: { [PUTER_PROVIDER_ID]: PUTER_DEFAULT_MODEL },
   updatedAt: new Date().toISOString(),
 };
 

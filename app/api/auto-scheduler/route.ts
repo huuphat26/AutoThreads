@@ -8,6 +8,7 @@ import {
   triggerAutoPost,
   startAutoScheduler,
   stopAutoScheduler,
+  executePlatformPosts,
 } from "@/lib/services/auto-scheduler";
 import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getIGImagePool } from "@/lib/ig-image-pool";
@@ -89,6 +90,48 @@ export async function PATCH(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: getAutoSchedulerStatus() });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ success: false, error: msg }, { status: 500 });
+  }
+}
+
+// ── PUT: Browser gửi nội dung AI lên, server tiến hành đăng bài ──
+// Body: { recordId, fbContent, threadsContent, igCaption, topicLabel? }
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { recordId, fbContent, threadsContent, igCaption, topicLabel } =
+      body as {
+        recordId: string;
+        fbContent: string;
+        threadsContent: string;
+        igCaption: string;
+        topicLabel?: string;
+      };
+
+    if (!recordId || !fbContent?.trim()) {
+      return NextResponse.json(
+        { success: false, error: "Thiếu recordId hoặc fbContent" },
+        { status: 400 },
+      );
+    }
+
+    // Chạy bất đồng bộ — trả về ngay, tránh timeout serverless
+    executePlatformPosts(
+      recordId,
+      fbContent.trim(),
+      (threadsContent ?? fbContent).trim().slice(0, 480),
+      (igCaption ?? fbContent).trim().slice(0, 300),
+      topicLabel ?? "",
+    ).catch((err) => {
+      console.error("[AutoScheduler API] executePlatformPosts lỗi:", err);
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: { message: "Đã nhận nội dung, đang đăng FB → Threads → IG…" },
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ success: false, error: msg }, { status: 500 });

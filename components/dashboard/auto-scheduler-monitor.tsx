@@ -4,7 +4,7 @@
 // ============================================================
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { RefreshIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
 import type { AutoPostRecord, AutoPostPlatformStatus } from "@/types";
@@ -33,7 +33,7 @@ type SchedulerStatus = {
 // ─── Constants ───────────────────────────────────────────────
 
 const SLOT_HOURS: Record<string, { h: number; m: number }> = {
-  noon: { h: 12, m: 0 },
+  noon: { h: 14, m: 15 },
   evening: { h: 18, m: 0 },
 };
 const DELAY_MINUTES = 2;
@@ -65,7 +65,7 @@ function fmtTime(iso: string): string {
 }
 
 function slotDateToday(slotId: string, extraMinutes = 0): Date {
-  const { h, m } = SLOT_HOURS[slotId] ?? { h: 12, m: 0 };
+  const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 0 };
   const now = new Date();
   const vnNow = new Date(
     now.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }),
@@ -80,7 +80,7 @@ function slotDateToday(slotId: string, extraMinutes = 0): Date {
 }
 
 function slotTimeLabel(slotId: string, extraMinutes: number): string {
-  const { h, m } = SLOT_HOURS[slotId] ?? { h: 12, m: 0 };
+  const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 0 };
   const totalMin = m + extraMinutes;
   const hh = String(h + Math.floor(totalMin / 60)).padStart(2, "0");
   const mm = String(totalMin % 60).padStart(2, "0");
@@ -115,12 +115,18 @@ type StatusKey =
   | "completed"
   | "partial"
   | "scheduled"
-  | "waiting";
+  | "waiting"
+  | "waiting_for_ai";
 
 const STATUS_CFG: Record<
   StatusKey,
   { dot: string; pill: string; label: string }
 > = {
+  waiting_for_ai: {
+    dot: "bg-violet-400 animate-pulse",
+    pill: "bg-violet-50 text-violet-600 border-violet-200",
+    label: "Đang soạn AI",
+  },
   scheduled: {
     dot: "bg-slate-300",
     pill: "bg-slate-50 text-slate-500 border-slate-200",
@@ -248,9 +254,9 @@ function TodaySlotCard({
   slotId: string;
   record: AutoPostRecord | null;
 }) {
-  const { h } = SLOT_HOURS[slotId] ?? { h: 12 };
+  const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
   const slotName = slotId === "noon" ? "Buổi trưa" : "Buổi tối";
-  const baseTime = `${String(h).padStart(2, "0")}:00`;
+  const baseTime = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   const now = new Date();
   const isRunning = record?.overallStatus === "running";
 
@@ -341,7 +347,7 @@ function HistoryPlatformRow({
 
 function HistoryRow({ record }: { record: AutoPostRecord }) {
   const [open, setOpen] = useState(false);
-  const slotTime = record.slot === "noon" ? "12:00" : "18:00";
+  const slotTime = record.slot === "noon" ? "13:55" : "18:00";
 
   return (
     <div className="border border-slate-100 rounded-xl overflow-hidden">
@@ -402,6 +408,9 @@ export function AutoSchedulerMonitor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [aiGeneratingId, setAiGeneratingId] = useState<string | null>(null);
+  // Track records already being processed to avoid double-trigger
+  const processingRef = useRef<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -420,11 +429,173 @@ export function AutoSchedulerMonitor() {
     }
   }, []);
 
+  // Soạn AI bằng Puter.js và submit lên server
+  const generateAndSubmit = useCallback(
+    async (record: AutoPostRecord) => {
+      if (processingRef.current.has(record.id)) return;
+      processingRef.current.add(record.id);
+      setAiGeneratingId(record.id);
+
+      try {
+        // Lấy AI model hiện tại
+        const cfgRes = await fetch("/api/ai-config").then((r) => r.json());
+        const model: string =
+          cfgRes.data?.currentProvider?.model ?? "gpt-4o-mini";
+
+        // Puter.js helper
+        const puterRef =
+          typeof window !== "undefined"
+            ? (
+                window as Window & {
+                  puter?: {
+                    ai: {
+                      chat: (
+                        ...args: unknown[]
+                      ) => Promise<AsyncIterable<{ text: string }>>;
+                    };
+                  };
+                }
+              ).puter
+            : undefined;
+        if (!puterRef)
+          throw new Error("Puter.js chưa tải. Vui lòng tải lại trang.");
+
+        // Helper: gọi Puter.js + parse JSON output
+        const generateContent = async (
+          systemPrompt: string,
+          userPrompt: string,
+        ): Promise<string> => {
+          const stream = (await puterRef.ai.chat(
+            [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt },
+            ],
+            { model, stream: true },
+          )) as AsyncIterable<{ text: string }>;
+
+          let accumulated = "";
+          for await (const chunk of stream) {
+            if (chunk.text) accumulated += chunk.text;
+          }
+
+          let content = accumulated;
+          try {
+            const parsed = JSON.parse(accumulated);
+            content = parsed.content ?? parsed.fullPost ?? accumulated;
+          } catch {
+            // không phải JSON — dùng nguyên
+          }
+          return content.trim();
+        };
+
+        // ── Step 1: Facebook (550-850 ký tự) ──────────────────────
+        const fbPromptRes = await fetch("/api/puter-prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ platform: "facebook" }),
+        });
+        const fbPromptJson = await fbPromptRes.json();
+        if (!fbPromptJson.success)
+          throw new Error(fbPromptJson.error ?? "Không thể build FB prompt");
+
+        const {
+          systemPrompt: fbSys,
+          userPrompt: fbUser,
+          topicLabel,
+          topicId,
+        } = fbPromptJson.data as {
+          systemPrompt: string;
+          userPrompt: string;
+          topicLabel: string;
+          topicId: string;
+        };
+
+        const fbContent = await generateContent(fbSys, fbUser);
+        if (!fbContent) throw new Error("AI không trả về nội dung Facebook");
+
+        // ── Step 2: Threads (≤480 ký tự, cùng topic) ─────────────
+        const thPromptRes = await fetch("/api/puter-prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ platform: "threads", topic: topicId }),
+        });
+        const thPromptJson = await thPromptRes.json();
+        if (!thPromptJson.success)
+          throw new Error(
+            thPromptJson.error ?? "Không thể build Threads prompt",
+          );
+
+        const { systemPrompt: thSys, userPrompt: thUser } =
+          thPromptJson.data as { systemPrompt: string; userPrompt: string };
+
+        let threadsContent = await generateContent(thSys, thUser);
+        if (!threadsContent) threadsContent = fbContent; // fallback
+        threadsContent = threadsContent.slice(0, 480); // safety clamp
+
+        // ── Step 3: Instagram caption (từ bài FB) ─────────────────
+        const igPromptRes = await fetch("/api/puter-prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ platform: "instagram", fbContent }),
+        });
+        const igPromptJson = await igPromptRes.json();
+        if (!igPromptJson.success)
+          throw new Error(igPromptJson.error ?? "Không thể build IG prompt");
+
+        const { systemPrompt: igSys, userPrompt: igUser } =
+          igPromptJson.data as { systemPrompt: string; userPrompt: string };
+
+        let igCaption = await generateContent(igSys, igUser);
+        if (!igCaption) igCaption = fbContent.slice(0, 250); // fallback
+
+        // ── Submit 3 nội dung lên server ──────────────────────────
+        const submitRes = await fetch("/api/auto-scheduler", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recordId: record.id,
+            fbContent,
+            threadsContent,
+            igCaption,
+            topicLabel,
+          }),
+        });
+        const submitJson = await submitRes.json();
+        if (!submitJson.success)
+          throw new Error(submitJson.error ?? "Submit thất bại");
+
+        // Refresh để cập nhật trạng thái
+        await fetchData();
+      } catch (err) {
+        console.error("[AutoSchedulerMonitor] AI generate lỗi:", err);
+        // Thử lại lần sau — xóa khỏi processing set
+        processingRef.current.delete(record.id);
+      } finally {
+        setAiGeneratingId(null);
+      }
+    },
+    [fetchData],
+  );
+
+  // Polling cố định 30s — KHÔNG đưa records vào deps (gây infinite loop)
   useEffect(() => {
     fetchData();
-    const timer = setInterval(fetchData, 60_000);
+    const timer = setInterval(fetchData, 30_000);
     return () => clearInterval(timer);
   }, [fetchData]);
+
+  // Auto-trigger AI generation khi phát hiện waiting_for_ai
+  useEffect(() => {
+    const waiting = records.find(
+      (r) =>
+        r.overallStatus === "waiting_for_ai" &&
+        isTodayVN(r.triggeredAt) &&
+        !processingRef.current.has(r.id),
+    );
+    if (waiting) {
+      generateAndSubmit(waiting);
+    }
+  }, [records, generateAndSubmit]);
 
   function todayRecord(slotId: string): AutoPostRecord | null {
     return (
@@ -485,6 +656,14 @@ export function AutoSchedulerMonitor() {
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
             Lịch hôm nay — {todayLabel()}
           </p>
+          {aiGeneratingId && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-violet-50 border border-violet-100 rounded-lg">
+              <Spinner className="w-3.5 h-3.5 text-violet-400" />
+              <span className="text-xs text-violet-600">
+                Đang soạn nội dung bằng Puter.js AI…
+              </span>
+            </div>
+          )}
           {loading && records.length === 0 ? (
             <div className="flex justify-center py-6">
               <Spinner className="w-5 h-5 text-slate-300" />
