@@ -584,7 +584,7 @@ class ThreadsService {
       const res = await this.http.get<ThreadsPost>(`/${postId}`, {
         params: {
           fields:
-            "id,text,timestamp,media_type,media_url,permalink,shortcode,thumbnail_url,has_replies,hide_status,reply_audience,is_quote_post",
+            "id,text,timestamp,media_type,media_url,permalink,shortcode,thumbnail_url,has_replies,is_quote_post",
           access_token: this.token,
         },
       });
@@ -607,7 +607,7 @@ class ThreadsService {
       const res = await this.http.get(`/${this.userId}/threads`, {
         params: {
           fields:
-            "id,text,timestamp,media_type,permalink,shortcode,has_replies,hide_status",
+            "id,text,timestamp,media_type,permalink,shortcode,has_replies",
           limit,
           access_token: this.token,
         },
@@ -641,7 +641,7 @@ class ThreadsService {
   }> {
     const { pageSize = 50, maxPages = 20, afterCursor } = opts;
     const fields =
-      "id,text,timestamp,media_type,permalink,shortcode,has_replies,hide_status";
+      "id,text,timestamp,media_type,permalink,shortcode,has_replies";
 
     const allPosts: ThreadsPost[] = [];
     let cursor: string | undefined = afterCursor;
