@@ -10,7 +10,8 @@ export async function register() {
     const { startIGScheduler } = await import("./lib/services/ig-scheduler");
     const { startThreadsManualScheduler } =
       await import("./lib/services/threads-manual-scheduler");
-    const { startAutoScheduler } = await import("./lib/services/auto-scheduler");
+    const { startAutoScheduler } =
+      await import("./lib/services/auto-scheduler");
     startScheduler();
     startFBScheduler();
     startIGScheduler();

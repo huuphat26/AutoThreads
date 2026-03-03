@@ -589,7 +589,11 @@ export interface ThreadsManualPostHistory {
 
 export type AutoPostSlot = "noon" | "evening";
 
-export type AutoPostPlatformStatus = "pending" | "posted" | "failed" | "skipped";
+export type AutoPostPlatformStatus =
+  | "pending"
+  | "posted"
+  | "failed"
+  | "skipped";
 
 /** Kết quả đăng bài trên một nền tảng cụ thể */
 export interface AutoPostPlatformResult {

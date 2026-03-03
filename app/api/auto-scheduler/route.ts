@@ -36,7 +36,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-cron-secret");
   if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ success: false, error: "Không có quyền truy cập" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
   }
 
   try {
@@ -50,7 +53,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { message: `Đã kích hoạt auto-post [${slot}] — đăng tuần tự FB→Threads→IG trong ~4 phút` },
+      data: {
+        message: `Đã kích hoạt auto-post [${slot}] — đăng tuần tự FB→Threads→IG trong ~4 phút`,
+      },
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
@@ -62,7 +67,10 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const secret = req.headers.get("x-cron-secret");
   if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ success: false, error: "Không có quyền truy cập" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
   }
 
   try {

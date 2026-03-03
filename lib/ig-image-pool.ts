@@ -48,7 +48,9 @@ export function getNextIGImage(): ImageEntry | null {
   const pool = readPool();
 
   if (!pool.images || pool.images.length === 0) {
-    console.warn("[IG ImagePool] ⚠️  Pool ảnh trống. Thêm URL vào data/ig-auto-images.json");
+    console.warn(
+      "[IG ImagePool] ⚠️  Pool ảnh trống. Thêm URL vào data/ig-auto-images.json",
+    );
     return null;
   }
 
@@ -76,7 +78,10 @@ export function peekNextIGImage(): ImageEntry | null {
 /**
  * Trả về toàn bộ pool để hiển thị trên UI
  */
-export function getIGImagePool(): { images: ImageEntry[]; lastUsedIndex: number } {
+export function getIGImagePool(): {
+  images: ImageEntry[];
+  lastUsedIndex: number;
+} {
   const pool = readPool();
   return { images: pool.images ?? [], lastUsedIndex: pool.lastUsedIndex ?? -1 };
 }

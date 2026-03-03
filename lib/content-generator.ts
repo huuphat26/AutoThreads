@@ -83,7 +83,10 @@ export async function generateContent(
  * Caption IG: ≤ 300 ký tự + 5-8 hashtag liên quan.
  * Thực chất wrap lại fullPost rồi yêu cầu AI rút gọn + thêm hashtag.
  */
-export async function generateIGCaption(fullPost: string, topicLabel?: string): Promise<string> {
+export async function generateIGCaption(
+  fullPost: string,
+  topicLabel?: string,
+): Promise<string> {
   const provider = createProvider();
 
   const systemPrompt = `Bạn là copywriter Instagram. Nhiệm vụ: rút gọn bài đăng thành IG caption ngắn gọn.

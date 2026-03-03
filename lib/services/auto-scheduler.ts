@@ -24,8 +24,16 @@ const TIMEZONE = process.env.TIMEZONE || "Asia/Ho_Chi_Minh";
 const PLATFORM_DELAY_MS = 2 * 60 * 1000; // 2 phút
 
 const SLOTS = [
-  { id: "noon" as AutoPostSlot, label: "Buổi trưa (12:00)", cron: "0 12 * * *" },
-  { id: "evening" as AutoPostSlot, label: "Buổi tối (18:00)", cron: "0 18 * * *" },
+  {
+    id: "noon" as AutoPostSlot,
+    label: "Buổi trưa (12:00)",
+    cron: "0 12 * * *",
+  },
+  {
+    id: "evening" as AutoPostSlot,
+    label: "Buổi tối (18:00)",
+    cron: "0 18 * * *",
+  },
 ];
 
 // ─── Global guard ─────────────────────────────────────────────
@@ -42,12 +50,16 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  *
  * @param slot - "noon" | "evening" (để phân biệt log)
  */
-export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<AutoPostRecord> {
+export async function executeAutoPost(
+  slot: AutoPostSlot = "noon",
+): Promise<AutoPostRecord> {
   const recordId = generateAutoId();
   const triggeredAt = new Date().toISOString();
 
   console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
-  console.log(`[AutoScheduler] 🚀 Bắt đầu auto-post [${slot}] — ${triggeredAt}`);
+  console.log(
+    `[AutoScheduler] 🚀 Bắt đầu auto-post [${slot}] — ${triggeredAt}`,
+  );
   console.log(`[AutoScheduler] ═══════════════════════════════════`);
 
   // ── Khởi tạo record ──────────────────────────────────────────
@@ -91,7 +103,10 @@ export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<Auto
 
     record.facebook = { status: "failed", errorMessage: `AI thất bại: ${msg}` };
     record.threads = { status: "failed", errorMessage: `AI thất bại: ${msg}` };
-    record.instagram = { status: "failed", errorMessage: `AI thất bại: ${msg}` };
+    record.instagram = {
+      status: "failed",
+      errorMessage: `AI thất bại: ${msg}`,
+    };
     record.overallStatus = "failed";
     upsertAutoRecord(record);
     return record;
@@ -102,7 +117,8 @@ export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<Auto
   try {
     const fbResult = await facebookService.publishText(fullPost);
     const fbPostId = fbResult.kind !== "video" ? fbResult.postId : undefined;
-    const fbPermalink = fbResult.kind !== "video" ? (fbResult.permalink ?? undefined) : undefined;
+    const fbPermalink =
+      fbResult.kind !== "video" ? (fbResult.permalink ?? undefined) : undefined;
 
     record.facebook = {
       status: "posted",
@@ -167,7 +183,9 @@ export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<Auto
       igCaption = await generateIGCaption(fullPost, topicLabel);
       record.igCaption = igCaption;
       upsertAutoRecord(record);
-      console.log(`[AutoScheduler] 🤖 IG caption OK (${igCaption.length} chars)`);
+      console.log(
+        `[AutoScheduler] 🤖 IG caption OK (${igCaption.length} chars)`,
+      );
     } catch (err) {
       // Fallback: dùng 280 ký tự đầu của fullPost
       igCaption = fullPost.slice(0, 280);
@@ -190,7 +208,9 @@ export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<Auto
         postedAt: new Date().toISOString(),
       };
       upsertAutoRecord(record);
-      console.log(`[AutoScheduler] ✅ Instagram OK — Media ID: ${igResult.mediaId}`);
+      console.log(
+        `[AutoScheduler] ✅ Instagram OK — Media ID: ${igResult.mediaId}`,
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       record.instagram = { status: "failed", errorMessage: msg };
@@ -200,11 +220,19 @@ export async function executeAutoPost(slot: AutoPostSlot = "noon"): Promise<Auto
   }
 
   // ── Bước 5: Tính overallStatus ────────────────────────────────
-  const results = [record.facebook.status, record.threads.status, record.instagram.status];
+  const results = [
+    record.facebook.status,
+    record.threads.status,
+    record.instagram.status,
+  ];
   const allPosted = results.every((s) => s === "posted");
   const allFailed = results.every((s) => s === "failed");
 
-  record.overallStatus = allPosted ? "completed" : allFailed ? "failed" : "partial";
+  record.overallStatus = allPosted
+    ? "completed"
+    : allFailed
+      ? "failed"
+      : "partial";
   upsertAutoRecord(record);
 
   console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
@@ -248,7 +276,10 @@ export function startAutoScheduler(): void {
       slot.cron,
       () => {
         executeAutoPost(slot.id).catch((err) => {
-          console.error(`[AutoScheduler] ❌ Lỗi không mong đợi [${slot.id}]:`, err);
+          console.error(
+            `[AutoScheduler] ❌ Lỗi không mong đợi [${slot.id}]:`,
+            err,
+          );
         });
       },
       { timezone: TIMEZONE },
@@ -273,7 +304,9 @@ export function stopAutoScheduler(): void {
  * Trigger thủ công (dùng để test trên UI hoặc API).
  * Không cần AUTO_SCHEDULER_ENABLED=true.
  */
-export async function triggerAutoPost(slot: AutoPostSlot = "noon"): Promise<AutoPostRecord> {
+export async function triggerAutoPost(
+  slot: AutoPostSlot = "noon",
+): Promise<AutoPostRecord> {
   console.log(`[AutoScheduler] 🔧 Trigger thủ công [${slot}]`);
   return executeAutoPost(slot);
 }
