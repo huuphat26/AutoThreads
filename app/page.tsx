@@ -11,6 +11,7 @@ import { ThreadsMonitorBlock } from "@/components/dashboard/threads-monitor-bloc
 import { FacebookMonitorBlock } from "@/components/platforms/facebook/monitor";
 import { InstagramMonitorBlock } from "@/components/platforms/instagram/monitor";
 import { AIConfigCard } from "@/components/shared/ai-config-card";
+import { AutoSchedulerMonitor } from "@/components/dashboard/auto-scheduler-monitor";
 
 export default function DashboardPage() {
   const [activePlatform, setActivePlatform] = useState<Platform>("threads");
@@ -82,6 +83,8 @@ export default function DashboardPage() {
           onProviderChange={handleProviderChange}
           onModelChange={handleModelChange}
         />
+
+        <AutoSchedulerMonitor />
 
         <PlatformTabBar active={activePlatform} onChange={setActivePlatform} />
 
