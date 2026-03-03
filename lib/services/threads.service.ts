@@ -273,17 +273,13 @@ class ThreadsService {
    */
   async createTextContainer(text: string): Promise<string> {
     try {
-      const res = await this.http.post<{ id: string }>(
-        `/me/threads`,
-        null,
-        {
-          params: {
-            media_type: "TEXT",
-            text,
-            access_token: this.token,
-          },
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params: {
+          media_type: "TEXT",
+          text,
+          access_token: this.token,
         },
-      );
+      });
       return res.data.id;
     } catch (err) {
       throw parseMetaError(err);
@@ -309,11 +305,9 @@ class ThreadsService {
       };
       if (params.text) queryParams.text = params.text;
 
-      const res = await this.http.post<{ id: string }>(
-        `/me/threads`,
-        null,
-        { params: queryParams },
-      );
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params: queryParams,
+      });
       return res.data.id;
     } catch (err) {
       throw parseMetaError(err);
@@ -338,11 +332,9 @@ class ThreadsService {
       };
       if (params.text) queryParams.text = params.text;
 
-      const res = await this.http.post<{ id: string }>(
-        `/me/threads`,
-        null,
-        { params: queryParams },
-      );
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params: queryParams,
+      });
       return res.data.id;
     } catch (err) {
       throw parseMetaError(err);
