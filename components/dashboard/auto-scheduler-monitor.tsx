@@ -33,13 +33,13 @@ type SchedulerStatus = {
 // ─── Constants ───────────────────────────────────────────────
 
 const SLOT_HOURS: Record<string, { h: number; m: number }> = {
-  noon:    { h: 12, m: 0 },
+  noon: { h: 12, m: 0 },
   evening: { h: 18, m: 0 },
 };
 const DELAY_MINUTES = 2;
 const PLATFORMS = [
-  { key: "facebook",  label: "Facebook",  delayMin: 0 },
-  { key: "threads",   label: "Threads",   delayMin: DELAY_MINUTES },
+  { key: "facebook", label: "Facebook", delayMin: 0 },
+  { key: "threads", label: "Threads", delayMin: DELAY_MINUTES },
   { key: "instagram", label: "Instagram", delayMin: DELAY_MINUTES * 2 },
 ] as const;
 
@@ -171,9 +171,7 @@ const STATUS_CFG: Record<
 function Dot({ status }: { status: string }) {
   const cfg = STATUS_CFG[status as StatusKey] ?? STATUS_CFG.skipped;
   return (
-    <span
-      className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`}
-    />
+    <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
   );
 }
 
@@ -206,11 +204,7 @@ function PlatformScheduleRow({
 }) {
   const [showError, setShowError] = useState(false);
 
-  const status = result
-    ? result.status
-    : isPast
-      ? "skipped"
-      : "scheduled";
+  const status = result ? result.status : isPast ? "skipped" : "scheduled";
 
   return (
     <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-50 last:border-0">
@@ -388,8 +382,7 @@ function HistoryRow({ record }: { record: AutoPostRecord }) {
           )}
           <div className="divide-y divide-slate-50">
             {PLATFORMS.map((p) => {
-              const r =
-                record[p.key as "facebook" | "threads" | "instagram"];
+              const r = record[p.key as "facebook" | "threads" | "instagram"];
               return (
                 <HistoryPlatformRow key={p.key} label={p.label} result={r} />
               );
@@ -435,8 +428,7 @@ export function AutoSchedulerMonitor() {
 
   function todayRecord(slotId: string): AutoPostRecord | null {
     return (
-      records.find((r) => r.slot === slotId && isTodayVN(r.triggeredAt)) ??
-      null
+      records.find((r) => r.slot === slotId && isTodayVN(r.triggeredAt)) ?? null
     );
   }
 
@@ -500,10 +492,7 @@ export function AutoSchedulerMonitor() {
           ) : (
             <div className="space-y-2">
               <TodaySlotCard slotId="noon" record={todayRecord("noon")} />
-              <TodaySlotCard
-                slotId="evening"
-                record={todayRecord("evening")}
-              />
+              <TodaySlotCard slotId="evening" record={todayRecord("evening")} />
             </div>
           )}
         </div>
