@@ -132,12 +132,14 @@ export interface ThreadsTokenResult {
 export interface CreateImageContainerParams {
   imageUrl: string;
   text?: string; // caption (tùy chọn, tối đa 500 ký tự)
+  topicTag?: string; // topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &)
 }
 
 /** Params để tạo video container */
 export interface CreateVideoContainerParams {
   videoUrl: string;
   text?: string;
+  topicTag?: string;
 }
 
 /** Kết quả full publish flow (internal) */
@@ -565,6 +567,8 @@ export interface ThreadsManualPost {
   mediaType: ThreadsManualMediaType;
   /** URL ảnh công khai HTTPS — bắt buộc khi mediaType === "IMAGE" */
   imageUrl?: string;
+  /** Topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &) */
+  topicTag?: string;
   /** ISO string — thời điểm hẹn đăng */
   scheduledAt: string;
   /** ISO string — thời điểm đăng thực tế */
@@ -613,8 +617,10 @@ export interface AutoPostRecord {
   /** Chủ đề AI đã chọn */
   topic: string;
   topicLabel?: string;
-  /** Nội dung AI soạn (dùng cho FB + Threads) */
+  /** Nội dung AI soạn cho Facebook */
   content: string;
+  /** Nội dung AI soạn riêng cho Threads (≤480 chars) */
+  threadsContent?: string;
   /** Caption riêng cho Instagram */
   igCaption: string;
   /** URL ảnh đã dùng cho Instagram */
@@ -623,9 +629,18 @@ export interface AutoPostRecord {
   facebook: AutoPostPlatformResult;
   threads: AutoPostPlatformResult;
   instagram: AutoPostPlatformResult;
-  /** Trạng thái tổng */
+  /**
+   * Trạng thái tổng:
+   *   waiting_for_ai  — cron đã tạo record, chờ browser soạn AI (11:50)
+   *   content_ready   — browser đã soạn xong, chờ đồng hồ đến 12:00/18:00
+   *   running         — đang đăng lên các nền tảng
+   *   completed       — cả 3 nền tảng thành công
+   *   partial         — ít nhất 1 thành công
+   *   failed          — cả 3 thất bại
+   */
   overallStatus:
     | "waiting_for_ai"
+    | "content_ready"
     | "running"
     | "completed"
     | "partial"

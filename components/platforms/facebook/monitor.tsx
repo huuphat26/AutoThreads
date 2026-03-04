@@ -11,6 +11,16 @@ import { FacebookComposeForm } from "./compose-form";
 import { FacebookPostsList } from "./posts-list";
 import { useFacebookDashboard } from "@/hooks/use-facebook-dashboard";
 
+// Spinner dùng lại từ IG
+function Spinner() {
+  return (
+    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+    </svg>
+  );
+}
+
 type PageInfo = {
   id: string;
   name: string;
@@ -122,204 +132,153 @@ export function FacebookMonitorBlock({
   const token = data?.token;
 
   return (
-    <div className="space-y-4">
-      {/* ── Page Info Card ─────────────────────────────────────────────────── */}
-      <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[#1877F2]">
-            <FacebookIcon className="w-5 h-5" />
-            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-              Facebook Page
-            </h2>
-          </div>
-          {token && <TokenBadge token={token} />}
+    <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[#1877F2]">
+          <FacebookIcon className="w-5 h-5" />
+          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+            Facebook Page
+          </h2>
         </div>
+        {token && <TokenBadge token={token} />}
+      </div>
 
-        {/* Body */}
-        <div className="px-5 py-4">
-          {pageLoading && (
-            <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
-              <svg
-                className="animate-spin w-3.5 h-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
+      {/* Body */}
+      <div className="px-5 py-4">
+        {pageLoading && (
+          <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
+            <Spinner />
+            Đang tải thông tin...
+          </div>
+        )}
+
+        {!pageLoading && !data?.connected && (
+          <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3">
+            <p className="text-xs font-semibold text-rose-600">Chưa kết nối</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">
+              {data?.error ?? "Kiểm tra FB_PAGE_ACCESS_TOKEN trong .env"}
+            </p>
+          </div>
+        )}
+
+        {!pageLoading && data?.connected && page && (
+          <div className="space-y-4">
+            {/* Profile row */}
+            <div className="flex items-center gap-3">
+              {page.pictureUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={page.pictureUrl}
+                  alt="page"
+                  className="w-12 h-12 rounded-xl object-cover border border-slate-100"
                 />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                />
-              </svg>
-              Đang tải thông tin...
-            </div>
-          )}
-
-          {!pageLoading && !data?.connected && (
-            <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3">
-              <p className="text-xs font-semibold text-rose-600">
-                Chưa kết nối
-              </p>
-              <p className="text-[11px] text-rose-500 mt-0.5">
-                {data?.error ?? "Kiểm tra FB_PAGE_ACCESS_TOKEN trong .env"}
-              </p>
-            </div>
-          )}
-
-          {!pageLoading && data?.connected && page && (
-            <div className="space-y-4">
-              {/* Profile row */}
-              <div className="flex items-center gap-3">
-                {page.pictureUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={page.pictureUrl}
-                    alt="page"
-                    className="w-12 h-12 rounded-xl object-cover border border-slate-100"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-[#1877F2]">
-                    <FacebookIcon className="w-5 h-5" />
-                  </div>
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-[#1877F2]">
+                  <FacebookIcon className="w-5 h-5" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="font-semibold text-slate-800 text-sm truncate">
+                  {page.name}
+                </p>
+                {page.category && (
+                  <p className="text-[11px] text-slate-400">{page.category}</p>
                 )}
-                <div className="min-w-0">
-                  <p className="font-semibold text-slate-800 text-sm truncate">
-                    {page.name}
+                {page.about && (
+                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
+                    {page.about}
                   </p>
-                  <p className="text-[11px] text-slate-400">ID: {page.id}</p>
-                  {page.link && (
-                    <a
-                      href={
-                        "https://www.facebook.com/people/Trai-%C4%91%E1%BA%B9p-detox/61587200434618/"
-                      }
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[11px] text-blue-500 hover:underline truncate block"
-                    >
-                      https://www.facebook.com/people/Trai-%C4%91%E1%BA%B9p-detox/61587200434618/
-                    </a>
-                  )}
-                </div>
+                )}
+                {page.link && (
+                  <a
+                    href={page.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-blue-500 hover:text-blue-600 underline truncate block"
+                  >
+                    {page.link}
+                  </a>
+                )}
               </div>
-
-              {/* Page meta */}
-              {(page.category || page.about || page.website) && (
-                <div className="bg-slate-50 rounded-xl px-3 py-2.5 space-y-1">
-                  {page.category && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-slate-400">
-                        Danh mục
-                      </span>
-                      <span className="text-[11px] font-medium text-slate-700">
-                        {page.category}
-                      </span>
-                    </div>
-                  )}
-                  {page.about && (
-                    <p className="text-[11px] text-slate-500 leading-relaxed">
-                      {page.about}
-                    </p>
-                  )}
-                  {page.website && (
-                    <a
-                      href={page.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[11px] text-blue-500 hover:underline block truncate"
-                    >
-                      {page.website}
-                    </a>
-                  )}
-                </div>
-              )}
-
-              {/* Stats */}
-              {(page.fanCount > 0 || page.followersCount > 0) && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                      Người thích
-                    </p>
-                    <p className="text-xl font-bold text-slate-800 mt-0.5">
-                      {page.fanCount.toLocaleString("vi-VN")}
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                      Theo dõi
-                    </p>
-                    <p className="text-xl font-bold text-slate-800 mt-0.5">
-                      {page.followersCount.toLocaleString("vi-VN")}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
-          )}
-        </div>
-      </section>
 
-      <FacebookPostsList
-        posts={fb.fbPosts}
-        stats={fb.fbStats}
-        loading={fb.postsLoading}
-        error={fb.postsError}
-        onFetch={fb.fetchFBPosts}
-        onCancel={fb.handleCancelPost}
-      />
-      <div>
-        <button
-          onClick={() => setComposeOpen((v) => !v)}
-          className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-[#1877F2]/30 transition-all text-slate-600 group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[#1877F2] group-hover:bg-blue-100 transition-colors">
-              <PlusIcon className="w-4 h-4" />
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-slate-50 rounded-xl px-3 py-2.5">
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
+                  Người thích
+                </p>
+                <p className="text-xl font-bold text-slate-800 mt-0.5">
+                  {page.fanCount.toLocaleString("vi-VN")}
+                </p>
+              </div>
+              <div className="bg-slate-50 rounded-xl px-3 py-2.5">
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
+                  Theo dõi
+                </p>
+                <p className="text-xl font-bold text-slate-800 mt-0.5">
+                  {page.followersCount.toLocaleString("vi-VN")}
+                </p>
+              </div>
             </div>
-            <span className="font-semibold text-sm">
-              Tạo & Đăng bài Facebook
-            </span>
-          </div>
-          {composeOpen ? (
-            <ChevronUpIcon className="w-4 h-4" />
-          ) : (
-            <ChevronDownIcon className="w-4 h-4" />
-          )}
-        </button>
 
-        {composeOpen && (
-          <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
-            <FacebookComposeForm
-              keywords={fb.keywords}
-              content={fb.content}
-              mediaType={fb.mediaType}
-              imageUrl={fb.imageUrl}
-              isScheduled={fb.isScheduled}
-              scheduledTime={fb.scheduledTime}
-              generating={fb.generating}
-              loading={fb.loading}
-              error={fb.error}
-              success={fb.success}
-              onKeywordsChange={fb.setKeywords}
-              onContentChange={fb.setContent}
-              onMediaTypeChange={fb.setMediaType}
-              onImageUrlChange={fb.setImageUrl}
-              onIsScheduledChange={fb.setIsScheduled}
-              onScheduledTimeChange={fb.setScheduledTime}
-              onGenerate={fb.handleGenerate}
-              onPost={fb.handlePost}
+
+            {/* Compose button */}
+            <div className="border-t border-slate-50 pt-3">
+              <button
+                onClick={() => setComposeOpen((o) => !o)}
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold text-white bg-[#1877F2] hover:bg-[#1463cc] transition-colors"
+              >
+                {composeOpen ? (
+                  <>
+                    <ChevronUpIcon className="w-3.5 h-3.5" />
+                    Đóng
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="w-3.5 h-3.5" />
+                    Tạo bài đăng
+                  </>
+                )}
+              </button>
+            </div>
+
+            {composeOpen && (
+              <FacebookComposeForm
+                keywords={fb.keywords}
+                content={fb.content}
+                mediaType={fb.mediaType}
+                imageUrl={fb.imageUrl}
+                isScheduled={fb.isScheduled}
+                scheduledTime={fb.scheduledTime}
+                generating={fb.generating}
+                loading={fb.loading}
+                error={fb.error}
+                success={fb.success}
+                onKeywordsChange={fb.setKeywords}
+                onContentChange={fb.setContent}
+                onMediaTypeChange={fb.setMediaType}
+                onImageUrlChange={fb.setImageUrl}
+                onIsScheduledChange={fb.setIsScheduled}
+                onScheduledTimeChange={fb.setScheduledTime}
+                onGenerate={fb.handleGenerate}
+                onPost={fb.handlePost}
+              />
+            )}
+
+            {/* Posts list */}
+            <FacebookPostsList
+              posts={fb.fbPosts}
+              stats={fb.fbStats}
+              loading={fb.postsLoading}
+              error={fb.postsError}
+              onFetch={fb.fetchFBPosts}
+              onCancel={fb.handleCancelPost}
             />
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

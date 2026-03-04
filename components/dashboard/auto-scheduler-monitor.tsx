@@ -15,8 +15,9 @@ type SchedulerStatus = {
   enabled: boolean;
   running: boolean;
   timezone: string;
-  slots: { id: string; label: string; cron: string }[];
+  slots: { id: string; label: string; prepCron: string; postCron: string }[];
   platformDelayMinutes: number;
+  retryWindowMinutes?: number;
   totalRuns: number;
   lastRun: null | {
     id: string;
@@ -34,7 +35,10 @@ const SLOT_HOURS: Record<string, { h: number; m: number }> = {
   noon: { h: 12, m: 0 },
   evening: { h: 18, m: 0 },
 };
-const DELAY_MINUTES = 2;
+/** Khoảng cách giữa các nền tảng khi đăng (phút) */
+const DELAY_MINUTES = 3;
+/** Thời gian chuẩn bị AI trước giờ đăng (phút) */
+const PREP_BEFORE_POST_MIN = 10;
 const PLATFORMS = [
   { key: "facebook", label: "Facebook", delayMin: 0 },
   { key: "threads", label: "Threads", delayMin: DELAY_MINUTES },
@@ -101,7 +105,8 @@ type StatusKey =
   | "partial"
   | "scheduled"
   | "waiting"
-  | "waiting_for_ai";
+  | "waiting_for_ai"
+  | "content_ready";
 
 const STATUS_CFG: Record<
   StatusKey,
@@ -111,6 +116,11 @@ const STATUS_CFG: Record<
     dot: "bg-violet-400 animate-pulse",
     pill: "bg-violet-50 text-violet-600 border-violet-200",
     label: "Đang soạn AI",
+  },
+  content_ready: {
+    dot: "bg-sky-400",
+    pill: "bg-sky-50 text-sky-600 border-sky-200",
+    label: "Chờ đăng bài",
   },
   scheduled: {
     dot: "bg-slate-300",
@@ -238,14 +248,25 @@ function TodaySlotCard({
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
   const slotName = slotId === "noon" ? "Buổi trưa" : "Buổi tối";
   const baseTime = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  // Giờ chuẩn bị AI: 10 phút trước giờ đăng
+  const prepH = m - PREP_BEFORE_POST_MIN >= 0 ? h : h - 1;
+  const prepM = (60 + m - PREP_BEFORE_POST_MIN) % 60;
+  const prepTime = `${String(prepH).padStart(2, "0")}:${String(prepM).padStart(2, "0")}`;
+  const prep3 = `${String(prepH).padStart(2, "0")}:${String(prepM + 3).padStart(2, "0")}`;
+  const prep5 = `${String(prepH).padStart(2, "0")}:${String(prepM + 5).padStart(2, "0")}`;
   const now = new Date();
   const isRunning = record?.overallStatus === "running";
+  const isContentReady = record?.overallStatus === "content_ready";
 
   const overallStatus =
     record?.overallStatus ??
     (now > slotDateToday(slotId, 4) ? "skipped" : "scheduled");
 
-  const overallPill = isRunning ? "running" : overallStatus;
+  const overallPill = isRunning
+    ? "running"
+    : isContentReady
+      ? "content_ready"
+      : overallStatus;
 
   return (
     <div className="rounded-xl border border-slate-100 overflow-hidden bg-white">
@@ -267,7 +288,29 @@ function TodaySlotCard({
           <Pill status={overallPill} />
         </div>
       </div>
+      {/* Prep timeline */}
+      <div className="flex items-center gap-1 px-4 py-1.5 bg-slate-50/60 border-b border-slate-100 text-[9px] text-slate-400">
+        <span className="font-mono font-semibold">{prepTime}</span>
+        <span>→ FB</span>
+        <span className="mx-0.5 text-slate-200">·</span>
+        <span className="font-mono font-semibold">{prep3}</span>
+        <span>→ Threads</span>
+        <span className="mx-0.5 text-slate-200">·</span>
+        <span className="font-mono font-semibold">{prep5}</span>
+        <span>→ IG</span>
+        {isContentReady && (
+          <span className="ml-auto text-sky-500 font-semibold">
+            ✓ Sẵn sàng đăng
+          </span>
+        )}
+        {record?.overallStatus === "waiting_for_ai" && (
+          <span className="ml-auto text-violet-500 font-semibold animate-pulse">
+            ⚡ Đang soạn AI…
+          </span>
+        )}
+      </div>
       {/* Platform rows */}
+
       <div>
         {PLATFORMS.map((p) => {
           const scheduledTime = slotTimeLabel(slotId, p.delayMin);
@@ -299,9 +342,11 @@ export function AutoSchedulerMonitor() {
   const [error, setError] = useState("");
   const [aiGeneratingId, setAiGeneratingId] = useState<string | null>(null);
   const processingRef = useRef<Set<string>>(new Set());
+  const initialFetched = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (showLoading = false) => {
+    if (showLoading) setLoading(true);
     setError("");
     try {
       const [s, h] = await Promise.all([
@@ -315,7 +360,7 @@ export function AutoSchedulerMonitor() {
     } catch {
       setError("Không thể tải dữ liệu");
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }, []);
 
@@ -465,10 +510,18 @@ export function AutoSchedulerMonitor() {
   );
 
   useEffect(() => {
-    fetchData();
-    const timer = setInterval(fetchData, 30_000);
-    return () => clearInterval(timer);
-  }, [fetchData]);
+    // Guard against React StrictMode double-mount creating 2 intervals
+    if (initialFetched.current) return;
+    initialFetched.current = true;
+
+    fetchData(true); // show spinner only on first load
+
+    intervalRef.current = setInterval(() => fetchData(false), 30_000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const waiting = records.find(
@@ -488,18 +541,12 @@ export function AutoSchedulerMonitor() {
     );
   }
 
-  const schedulerActive = status?.enabled && status?.running;
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span
-            className={`w-2 h-2 rounded-full shrink-0 ${
-              schedulerActive ? "bg-emerald-400 animate-pulse" : "bg-slate-300"
-            }`}
-          />
-          <div>
+          <div className="gap-2">
             <div className="flex items-center gap-2">
               <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                 Đăng tự động 3 nền tảng
@@ -536,7 +583,7 @@ export function AutoSchedulerMonitor() {
           </div>
         </div>
         <button
-          onClick={fetchData}
+          onClick={() => fetchData(true)}
           disabled={loading}
           className="text-slate-400 hover:text-slate-600 transition-colors"
         >

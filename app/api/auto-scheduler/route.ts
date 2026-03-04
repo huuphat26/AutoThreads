@@ -8,7 +8,7 @@ import {
   triggerAutoPost,
   startAutoScheduler,
   stopAutoScheduler,
-  executePlatformPosts,
+  storeContentForRecord,
 } from "@/lib/services/auto-scheduler";
 import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getIGImagePool } from "@/lib/ig-image-pool";
@@ -109,8 +109,10 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// ── PUT: Browser gửi nội dung AI lên, server tiến hành đăng bài ──
+// ── PUT: Browser gửi nội dung AI đã soạn — lưu vào record (không đăng ngay) ─
 // Body: { recordId, fbContent, threadsContent, igCaption, topicLabel? }
+// Nội dung được lưu với status "content_ready".
+// Cron 12:00/18:00 sẽ tự động đăng theo thứ tự FB→Threads→IG.
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
@@ -130,20 +132,28 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Chạy bất đồng bộ — trả về ngay, tránh timeout serverless
-    executePlatformPosts(
-      recordId,
-      fbContent.trim(),
-      (threadsContent ?? fbContent).trim().slice(0, 480),
-      (igCaption ?? fbContent).trim().slice(0, 300),
-      topicLabel ?? "",
-    ).catch((err) => {
-      console.error("[AutoScheduler API] executePlatformPosts lỗi:", err);
-    });
+    // Lưu content vào record — trả về ngay, tránh timeout serverless
+    // storeContentForRecord tự kiểm tra nếu đã qua giờ đăng → trigger ngay
+    try {
+      storeContentForRecord(
+        recordId,
+        fbContent.trim(),
+        (threadsContent ?? fbContent).trim().slice(0, 480),
+        (igCaption ?? fbContent).trim().slice(0, 300),
+        topicLabel ?? "",
+      );
+    } catch (err) {
+      console.error("[AutoScheduler API] storeContentForRecord lỗi:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json({ success: false, error: msg }, { status: 500 });
+    }
 
     return NextResponse.json({
       success: true,
-      data: { message: "Đã nhận nội dung, đang đăng FB → Threads → IG…" },
+      data: {
+        message:
+          "Đã lưu nội dung (content_ready). Sẽ đăng FB 12:00 → Threads 12:03 → IG 12:06",
+      },
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

@@ -1,8 +1,3 @@
-// ============================================================
-// AIConfigCard — Compact AI engine selector
-// Ưu tiên Puter.js (primary, luôn hiển thị ở đầu).
-// Các provider khác thu gọn trong dropdown nhỏ.
-// ============================================================
 "use client";
 
 import { useEffect, useState } from "react";
@@ -86,7 +81,6 @@ export function AIConfigCard({
               if (!isPuter) onProviderChange("puter");
             }}
           >
-            {/* Provider header */}
             <div className="flex items-center gap-2.5 px-3 py-2 border-b border-white/60">
               <div
                 className={`w-6 h-6 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${

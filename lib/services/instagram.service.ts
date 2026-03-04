@@ -65,6 +65,44 @@ function parseMetaError(err: unknown): IGApiError {
 const sleep = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Meta error codes được coi là transient (có thể retry):
+ *   2  - Unexpected error, please retry later
+ *   1  - Unknown error
+ *  -1  - An unknown error occurred (internal)
+ *   4  - Application request limit reached (throttle)
+ * 341  - Application limit reached
+ */
+const TRANSIENT_CODES = new Set([2, 1, -1, 4, 341]);
+
+/**
+ * Retry một async fn tối đa `maxAttempts` lần với exponential backoff.
+ * Chỉ retry nếu lỗi có code nằm trong TRANSIENT_CODES.
+ */
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxAttempts = 3,
+  baseDelayMs = 5_000,
+): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const isTransient =
+        err instanceof IGApiError && TRANSIENT_CODES.has(err.code);
+      if (!isTransient || attempt === maxAttempts) throw err;
+      const delay = baseDelayMs * Math.pow(2, attempt - 1); // 5s, 10s, 20s
+      console.warn(
+        `[IG API] ⚠️  Lỗi tạm thời (code ${(err as IGApiError).code}), thử lại lần ${attempt + 1}/${maxAttempts} sau ${delay / 1000}s...`,
+      );
+      await sleep(delay);
+    }
+  }
+  throw lastErr;
+}
+
 // ─── Instagram Service ────────────────────────────────────────
 class InstagramService {
   private http: AxiosInstance;
@@ -365,7 +403,7 @@ class InstagramService {
    * Trả về container ID để poll + publish
    */
   async createMediaContainer(params: IGPublishParams): Promise<string> {
-    try {
+    return withRetry(async () => {
       const queryParams: Record<string, string> = {
         access_token: this.token,
       };
@@ -392,15 +430,17 @@ class InstagramService {
 
       if (params.caption) queryParams.caption = params.caption;
 
-      const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/media`,
-        null,
-        { params: queryParams },
-      );
-      return res.data.id;
-    } catch (err) {
-      throw parseMetaError(err);
-    }
+      try {
+        const res = await this.http.post<{ id: string }>(
+          `/${this.userId}/media`,
+          null,
+          { params: queryParams },
+        );
+        return res.data.id;
+      } catch (err) {
+        throw parseMetaError(err);
+      }
+    });
   }
 
   /**
@@ -441,21 +481,23 @@ class InstagramService {
    * POST /{IG_USER_ID}/media_publish?creation_id=...
    */
   async publishContainer(containerId: string): Promise<string> {
-    try {
-      const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/media_publish`,
-        null,
-        {
-          params: {
-            creation_id: containerId,
-            access_token: this.token,
+    return withRetry(async () => {
+      try {
+        const res = await this.http.post<{ id: string }>(
+          `/${this.userId}/media_publish`,
+          null,
+          {
+            params: {
+              creation_id: containerId,
+              access_token: this.token,
+            },
           },
-        },
-      );
-      return res.data.id;
-    } catch (err) {
-      throw parseMetaError(err);
-    }
+        );
+        return res.data.id;
+      } catch (err) {
+        throw parseMetaError(err);
+      }
+    });
   }
 
   /**

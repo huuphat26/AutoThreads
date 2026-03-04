@@ -11,6 +11,15 @@ import { InstagramComposeForm } from "./compose-form";
 import { InstagramPostsList } from "./posts-list";
 import { useInstagramDashboard } from "@/hooks/use-instagram-dashboard";
 
+function Spinner() {
+  return (
+    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+    </svg>
+  );
+}
+
 type IGAccount = {
   id: string;
   username: string | null;
@@ -105,7 +114,7 @@ export function InstagramMonitorBlock({
     ig.ensureFetched();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("data.account", data);
+
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       {/* Header */}
@@ -125,25 +134,7 @@ export function InstagramMonitorBlock({
       <div className="px-5 py-4">
         {loading && (
           <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
-            <svg
-              className="animate-spin w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8z"
-              />
-            </svg>
+            <Spinner />
             Đang tải thông tin...
           </div>
         )}
@@ -190,12 +181,12 @@ export function InstagramMonitorBlock({
                   </p>
                 )}
                 <a
-                  href="https://www.instagram.com/traidepthichdetox/"
+                  href={`https://www.instagram.com/${data.account.username}/`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[11px] text-blue-500 hover:text-blue-600 underline"
                 >
-                  https://www.instagram.com/traidepthichdetox/
+                  https://www.instagram.com/{data.account.username}/
                 </a>
               </div>
             </div>

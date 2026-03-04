@@ -65,6 +65,7 @@ export function useDashboard() {
   const [keywords, setKeywords] = useState("");
   const [mediaType, setMediaType] = useState<ThreadsManualMediaType>("TEXT");
   const [imageUrl, setImageUrl] = useState("");
+  const [topicTag, setTopicTag] = useState("");
 
   // Schedule state
   const [isScheduled, setIsScheduled] = useState(false);
@@ -451,6 +452,7 @@ export function useDashboard() {
         content: content.trim() || undefined,
         mediaType,
         imageUrl: mediaType === "IMAGE" ? imageUrl.trim() : undefined,
+        topicTag: topicTag.trim().replace(/^#/, "") || undefined,
         scheduledAt: isScheduled
           ? new Date(scheduledTime).toISOString()
           : undefined,
@@ -474,6 +476,7 @@ export function useDashboard() {
         }
         setContent("");
         setImageUrl("");
+        setTopicTag("");
         setIsScheduled(false);
         setScheduledTime(defaultScheduledTime());
         fetchHistory();
@@ -531,6 +534,8 @@ export function useDashboard() {
     setMediaType,
     imageUrl,
     setImageUrl,
+    topicTag,
+    setTopicTag,
     isScheduled,
     setIsScheduled,
     scheduledTime,

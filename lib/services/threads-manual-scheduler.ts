@@ -70,9 +70,13 @@ export async function publishThreadsManualPost(
       result = await threadsService.publishImagePost(
         post.imageUrl,
         post.content || undefined,
+        post.topicTag,
       );
     } else {
-      result = await threadsService.publishTextPost(post.content);
+      result = await threadsService.publishTextPost(
+        post.content,
+        post.topicTag,
+      );
     }
 
     upsertThreadsManualPost({
@@ -102,12 +106,14 @@ export async function postThreadsManualNow(params: {
   content: string;
   mediaType: ThreadsManualMediaType;
   imageUrl?: string;
+  topicTag?: string;
 }): Promise<ThreadsManualPost> {
   const post: ThreadsManualPost = {
     id: generateThreadsManualId(),
     content: params.content,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,
+    topicTag: params.topicTag,
     scheduledAt: new Date().toISOString(),
     status: "pending",
     source: "manual",
@@ -131,6 +137,7 @@ export function scheduleThreadsManualPost(params: {
   content: string;
   mediaType: ThreadsManualMediaType;
   imageUrl?: string;
+  topicTag?: string;
   scheduledAt: string; // ISO string
 }): ThreadsManualPost {
   const post: ThreadsManualPost = {
@@ -138,6 +145,7 @@ export function scheduleThreadsManualPost(params: {
     content: params.content,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,
+    topicTag: params.topicTag,
     scheduledAt: params.scheduledAt,
     status: "scheduled",
     source: "manual",

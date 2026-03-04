@@ -11,7 +11,7 @@
 // ============================================================
 
 import cron from "node-cron";
-import { instagramService } from "./instagram.service";
+import { instagramService, IGApiError } from "./instagram.service";
 import {
   getDueIGPosts,
   upsertIGPost,
@@ -84,9 +84,18 @@ export async function publishIGPost(post: IGScheduledPost): Promise<void> {
       `[IG Scheduler] ✅ Đăng IG thành công — Media ID: ${result.mediaId}`,
     );
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    let msg: string;
+    if (err instanceof IGApiError) {
+      msg = `[Meta ${err.code}${err.subcode ? `/${err.subcode}` : ""}] ${err.message}`;
+      console.error(
+        `[IG Scheduler] ❌ Đăng IG thất bại (${post.id}): ${msg}`,
+        err.raw ? JSON.stringify(err.raw) : "",
+      );
+    } else {
+      msg = err instanceof Error ? err.message : String(err);
+      console.error(`[IG Scheduler] ❌ Đăng IG thất bại (${post.id}): ${msg}`);
+    }
     upsertIGPost({ ...post, status: "failed", errorMessage: msg });
-    console.error(`[IG Scheduler] ❌ Đăng IG thất bại (${post.id}): ${msg}`);
   }
 }
 

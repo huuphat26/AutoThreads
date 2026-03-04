@@ -296,14 +296,16 @@ class ThreadsService {
    * Bước 1: Tạo TEXT media container
    * Trả về container ID để dùng ở bước 3
    */
-  async createTextContainer(text: string): Promise<string> {
+  async createTextContainer(text: string, topicTag?: string): Promise<string> {
     try {
+      const params: Record<string, string> = {
+        media_type: "TEXT",
+        text,
+        access_token: this.token,
+      };
+      if (topicTag) params.topic_tag = topicTag;
       const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
-        params: {
-          media_type: "TEXT",
-          text,
-          access_token: this.token,
-        },
+        params,
       });
       return res.data.id;
     } catch (err) {
@@ -329,6 +331,7 @@ class ThreadsService {
         access_token: this.token,
       };
       if (params.text) queryParams.text = params.text;
+      if (params.topicTag) queryParams.topic_tag = params.topicTag;
 
       const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
         params: queryParams,
@@ -356,6 +359,7 @@ class ThreadsService {
         access_token: this.token,
       };
       if (params.text) queryParams.text = params.text;
+      if (params.topicTag) queryParams.topic_tag = params.topicTag;
 
       const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
         params: queryParams,
@@ -453,7 +457,10 @@ class ThreadsService {
    * @param text - Nội dung đầy đủ (tối đa 500 ký tự)
    * @returns ThreadsPublishFlow với postId và thông tin quota
    */
-  async publishTextPost(text: string): Promise<ThreadsPublishFlow> {
+  async publishTextPost(
+    text: string,
+    topicTag?: string,
+  ): Promise<ThreadsPublishFlow> {
     // [0] Kiểm tra quota trước để tránh lãng phí container
     const limit = await this.getPublishingLimit();
     const remaining = limit.config.quota_total - limit.quota_usage;
@@ -467,7 +474,7 @@ class ThreadsService {
     }
 
     // [1] Tạo container
-    const containerId = await this.createTextContainer(text);
+    const containerId = await this.createTextContainer(text, topicTag);
     console.log(`[ThreadsService] Container tạo: ${containerId}`);
 
     // [2] Đợi container FINISHED
@@ -503,6 +510,7 @@ class ThreadsService {
   async publishImagePost(
     imageUrl: string,
     text?: string,
+    topicTag?: string,
   ): Promise<ThreadsPublishFlow> {
     // [0] Kiểm tra quota
     const limit = await this.getPublishingLimit();
@@ -517,7 +525,11 @@ class ThreadsService {
     }
 
     // [1] Tạo image container
-    const containerId = await this.createImageContainer({ imageUrl, text });
+    const containerId = await this.createImageContainer({
+      imageUrl,
+      text,
+      topicTag,
+    });
     console.log(`[ThreadsService] Image container tạo: ${containerId}`);
 
     // [2] Đợi container FINISHED (image có thể mất lâu hơn text)
@@ -552,6 +564,7 @@ class ThreadsService {
   async publishVideoPost(
     videoUrl: string,
     text?: string,
+    topicTag?: string,
   ): Promise<ThreadsPublishFlow> {
     const limit = await this.getPublishingLimit();
     const remaining = limit.config.quota_total - limit.quota_usage;
@@ -564,7 +577,11 @@ class ThreadsService {
       );
     }
 
-    const containerId = await this.createVideoContainer({ videoUrl, text });
+    const containerId = await this.createVideoContainer({
+      videoUrl,
+      text,
+      topicTag,
+    });
     console.log(`[ThreadsService] Video container tạo: ${containerId}`);
 
     await this.waitForContainerReady(containerId);

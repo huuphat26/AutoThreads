@@ -19,12 +19,14 @@ type Props = {
   success: string;
   mediaType?: ThreadsManualMediaType;
   imageUrl?: string;
+  topicTag?: string;
   isScheduled?: boolean;
   scheduledTime?: string;
   onContentChange: (v: string) => void;
   onKeywordsChange: (v: string) => void;
   onMediaTypeChange?: (v: ThreadsManualMediaType) => void;
   onImageUrlChange?: (v: string) => void;
+  onTopicTagChange?: (v: string) => void;
   onIsScheduledChange?: (v: boolean) => void;
   onScheduledTimeChange?: (v: string) => void;
   onGenerate: () => void;
@@ -42,9 +44,11 @@ export function ComposeForm({
   success,
   mediaType = "TEXT",
   imageUrl = "",
+  topicTag = "",
   isScheduled = false,
   scheduledTime = "",
   onContentChange,
+  onTopicTagChange,
   onIsScheduledChange,
   onScheduledTimeChange,
   onGenerate,
@@ -93,6 +97,42 @@ export function ComposeForm({
             className={`${inputClass} resize-none leading-relaxed`}
           />
         </div>
+
+        {/* Topic Tag */}
+        {onTopicTagChange && (
+          <div>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+              Topic
+              <span className="text-slate-300 font-normal ml-1">(tùy chọn)</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium select-none">
+                #
+              </span>
+              <input
+                type="text"
+                value={topicTag.replace(/^#/, "")}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/^#/, "").slice(0, 50);
+                  onTopicTagChange(v);
+                }}
+                placeholder="NuocEpDetox"
+                maxLength={50}
+                className={`${inputClass} pl-6`}
+              />
+            </div>
+            {topicTag && /[.&]/.test(topicTag) && (
+              <p className="text-[11px] text-amber-500 mt-1">
+                ⚠️ Topic không được chứa dấu chấm (.) hoặc &amp;
+              </p>
+            )}
+            {topicTag && !(/[.&]/.test(topicTag)) && (
+              <p className="text-[11px] text-slate-300 mt-1">
+                {topicTag.length}/50
+              </p>
+            )}
+          </div>
+        )}
 
         {onIsScheduledChange && (
           <div className="bg-slate-50 rounded-xl p-3 space-y-3">

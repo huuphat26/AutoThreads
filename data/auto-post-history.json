@@ -1,6 +1,32 @@
 {
   "records": [
     {
+      "id": "auto-1772621880050-dw9ac",
+      "slot": "evening",
+      "triggeredAt": "2026-03-04T10:58:00.050Z",
+      "topic": "",
+      "content": "Hôm nay thử ngay một ly nước ép thanh mát với bưởi và dưa hấu nhé!\n\nVị ngọt thanh, chua nhẹ vừa đủ, cực kỳ dễ uống. \n\nNguyên liệu cần có:\n- 1 trái bưởi\n- 1 miếng dưa hấu\n- Một ít lá bạc hà (tùy thích)\n\nChỉ cần cắt bưởi lấy múi, dưa hấu cắt miếng nhỏ rồi cho vào máy ép chậm hoặc máy xay sinh tố. Nếu dùng máy xay, nhớ thêm chút nước cho dễ xay hơn. \n\nĐổ ra ly, có thể thêm một chút lá bạc hà để trang trí và thêm hương vị tươi mới. Chỉnh độ ngọt bằng cách cho thêm ít mật ong nếu thích nhé. \n\nUống ngay sau khi làm để giữ được vị ngon nhất. Nhanh nhanh ra bếp thử nào!",
+      "igCaption": "Ly nước ép bưởi dưa hấu mát lạnh đang chờ bạn thử ngay! 🍹 Vị ngọt thanh, chua nhẹ cực đã! Nhanh lên bếp làm thôi nào! \n\n#nuocep #buoih #duahau #hashtag #thanhmat #nguyenlieu",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122098740993240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122098740993240014",
+        "postedAt": "2026-03-04T10:58:52.611Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "17999536580730703",
+        "postedAt": "2026-03-04T11:01:03.135Z"
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "[Meta 2] An unexpected error has occurred. Please retry your request later."
+      },
+      "overallStatus": "partial",
+      "topicLabel": "Sai lầm phổ biến",
+      "igImageUrl": "https://i.pinimg.com/1200x/dc/d8/b5/dcd8b5f7d9acc9621e3f89c4630b09be.jpg"
+    },
+    {
       "id": "auto-1772600280072-u1zmq",
       "slot": "noon",
       "triggeredAt": "2026-03-04T04:58:00.072Z",
@@ -145,5 +171,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-04T05:03:19.919Z"
+  "lastUpdated": "2026-03-04T11:03:09.032Z"
 }

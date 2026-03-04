@@ -56,13 +56,35 @@ export async function POST(req: NextRequest) {
       content, // Nội dung / caption bài đăng
       mediaType = "TEXT" as ThreadsManualMediaType,
       imageUrl,
+      topicTag, // topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &)
       scheduledAt, // ISO string — nếu truyền → hẹn giờ; không truyền → đăng ngay
     } = body as {
       content?: string;
       mediaType?: ThreadsManualMediaType;
       imageUrl?: string;
+      topicTag?: string;
       scheduledAt?: string;
     };
+
+    // Validate topicTag
+    const cleanTopicTag = topicTag?.trim().replace(/^#/, "") || undefined;
+    if (cleanTopicTag) {
+      if (cleanTopicTag.length > 50) {
+        return NextResponse.json(
+          { success: false, error: "Topic tag không được dài quá 50 ký tự" },
+          { status: 400 },
+        );
+      }
+      if (/[.&]/.test(cleanTopicTag)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Topic tag không được chứa dấu chấm (.) hoặc dấu & ",
+          },
+          { status: 400 },
+        );
+      }
+    }
 
     const finalContent = content?.trim() ?? "";
 
@@ -94,6 +116,7 @@ export async function POST(req: NextRequest) {
         content: finalContent,
         mediaType,
         imageUrl: imageUrl?.trim(),
+        topicTag: cleanTopicTag,
         scheduledAt,
       });
       return NextResponse.json({ success: true, data: post });
@@ -103,6 +126,7 @@ export async function POST(req: NextRequest) {
         content: finalContent,
         mediaType,
         imageUrl: imageUrl?.trim(),
+        topicTag: cleanTopicTag,
       });
       return NextResponse.json({
         success: post.status === "posted",
