@@ -21,6 +21,19 @@ export async function GET(req: NextRequest) {
 
   if (view === "history") {
     const records = getAllAutoRecords();
+    const todayOnly = searchParams.get("today") === "true";
+    if (todayOnly) {
+      const todayKey = new Date().toLocaleDateString("sv", {
+        timeZone: process.env.TIMEZONE || "Asia/Ho_Chi_Minh",
+      });
+      const todayRecords = records.filter(
+        (r) =>
+          new Date(r.triggeredAt).toLocaleDateString("sv", {
+            timeZone: process.env.TIMEZONE || "Asia/Ho_Chi_Minh",
+          }) === todayKey,
+      );
+      return NextResponse.json({ success: true, data: todayRecords });
+    }
     return NextResponse.json({ success: true, data: records });
   }
 

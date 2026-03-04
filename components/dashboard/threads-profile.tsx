@@ -62,7 +62,6 @@ export function ThreadsProfileCard() {
       </div>
 
       <div className="px-4 py-2">
-        {/* Token hết hạn */}
         {data?.tokenExpired && (
           <div className="text-xs bg-rose-50 border border-rose-100 rounded-xl px-3 py-2 space-y-1">
             <p className="font-semibold text-rose-600">⚠️ Token đã hết hạn</p>
@@ -72,7 +71,6 @@ export function ThreadsProfileCard() {
             </code>
           </div>
         )}
-        {/* Lỗi khác */}
         {error && !data?.tokenExpired && (
           <div className="text-xs text-rose-500 bg-rose-50 border border-rose-100 rounded-xl px-3 py-1">
             ⚠ {error}
@@ -88,15 +86,15 @@ export function ThreadsProfileCard() {
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-base font-bold select-none">
-                {(data.profile.username ?? "?")[0].toUpperCase()}
+                {/* {(data.profile.username ?? "?")[0].toUpperCase()} */}
               </div>
             )}
             <div className="min-w-0">
               <div className="font-semibold text-md text-slate-800 truncate">
-                {data.profile.name || data.profile.username}
+                {/* {data.profile.name || data.profile.username} */}
               </div>
               <div className="text-md text-slate-400 truncate">
-                @{data.profile.username}
+                {/* @{data.profile.username} */}
               </div>
             </div>
           </div>
@@ -108,12 +106,6 @@ export function ThreadsProfileCard() {
               <div className="h-2.5 bg-slate-100 rounded w-20" />
             </div>
           </div>
-        )}
-        {/* Bio */}
-        {data?.profile?.threads_biography && (
-          <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 pl-0.5">
-            {data.profile.threads_biography}
-          </p>
         )}
       </div>
     </section>

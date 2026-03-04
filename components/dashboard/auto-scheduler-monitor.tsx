@@ -30,8 +30,6 @@ type SchedulerStatus = {
   };
 };
 
-// ─── Constants ───────────────────────────────────────────────
-
 const SLOT_HOURS: Record<string, { h: number; m: number }> = {
   noon: { h: 12, m: 0 },
   evening: { h: 18, m: 0 },
@@ -42,19 +40,6 @@ const PLATFORMS = [
   { key: "threads", label: "Threads", delayMin: DELAY_MINUTES },
   { key: "instagram", label: "Instagram", delayMin: DELAY_MINUTES * 2 },
 ] as const;
-
-// ─── Helpers ─────────────────────────────────────────────────
-
-function fmtDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleString("vi-VN", {
@@ -193,8 +178,6 @@ function Pill({ status }: { status: string }) {
   );
 }
 
-// ─── Today slot card ──────────────────────────────────────────
-
 type PlatformResult = AutoPostRecord["facebook"];
 
 function PlatformScheduleRow({
@@ -307,102 +290,6 @@ function TodaySlotCard({
   );
 }
 
-// ─── History row ──────────────────────────────────────────────
-
-function HistoryPlatformRow({
-  label,
-  result,
-}: {
-  label: string;
-  result: PlatformResult;
-}) {
-  const [showErr, setShowErr] = useState(false);
-  return (
-    <div className="px-3 py-1.5">
-      <div className="flex items-center gap-2">
-        <span className="text-[11px] text-slate-500 w-20 shrink-0">
-          {label}
-        </span>
-        {result.postedAt && (
-          <span className="text-[10px] text-slate-400">
-            {fmtDateTime(result.postedAt)}
-          </span>
-        )}
-        <span className="flex-1" />
-        <Pill status={result.status} />
-        {result.status === "failed" && result.errorMessage && (
-          <button
-            onClick={() => setShowErr((v) => !v)}
-            className="text-[10px] text-rose-400 hover:text-rose-600 underline underline-offset-2"
-          >
-            {showErr ? "ẩn" : "lỗi"}
-          </button>
-        )}
-      </div>
-      {showErr && result.errorMessage && (
-        <p className="mt-1 text-[10px] text-rose-500 bg-rose-50 rounded px-2 py-1 leading-relaxed">
-          {result.errorMessage}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function HistoryRow({ record }: { record: AutoPostRecord }) {
-  const [open, setOpen] = useState(false);
-  const slotTime = record.slot === "noon" ? "13:55" : "18:00";
-
-  return (
-    <div className="border border-slate-100 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50 transition-colors text-left"
-      >
-        <Dot status={record.overallStatus} />
-        <span className="text-[10px] font-mono text-slate-500 shrink-0 w-9">
-          {slotTime}
-        </span>
-        <span className="text-[10px] text-slate-400 shrink-0">
-          {fmtDateTime(record.triggeredAt)}
-        </span>
-        <span className="text-xs text-slate-600 flex-1 truncate">
-          {record.topicLabel ?? "—"}
-        </span>
-        <span
-          className="flex items-center gap-1 shrink-0"
-          title="Facebook · Threads · Instagram"
-        >
-          <Dot status={record.facebook.status} />
-          <Dot status={record.threads.status} />
-          <Dot status={record.instagram.status} />
-        </span>
-        <span className="text-slate-300 text-[10px] shrink-0">
-          {open ? "▲" : "▼"}
-        </span>
-      </button>
-
-      {open && (
-        <div className="border-t border-slate-100 bg-slate-50/40">
-          {record.content && (
-            <p className="px-3 pt-2 pb-1 text-[11px] text-slate-500 italic leading-relaxed line-clamp-2">
-              {record.content.slice(0, 180)}
-              {record.content.length > 180 ? "…" : ""}
-            </p>
-          )}
-          <div className="divide-y divide-slate-50">
-            {PLATFORMS.map((p) => {
-              const r = record[p.key as "facebook" | "threads" | "instagram"];
-              return (
-                <HistoryPlatformRow key={p.key} label={p.label} result={r} />
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── Main component ───────────────────────────────────────────
 
 export function AutoSchedulerMonitor() {
@@ -410,9 +297,7 @@ export function AutoSchedulerMonitor() {
   const [records, setRecords] = useState<AutoPostRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showHistory, setShowHistory] = useState(false);
   const [aiGeneratingId, setAiGeneratingId] = useState<string | null>(null);
-  // Track records already being processed to avoid double-trigger
   const processingRef = useRef<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
@@ -421,7 +306,9 @@ export function AutoSchedulerMonitor() {
     try {
       const [s, h] = await Promise.all([
         fetch("/api/auto-scheduler").then((r) => r.json()),
-        fetch("/api/auto-scheduler?view=history").then((r) => r.json()),
+        fetch("/api/auto-scheduler?view=history&today=true").then((r) =>
+          r.json(),
+        ),
       ]);
       if (s.success) setStatus(s.data);
       if (h.success) setRecords(h.data as AutoPostRecord[]);
@@ -551,7 +438,6 @@ export function AutoSchedulerMonitor() {
         let igCaption = await generateContent(igSys, igUser);
         if (!igCaption) igCaption = fbContent.slice(0, 250); // fallback
 
-        // ── Submit 3 nội dung lên server ──────────────────────────
         const submitRes = await fetch("/api/auto-scheduler", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -567,11 +453,9 @@ export function AutoSchedulerMonitor() {
         if (!submitJson.success)
           throw new Error(submitJson.error ?? "Submit thất bại");
 
-        // Refresh để cập nhật trạng thái
         await fetchData();
       } catch (err) {
         console.error("[AutoSchedulerMonitor] AI generate lỗi:", err);
-        // Thử lại lần sau — xóa khỏi processing set
         processingRef.current.delete(record.id);
       } finally {
         setAiGeneratingId(null);
@@ -580,14 +464,12 @@ export function AutoSchedulerMonitor() {
     [fetchData],
   );
 
-  // Polling cố định 30s — KHÔNG đưa records vào deps (gây infinite loop)
   useEffect(() => {
     fetchData();
     const timer = setInterval(fetchData, 30_000);
     return () => clearInterval(timer);
   }, [fetchData]);
 
-  // Auto-trigger AI generation khi phát hiện waiting_for_ai
   useEffect(() => {
     const waiting = records.find(
       (r) =>
@@ -606,15 +488,12 @@ export function AutoSchedulerMonitor() {
     );
   }
 
-  const historyRecords = records.filter((r) => !isTodayVN(r.triggeredAt));
   const schedulerActive = status?.enabled && status?.running;
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header */}
       <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Status indicator */}
           <span
             className={`w-2 h-2 rounded-full shrink-0 ${
               schedulerActive ? "bg-emerald-400 animate-pulse" : "bg-slate-300"
@@ -625,21 +504,6 @@ export function AutoSchedulerMonitor() {
               <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                 Đăng tự động 3 nền tảng
               </h2>
-              <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
-                  schedulerActive
-                    ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                    : status?.enabled
-                      ? "bg-slate-50 text-slate-500 border-slate-200"
-                      : "bg-rose-50 text-rose-500 border-rose-200"
-                }`}
-              >
-                {schedulerActive
-                  ? "Đang hoạt động"
-                  : status?.enabled
-                    ? "Đã bật"
-                    : "Tắt"}
-              </span>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">
               {[
@@ -687,7 +551,6 @@ export function AutoSchedulerMonitor() {
       <div className="px-5 py-4 space-y-4">
         {error && <p className="text-xs text-rose-500">{error}</p>}
 
-        {/* Lịch hôm nay */}
         <div className="space-y-2">
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
             Lịch hôm nay — {todayLabel()}
@@ -712,27 +575,6 @@ export function AutoSchedulerMonitor() {
           )}
         </div>
 
-        {/* Lịch sử */}
-        {historyRecords.length > 0 && (
-          <div className="space-y-2">
-            <button
-              onClick={() => setShowHistory((v) => !v)}
-              className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-600 transition-colors"
-            >
-              <span>Lịch sử ({historyRecords.length})</span>
-              <span className="text-slate-300">{showHistory ? "▲" : "▼"}</span>
-            </button>
-            {showHistory && (
-              <div className="space-y-1.5">
-                {historyRecords.slice(0, 20).map((r) => (
-                  <HistoryRow key={r.id} record={r} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Chú thích */}
         <div className="flex items-center gap-3 pt-1 border-t border-slate-50 text-[9px] text-slate-300">
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />

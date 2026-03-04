@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -8,7 +7,6 @@ import {
   ChevronDownIcon,
 } from "@/components/ui/icons";
 import { ComposeForm } from "@/components/dashboard/compose-form";
-import { ThreadsPostsList } from "@/components/dashboard/threads-posts-list";
 import { useDashboard } from "@/hooks/use-dashboard";
 import type { ThreadsUser } from "@/types";
 
@@ -97,11 +95,6 @@ export function ThreadsMonitorBlock() {
     handleGenerate,
     handlePost,
     ensureManualFetched,
-    threadsPosts,
-    threadsTotal,
-    threadsLoading,
-    threadsError,
-    fetchThreadsPosts,
   } = useDashboard();
 
   useEffect(() => {
@@ -202,6 +195,7 @@ export function ThreadsMonitorBlock() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 {profile.threads_profile_picture_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={profile.threads_profile_picture_url}
                     alt={profile.username}
@@ -224,20 +218,20 @@ export function ThreadsMonitorBlock() {
                       {profile.threads_biography}
                     </p>
                   )}
+                  <a
+                    href="https://www.threads.com/@traidepthichdetox"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-blue-500 hover:text-blue-600 underline"
+                  >
+                    https://www.threads.com/@traidepthichdetox
+                  </a>
                 </div>
               </div>
             </div>
           )}
         </div>
       </section>
-
-      {/* <ThreadsPostsList
-        posts={threadsPosts}
-        total={threadsTotal}
-        loading={threadsLoading}
-        error={threadsError}
-        onFetch={fetchThreadsPosts}
-      /> */}
 
       <div>
         <button

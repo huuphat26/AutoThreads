@@ -56,7 +56,7 @@ export function ThreadsMonitorBlock({
 }: Props) {
   return (
     <div className="space-y-8">
-      <ThreadsProfileCard />
+      {/* <ThreadsProfileCard /> */}
 
       <section className="space-y-3">
         <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
