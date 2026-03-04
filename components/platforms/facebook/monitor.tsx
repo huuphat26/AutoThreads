@@ -197,12 +197,14 @@ export function FacebookMonitorBlock({
                   <p className="text-[11px] text-slate-400">ID: {page.id}</p>
                   {page.link && (
                     <a
-                      href={page.link}
+                      href={
+                        "https://www.facebook.com/people/Trai-%C4%91%E1%BA%B9p-detox/61587200434618/"
+                      }
                       target="_blank"
                       rel="noreferrer"
                       className="text-[11px] text-blue-500 hover:underline truncate block"
                     >
-                      {page.link}
+                      https://www.facebook.com/people/Trai-%C4%91%E1%BA%B9p-detox/61587200434618/
                     </a>
                   )}
                 </div>
