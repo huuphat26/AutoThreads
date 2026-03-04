@@ -1,7 +1,7 @@
 // ============================================================
 // AUTO THREADS — Multi-Platform Auto Scheduler
-// Chạy lúc 13:00 và 18:00 mỗi ngày (Asia/Ho_Chi_Minh).
-// Flow: AI soạn nội dung → FB → (2 phút) → Threads → (2 phút) → IG
+// Lịch cố định: 11:58 & 17:58 chuẩn bị AI → 12:00 & 18:00 bắt đầu đăng
+// Flow: FB → (2 phút) → Threads → (2 phút) → IG
 // Tách biệt hoàn toàn với Threads scheduler (lib/scheduler.ts)
 // và các FB/IG scheduler hẹn giờ thủ công.
 // ============================================================
@@ -16,6 +16,8 @@ import {
   getAutoRecord,
   getAllAutoRecords,
 } from "@/lib/auto-post-store";
+import { upsertFBPost } from "@/lib/services/fb-store";
+import { upsertIGPost } from "@/lib/services/ig-store";
 import type { AutoPostRecord, AutoPostSlot } from "@/types";
 
 // ─── Constants ────────────────────────────────────────────────
@@ -26,13 +28,15 @@ const PLATFORM_DELAY_MS = 2 * 60 * 1000; // 2 phút
 const SLOTS = [
   {
     id: "noon" as AutoPostSlot,
-    label: "Buổi trưa (14:15)",
-    cron: "15 14 * * *",
+    label: "Buổi trưa (12:00)",
+    /** 11:58 → chuẩn bị AI content, đăng bắt đầu lúc 12:00 */
+    cron: "58 11 * * *",
   },
   {
     id: "evening" as AutoPostSlot,
     label: "Buổi tối (18:00)",
-    cron: "0 18 * * *",
+    /** 17:58 → chuẩn bị AI content, đăng bắt đầu lúc 18:00 */
+    cron: "58 17 * * *",
   },
 ];
 
@@ -117,13 +121,28 @@ export async function executePlatformPosts(
     const fbPermalink =
       fbResult.kind !== "video" ? (fbResult.permalink ?? undefined) : undefined;
 
+    const fbPostedAt = new Date().toISOString();
     record.facebook = {
       status: "posted",
       postId: fbPostId,
       permalinkUrl: fbPermalink ?? undefined,
-      postedAt: new Date().toISOString(),
+      postedAt: fbPostedAt,
     };
     upsertAutoRecord(record);
+    // Mirror to fb-store so it shows up in the FB posts list
+    upsertFBPost({
+      id: `auto_fb_${record.id}`,
+      message: fbContent,
+      mediaType: "TEXT",
+      scheduledAt: record.triggeredAt,
+      postedAt: fbPostedAt,
+      fbPostId: fbPostId ?? undefined,
+      fbPermalinkUrl: fbPermalink ?? undefined,
+      status: "posted",
+      topic: record.topic || undefined,
+      topicLabel: record.topicLabel || undefined,
+      source: "auto",
+    });
     console.log(`[AutoScheduler] ✅ Facebook OK — Post ID: ${fbPostId}`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -187,13 +206,30 @@ export async function executePlatformPosts(
         imageUrl: igImage.url,
       });
 
+      const igPostedAt = new Date().toISOString();
       record.instagram = {
         status: "posted",
         postId: igResult.mediaId,
         permalinkUrl: igResult.permalink ?? undefined,
-        postedAt: new Date().toISOString(),
+        postedAt: igPostedAt,
       };
       upsertAutoRecord(record);
+      // Mirror to ig-store so it shows up in the IG posts list
+      upsertIGPost({
+        id: `auto_ig_${record.id}`,
+        caption: igCaption,
+        mediaType: "IMAGE",
+        imageUrl: igImage.url,
+        scheduledAt: record.triggeredAt,
+        postedAt: igPostedAt,
+        igContainerId: undefined,
+        igMediaId: igResult.mediaId,
+        igPermalinkUrl: igResult.permalink ?? undefined,
+        status: "posted",
+        topic: record.topic || undefined,
+        topicLabel: record.topicLabel || undefined,
+        source: "auto",
+      });
       console.log(
         `[AutoScheduler] ✅ Instagram OK — Media ID: ${igResult.mediaId}`,
       );

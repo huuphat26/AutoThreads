@@ -24,12 +24,7 @@ export const PUTER_CDN_URL = "https://js.puter.com/v2/";
 // Puter proxy toàn bộ OpenAI Chat Completions API — model nào OpenAI có,
 // Puter đều hỗ trợ. Chỉ liệt kê những model phổ biến + miễn phí nhất.
 
-export const PUTER_MODELS: string[] = [
-  "gpt-4o-mini", // Mặc định — nhanh, miễn phí rộng rãi
-  "gpt-4o", // Mạnh hơn, đủ free tier
-  "gpt-5-nano",
-  "gpt-5.2",
-];
+export const PUTER_MODELS: string[] = ["gpt-4o-mini", "gpt-5.2"];
 
 export const PUTER_DEFAULT_MODEL = "gpt-5.2";
 

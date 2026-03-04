@@ -204,6 +204,31 @@ class ThreadsService {
         username: "",
       };
     } catch {
+      // debug_token thất bại (thường do Threads Long-Lived Token không
+      // tương thích với endpoint này). Fallback: verify qua /me.
+      try {
+        const me = await this.http.get<{ id: string; username?: string }>(
+          "/me",
+          {
+            params: {
+              fields: "id,username",
+              access_token: this.token,
+            },
+          },
+        );
+        // /me thành công → token hợp lệ, chỉ không đọc được expiry
+        if (me.data?.id) {
+          return {
+            isValid: true,
+            expiresAt: null,
+            daysLeft: -1,
+            scopes: [],
+            username: me.data.username ?? "",
+          };
+        }
+      } catch {
+        // /me cũng thất bại → token thực sự hết hạn
+      }
       return {
         isValid: false,
         expiresAt: null,

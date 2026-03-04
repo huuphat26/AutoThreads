@@ -187,6 +187,32 @@ class FacebookService {
         ? Math.ceil((expiresAt.getTime() - Date.now()) / 86_400_000)
         : null;
 
+      // debug_token trả về is_valid=false với error 190 khi token là User Token
+      // (không có page permissions). Verify thực tế bằng cách gọi /me.
+      const debugError = d.error as { code?: number } | undefined;
+      const isPagePermError = !d.is_valid && debugError?.code === 190;
+
+      if (isPagePermError) {
+        try {
+          const meRes = await this.http.get("/me", {
+            params: { fields: "id,name", access_token: this.pageToken },
+          });
+          // Token hoạt động được với /me → token hợp lệ, chỉ thiếu page perms
+          const isActuallyValid = !!meRes.data?.id;
+          return {
+            isValid: isActuallyValid,
+            expiresAt: expiresAt?.toISOString() ?? null,
+            daysLeft,
+            scopes: d.scopes ?? [],
+            appId: d.app_id ?? appId,
+            type: d.type ?? "USER",
+            // Truyền thêm cảnh báo để UI hiển thị
+          };
+        } catch {
+          // /me cũng thất bại → token thực sự hết hạn
+        }
+      }
+
       return {
         isValid: d.is_valid ?? false,
         expiresAt: expiresAt?.toISOString() ?? null,
@@ -223,7 +249,34 @@ class FacebookService {
         website: null,
       };
     } catch (err) {
-      throw parseMetaError(err);
+      const parsed = parseMetaError(err);
+      // Error 190: token thiếu page permissions nhưng vẫn là User Token hợp lệ.
+      // Fallback: lấy profile cá nhân qua /me để dashboard vẫn hiển thị được.
+      if (parsed.code === 190) {
+        try {
+          const meRes = await this.http.get("/me", {
+            params: {
+              fields: "id,name,link,picture",
+              access_token: this.pageToken,
+            },
+          });
+          const d = meRes.data;
+          return {
+            id: d.id,
+            name: d.name ?? "Facebook Profile",
+            fanCount: 0,
+            followersCount: 0,
+            link: d.link ?? `https://facebook.com/${d.id}`,
+            pictureUrl: d.picture?.data?.url ?? null,
+            category: "Personal Profile",
+            about: null,
+            website: null,
+          };
+        } catch {
+          // /me cũng thất bại → throw lỗi gốc
+        }
+      }
+      throw parsed;
     }
   }
 

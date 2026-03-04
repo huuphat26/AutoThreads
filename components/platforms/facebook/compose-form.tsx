@@ -1,9 +1,3 @@
-// ============================================================
-// FacebookComposeForm — Compose form tạo & đăng/hẹn lịch bài trên Facebook
-// Tương tự ComposeForm của Threads nhưng có thêm:
-//  - Tùy chọn đăng ngay vs hẹn giờ cụ thể
-//  - Hỗ trợ ảnh (IMAGE) qua URL công khai
-// ============================================================
 "use client";
 
 import {
@@ -42,7 +36,6 @@ const inputClass =
   "w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-slate-50 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent";
 
 export function FacebookComposeForm({
-  keywords,
   content,
   mediaType,
   imageUrl,
@@ -52,10 +45,7 @@ export function FacebookComposeForm({
   loading,
   error,
   success,
-  onKeywordsChange,
   onContentChange,
-  onMediaTypeChange,
-  onImageUrlChange,
   onIsScheduledChange,
   onScheduledTimeChange,
   onGenerate,
@@ -66,8 +56,7 @@ export function FacebookComposeForm({
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="px-6 pt-5 pb-4 border-b border-slate-50 flex items-start justify-between gap-4">
+      <div className="px-6 pt-5 pb-4 border-b border-slate-50 flex items-start justify-between gap-2">
         <div>
           <h2 className="text-base font-semibold text-slate-800">
             Tạo & Đăng bài Facebook
@@ -86,79 +75,9 @@ export function FacebookComposeForm({
         </button>
       </div>
 
-      <div className="px-6 py-5 space-y-4">
-        {/* Keywords */}
+      <div className="px-6 py-2 space-y-2">
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Từ khóa (cách nhau bằng dấu phẩy)
-          </label>
-          <input
-            type="text"
-            value={keywords}
-            onChange={(e) => onKeywordsChange(e.target.value)}
-            placeholder="vd: Facebook Marketing, quảng cáo, thương hiệu"
-            className={inputClass}
-          />
-        </div>
-
-        {/* Media Type */}
-        <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Loại bài đăng
-          </label>
-          <div className="flex gap-2">
-            {(["TEXT", "IMAGE"] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => onMediaTypeChange(type)}
-                className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
-                  mediaType === type
-                    ? "bg-[#1877F2] text-white border-[#1877F2]"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                {type === "TEXT" ? "📝 Chỉ văn bản" : "🖼️ Có hình ảnh"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Image URL — chỉ hiện khi IMAGE */}
-        {mediaType === "IMAGE" && (
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              URL hình ảnh (công khai, HTTPS)
-            </label>
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => onImageUrlChange(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className={inputClass}
-            />
-            <p className="text-[10px] text-slate-400 mt-1">
-              Hỗ trợ JPEG, PNG. URL phải truy cập được công khai.
-            </p>
-            {imageUrl && (
-              <div className="mt-2 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full max-h-48 object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Content / Caption */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between py-2">
             <label className="text-xs font-medium text-slate-500">
               {mediaType === "IMAGE" ? "Caption" : "Nội dung bài đăng"}
             </label>
@@ -179,7 +98,6 @@ export function FacebookComposeForm({
           />
         </div>
 
-        {/* Schedule toggle */}
         <div className="bg-slate-50 rounded-xl p-3 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -188,7 +106,6 @@ export function FacebookComposeForm({
                 Hẹn giờ đăng
               </span>
             </div>
-            {/* Toggle switch */}
             <button
               type="button"
               onClick={() => onIsScheduledChange(!isScheduled)}
@@ -213,7 +130,6 @@ export function FacebookComposeForm({
                 type="datetime-local"
                 value={scheduledTime}
                 onChange={(e) => onScheduledTimeChange(e.target.value)}
-                // min is not set to avoid impure render — validation handled in hook
                 className={inputClass}
               />
               <p className="text-[10px] text-slate-400 mt-1">
@@ -224,7 +140,6 @@ export function FacebookComposeForm({
           )}
         </div>
 
-        {/* Error / Success */}
         {error && (
           <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2.5 rounded-xl">
             <XCircleIcon />

@@ -100,22 +100,7 @@ export function InstagramComposeForm({
         </button>
       </div>
 
-      <div className="px-6 py-5 space-y-4">
-        {/* Keywords */}
-        <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Từ khóa (cách nhau bằng dấu phẩy)
-          </label>
-          <input
-            type="text"
-            value={keywords}
-            onChange={(e) => onKeywordsChange(e.target.value)}
-            placeholder="vd: lifestyle, skincare, beauty tips"
-            className={inputClass}
-          />
-        </div>
-
-        {/* Media Type */}
+      <div className="px-6 py-5 space-y-2">
         <div>
           <label className="text-xs font-medium text-slate-500 mb-1.5 block">
             Loại media

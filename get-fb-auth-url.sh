@@ -13,7 +13,9 @@ if [ -f "$ENV_FILE" ]; then set -a; source "$ENV_FILE"; set +a; fi
 
 CLIENT_ID="${FB_APP_ID:-}"
 REDIRECT_URI="${FB_REDIRECT_URI:-${NEXT_PUBLIC_APP_URL:-}}"
-SCOPES="pages_show_list,pages_read_engagement,pages_manage_posts,public_profile"
+# pages_show_list + pages_read_engagement + pages_manage_metadata đều bắt buộc
+# để có thể impersonate page (tránh lỗi Meta #190)
+SCOPES="pages_show_list,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_posts,public_profile"
 OPEN_BROWSER="false"
 
 if [ "${1:-}" = "--open" ]; then OPEN_BROWSER="true"; fi

@@ -83,7 +83,7 @@ export function useDashboard() {
     id: "puter",
     label: "Puter.js (Free OpenAI)",
     model: "gpt-5.2",
-    models: ["gpt-4o-mini", "gpt-5-nano", "gpt-5.2"],
+    models: ["gpt-4o-mini", "gpt-5.2"],
     available: true,
   });
   const [aiProviders, setAIProviders] = useState<ProviderInfo[]>([]);

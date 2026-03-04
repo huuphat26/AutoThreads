@@ -1,9 +1,7 @@
 {
   "provider": "puter",
   "models": {
-    "puter": "gpt-5.2",
-    "gemini": "gemini-3-flash-preview",
-    "openai": "gpt-4"
+    "puter": "gpt-5.2"
   },
   "updatedAt": "2026-03-01T00:00:00.000Z"
 }

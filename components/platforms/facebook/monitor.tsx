@@ -78,7 +78,7 @@ function TokenBadge({ token }: { token: TokenInfo }) {
 
 export function FacebookMonitorBlock({
   aiProviderId = "puter",
-  aiModel = "gpt-4o-mini",
+  aiModel = "gpt-5.2",
 }: {
   aiProviderId?: string;
   aiModel?: string;
@@ -260,60 +260,19 @@ export function FacebookMonitorBlock({
                   </div>
                 </div>
               )}
-
-              {/* Token detail */}
-              {token && (
-                <div className="bg-slate-50 rounded-xl px-3 py-2.5 space-y-1.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Token
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500">Loại</span>
-                    <span className="text-[11px] font-medium text-slate-700">
-                      {token.type ?? "—"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500">App ID</span>
-                    <span className="text-[11px] font-mono text-slate-600">
-                      {token.appId ?? "—"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500">Hết hạn</span>
-                    <span className="text-[11px] font-medium text-slate-700">
-                      {token.expiresAt
-                        ? new Date(token.expiresAt).toLocaleDateString("vi-VN")
-                        : "Không giới hạn"}
-                    </span>
-                  </div>
-
-                  {token.scopes.length > 0 && (
-                    <div className="pt-1">
-                      <p className="text-[10px] text-slate-400 mb-1">Quyền</p>
-                      <div className="flex flex-wrap gap-1">
-                        {token.scopes.map((s) => (
-                          <span
-                            key={s}
-                            className="text-[9px] bg-blue-50 text-blue-500 border border-blue-100 rounded px-1.5 py-0.5 font-mono"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
         </div>
       </section>
 
-      {/* ── Compose section (collapsible) ─────────────────────────────────── */}
+      <FacebookPostsList
+        posts={fb.fbPosts}
+        stats={fb.fbStats}
+        loading={fb.postsLoading}
+        error={fb.postsError}
+        onFetch={fb.fetchFBPosts}
+        onCancel={fb.handleCancelPost}
+      />
       <div>
         <button
           onClick={() => setComposeOpen((v) => !v)}
@@ -359,16 +318,6 @@ export function FacebookMonitorBlock({
           </div>
         )}
       </div>
-
-      {/* ── Posts list ─────────────────────────────────────────────────────── */}
-      <FacebookPostsList
-        posts={fb.fbPosts}
-        stats={fb.fbStats}
-        loading={fb.postsLoading}
-        error={fb.postsError}
-        onFetch={fb.fetchFBPosts}
-        onCancel={fb.handleCancelPost}
-      />
     </div>
   );
 }

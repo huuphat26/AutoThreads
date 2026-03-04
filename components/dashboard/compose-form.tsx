@@ -1,4 +1,3 @@
-// ComposeForm — khu vực tạo & đăng bài (hỗ trợ text + image)
 "use client";
 
 import {
@@ -37,7 +36,6 @@ const inputClass =
 
 export function ComposeForm({
   content,
-  keywords,
   generating,
   loading,
   error,
@@ -47,9 +45,6 @@ export function ComposeForm({
   isScheduled = false,
   scheduledTime = "",
   onContentChange,
-  onKeywordsChange,
-  onMediaTypeChange,
-  onImageUrlChange,
   onIsScheduledChange,
   onScheduledTimeChange,
   onGenerate,
@@ -57,7 +52,6 @@ export function ComposeForm({
 }: Props) {
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header card */}
       <div className="px-6 pt-5 pb-4 border-b border-slate-50 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-base font-semibold text-slate-800">
@@ -77,77 +71,7 @@ export function ComposeForm({
         </button>
       </div>
 
-      <div className="px-6 py-5 space-y-4">
-        {/* Keywords */}
-        <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Từ khóa (cách nhau bằng dấu phẩy)
-          </label>
-          <input
-            type="text"
-            value={keywords}
-            onChange={(e) => onKeywordsChange(e.target.value)}
-            placeholder="vd: nước ép detox, giảm cân, thanh lọc cơ thể"
-            className={inputClass}
-          />
-        </div>
-
-        {/* Media Type selector */}
-        <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Loại bài đăng
-          </label>
-          <div className="flex gap-2">
-            {(["TEXT", "IMAGE"] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => onMediaTypeChange?.(type)}
-                className={`px-4 py-2 text-sm font-medium rounded-xl border transition-colors ${
-                  mediaType === type
-                    ? "bg-slate-800 text-white border-slate-800"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                {type === "TEXT" ? "📝 Chỉ văn bản" : "🖼️ Có hình ảnh"}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Image URL input — chỉ hiện khi chọn IMAGE */}
-        {mediaType === "IMAGE" && (
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              URL hình ảnh (công khai, HTTPS)
-            </label>
-            <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => onImageUrlChange?.(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className={inputClass}
-            />
-            <p className="text-[10px] text-slate-400 mt-1">
-              Hỗ trợ JPEG, PNG, WebP. URL phải truy cập được công khai.
-            </p>
-            {imageUrl && (
-              <div className="mt-2 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full max-h-48 object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Content textarea */}
+      <div className="px-6 py-4 space-y-4">
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-medium text-slate-500">
@@ -170,7 +94,6 @@ export function ComposeForm({
           />
         </div>
 
-        {/* Schedule toggle */}
         {onIsScheduledChange && (
           <div className="bg-slate-50 rounded-xl p-3 space-y-3">
             <div className="flex items-center justify-between">
@@ -180,7 +103,6 @@ export function ComposeForm({
                   Hẹn giờ đăng
                 </span>
               </div>
-              {/* Toggle switch */}
               <button
                 type="button"
                 onClick={() => onIsScheduledChange?.(!isScheduled)}
@@ -216,7 +138,6 @@ export function ComposeForm({
           </div>
         )}
 
-        {/* Error / Success messages */}
         {error && (
           <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2.5 rounded-xl">
             <XCircleIcon />
@@ -230,7 +151,6 @@ export function ComposeForm({
           </div>
         )}
 
-        {/* Post button */}
         <button
           onClick={onPost}
           disabled={

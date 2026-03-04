@@ -9,14 +9,10 @@ import type {
 import { ThreadsProfileCard } from "./threads-profile";
 import { StatsSection } from "./stats-section";
 import { ManualPostSection } from "./manual-post-section";
-import { ThreadsPostsList } from "./threads-posts-list";
-import { ThreadsManualPostsList } from "@/components/platforms/threads/manual-posts-list";
 import type { ThreadsPost } from "@/types";
 
 type Props = {
-  // Stats
   stats: DashboardStats;
-  // Compose (manual post)
   content: string;
   keywords: string;
   generating: boolean;
@@ -35,19 +31,6 @@ type Props = {
   onScheduledTimeChange?: (v: string) => void;
   onGenerate: () => void;
   onPost: () => void;
-  // Manual scheduled posts list
-  manualPosts: ThreadsManualPost[];
-  manualPostsStats: ThreadsManualDashboardStats;
-  manualPostsLoading: boolean;
-  manualPostsError: string;
-  onFetchManualPosts: () => void;
-  onCancelManualPost: (id: string) => void;
-  // Threads posts list
-  threadsPosts: ThreadsPost[];
-  threadsTotal: number;
-  threadsLoading: boolean;
-  threadsError: string;
-  fetchThreadsPosts: () => void;
 };
 
 export function ThreadsMonitorBlock({
@@ -70,17 +53,6 @@ export function ThreadsMonitorBlock({
   onScheduledTimeChange,
   onGenerate,
   onPost,
-  manualPosts,
-  manualPostsStats,
-  manualPostsLoading,
-  manualPostsError,
-  onFetchManualPosts,
-  onCancelManualPost,
-  threadsPosts,
-  threadsTotal,
-  threadsLoading,
-  threadsError,
-  fetchThreadsPosts,
 }: Props) {
   return (
     <div className="space-y-8">
@@ -112,23 +84,6 @@ export function ThreadsMonitorBlock({
         onScheduledTimeChange={onScheduledTimeChange}
         onGenerate={onGenerate}
         onPost={onPost}
-      />
-
-      <ThreadsManualPostsList
-        posts={manualPosts}
-        stats={manualPostsStats}
-        loading={manualPostsLoading}
-        error={manualPostsError}
-        onFetch={onFetchManualPosts}
-        onCancel={onCancelManualPost}
-      />
-
-      <ThreadsPostsList
-        posts={threadsPosts}
-        total={threadsTotal}
-        loading={threadsLoading}
-        error={threadsError}
-        onFetch={fetchThreadsPosts}
       />
     </div>
   );

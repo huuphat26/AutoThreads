@@ -1,6 +1,33 @@
 {
   "records": [
     {
+      "id": "auto-1772535600038-3p1dt",
+      "slot": "evening",
+      "triggeredAt": "2026-03-03T11:00:00.038Z",
+      "topic": "",
+      "content": "Hôm nay mình có một ly nước ép đơn giản nhưng cực ngon đây. Vị ngọt mát, rất dễ uống luôn!\n\nLy nước ép này sẽ kết hợp giữa dưa hấu và chanh. Nguyên liệu cần có là 1/2 quả dưa hấu, 1 quả chanh và một chút muối.\n\nĐể làm thì chỉ cần cắt dưa hấu thành miếng nhỏ và cho vào máy ép hoặc xay nhuyễn. Sau khi có nước, bạn lọc qua rây để lấy phần nước trong. Tiếp theo, vắt chanh lấy nước cốt và cho vào. Cuối cùng, thêm một chút muối để tăng độ đậm đà.\n\nNếu bạn thích ngọt hơn, có thể thêm một chút đường hoặc siro agave nhé. Uống lạnh thì phê hơn nhiều, nên đừng quên cho đá vào ly.\n\nThử ngay đi, mình đảm bảo bạn sẽ thích mê cho mà xem!",
+      "igCaption": "Nước ép dưa hấu chanh mát lạnh vừa ngon lại dễ làm! 🍉🍋 Thử ngay công thức siêu đơn giản này nhé! Bạn có muốn thêm gì vào ly nước của mình không?\n\n#nuocep #duahau #chanh #thucuongtuoi #matlanh #nguyenlieudon gian",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122097868911240014",
+        "postedAt": "2026-03-03T12:13:34.682Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18096008035962902",
+        "postedAt": "2026-03-03T12:15:42.660Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18094987849820513",
+        "permalinkUrl": "https://www.instagram.com/p/DVbAfNPgVmQ/",
+        "postedAt": "2026-03-03T12:17:50.756Z"
+      },
+      "overallStatus": "completed",
+      "topicLabel": "Thói quen lành mạnh",
+      "igImageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&q=85&fit=crop"
+    },
+    {
       "id": "auto-1772522100037-1tpzd",
       "slot": "noon",
       "triggeredAt": "2026-03-03T07:15:00.037Z",
@@ -90,5 +117,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-03T07:19:25.777Z"
+  "lastUpdated": "2026-03-03T12:17:50.759Z"
 }

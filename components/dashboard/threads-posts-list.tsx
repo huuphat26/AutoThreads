@@ -38,22 +38,13 @@ function fmtNum(n: number): string {
 }
 
 // ─── InsightBadge ──────────────────────────────────────────────
-function InsightBadge({
-  icon,
-  label,
-  value,
-}: {
-  icon: string;
-  label: string;
-  value: number;
-}) {
+function InsightBadge({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 bg-slate-50 rounded-xl py-2 px-1 min-w-0">
-      <span className="text-sm leading-none">{icon}</span>
-      <span className="text-xs font-semibold text-slate-700">
+    <div className="flex flex-col items-center gap-0.5 min-w-0">
+      <span className="text-sm font-bold text-slate-700 leading-none">
         {fmtNum(value)}
       </span>
-      <span className="text-[9px] text-slate-400 leading-none">{label}</span>
+      <span className="text-[10px] text-slate-400 leading-none">{label}</span>
     </div>
   );
 }
@@ -144,12 +135,12 @@ function ThreadsPostItem({ post }: { post: ThreadsPost }) {
           <Spinner className="w-3.5 h-3.5 text-slate-300 mx-auto" />
         )}
         {!insightsLoading && insights && (
-          <div className="grid grid-cols-5 gap-1.5 w-full">
-            <InsightBadge icon="👁" label="Views" value={insights.views} />
-            <InsightBadge icon="❤️" label="Likes" value={insights.likes} />
-            <InsightBadge icon="💬" label="Replies" value={insights.replies} />
-            <InsightBadge icon="🔁" label="Reposts" value={insights.reposts} />
-            <InsightBadge icon="🗨️" label="Quotes" value={insights.quotes} />
+          <div className="flex items-center justify-between w-full">
+            <InsightBadge label="Views" value={insights.views} />
+            <InsightBadge label="Likes" value={insights.likes} />
+            <InsightBadge label="Replies" value={insights.replies} />
+            <InsightBadge label="Reposts" value={insights.reposts} />
+            <InsightBadge label="Quotes" value={insights.quotes} />
           </div>
         )}
         {!insightsLoading && insightsFailed && (

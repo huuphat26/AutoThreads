@@ -105,7 +105,7 @@ export function InstagramMonitorBlock({
     ig.ensureFetched();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  console.log("data.account", data);
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       {/* Header */}
@@ -189,6 +189,14 @@ export function InstagramMonitorBlock({
                     {data.account.biography}
                   </p>
                 )}
+                <a
+                  href="https://www.instagram.com/traidepthichdetox/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-blue-500 hover:text-blue-600 underline"
+                >
+                  https://www.instagram.com/traidepthichdetox/
+                </a>
               </div>
             </div>
 
@@ -248,7 +256,6 @@ export function InstagramMonitorBlock({
               </div>
             )}
 
-            {/* Compose toggle button */}
             <div className="border-t border-slate-50 pt-3">
               <button
                 onClick={() => setComposeOpen((o) => !o)}
@@ -268,7 +275,6 @@ export function InstagramMonitorBlock({
               </button>
             </div>
 
-            {/* Compose form */}
             {composeOpen && (
               <InstagramComposeForm
                 keywords={ig.keywords}

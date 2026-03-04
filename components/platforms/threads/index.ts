@@ -1,2 +1,1 @@
-// platforms/threads/index.tsx — re-export ThreadsMonitorBlock
-export { ThreadsMonitorBlock } from "@/components/dashboard/threads-monitor-block";
+export { ThreadsMonitorBlock } from "./monitor";
