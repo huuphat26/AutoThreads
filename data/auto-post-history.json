@@ -1,6 +1,34 @@
 {
   "records": [
     {
+      "id": "auto-1772600280072-u1zmq",
+      "slot": "noon",
+      "triggeredAt": "2026-03-04T04:58:00.072Z",
+      "topic": "",
+      "content": "Hôm nay mình sẽ giới thiệu một ly nước ép chua chua ngọt ngọt tuyệt vời. Đó chính là nước ép dứa táo. Vị thì chua nhẹ của dứa hòa cùng sự ngọt mát của táo, rất dễ uống luôn.\n\nNguyên liệu cần có:\n- 1 trái dứa chín\n- 2 quả táo\n- 1 ít chanh\n\nCách làm rất đơn giản:\n1. Gọt vỏ dứa, cắt thành miếng nhỏ.\n2. Rửa sạch táo, ngoài việc để nguyên vỏ, bạn cũng có thể cắt nhỏ nếu muốn.\n3. Cho tất cả vào máy ép chậm hoặc máy xay. Nếu xay, hãy cho thêm một chút nước để dễ hơn.\n4. Ép hoặc xay xong, bạn có thể thêm một ít nước cốt chanh cho vị thêm phần tươi mát.\n\nNếu muốn ngọt hơn, bạn có thể thêm chút mật ong hoặc đường.\n\nMẹo nhỏ: Uống ngay để giữ lại nhiều dưỡng chất nhất nhé. Đây là ly nước bạn khó có thể cưỡng lại! Cùng thử ngay nào!",
+      "igCaption": "Thử ngay nước ép dứa táo chua ngọt tuyệt vời nào! 🍍🍏 Vị tươi mát, dễ uống, chắc chắn sẽ làm bạn mê mẩn. Ai đã sẵn sàng làm một ly cho mình? \n\n#nuocep #dusa #tao #sangtao #thuchanh #monngon",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122098518669240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122098518669240014",
+        "postedAt": "2026-03-04T04:58:57.482Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18110537485741493",
+        "postedAt": "2026-03-04T05:01:07.184Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "17948520444068738",
+        "permalinkUrl": "https://www.instagram.com/p/DVczjGfAXdt/",
+        "postedAt": "2026-03-04T05:03:19.915Z"
+      },
+      "overallStatus": "completed",
+      "topicLabel": "Sai lầm phổ biến",
+      "igImageUrl": "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=1080&q=85&fit=crop"
+    },
+    {
       "id": "auto-1772535600038-3p1dt",
       "slot": "evening",
       "triggeredAt": "2026-03-03T11:00:00.038Z",
@@ -117,5 +145,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-03T12:17:50.759Z"
+  "lastUpdated": "2026-03-04T05:03:19.919Z"
 }
