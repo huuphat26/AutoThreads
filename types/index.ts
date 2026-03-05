@@ -651,3 +651,33 @@ export interface AutoPostHistory {
   records: AutoPostRecord[];
   lastUpdated: string;
 }
+
+// ============================================
+// Content Pool — Nội dung có sẵn từ file Excel
+// Scheduler sẽ dùng pool trước khi fallback AI
+// ============================================
+
+export type ContentPoolStatus = "pending" | "used" | "skipped";
+
+/** Một bài đăng đã soạn sẵn, chờ đăng vào ngày + slot cụ thể */
+export interface ContentPoolItem {
+  id: string;
+  /** Ngày đăng — "2026-03-05" */
+  date: string;
+  slot: AutoPostSlot;
+  topicLabel: string;
+  fbContent: string;
+  threadsContent: string;
+  igCaption: string;
+  igImageUrl?: string;
+  status: ContentPoolStatus;
+  importedAt: string;
+  usedAt?: string;
+  /** ID của AutoPostRecord đã dùng item này */
+  recordId?: string;
+}
+
+export interface ContentPoolStore {
+  items: ContentPoolItem[];
+  lastUpdated: string;
+}

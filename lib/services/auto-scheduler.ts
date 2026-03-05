@@ -1,10 +1,9 @@
 // ============================================================
 // AUTO THREADS — Multi-Platform Auto Scheduler
-// ─── Lịch CHUẨN BỊ: 11:50 & 17:50 ─────────────────────────────
-//   11:50 → Browser soạn AI nội dung FB
-//   ~11:53 → Browser soạn AI nội dung Threads
-//   ~11:55 → Browser soạn AI nội dung IG
-//   → Lưu record "content_ready", chờ đến giờ đăng
+// ─── Nguồn nội dung: CHỈ lấy từ Content Pool (.xlsx) ───────────
+//   11:50/17:50 → Lấy item pending trong day+slot từ pool
+//   Nếu có → content_ready ngay (không cần browser AI)
+//   Nếu không có → bỏ qua slot này (không đăng)
 // ─── Lịch ĐĂNG: 12:00 & 18:00 ──────────────────────────────────
 //   12:00 → Đăng FB (retry tối đa 3 phút)
 //   12:03 → Đăng Threads (retry tối đa 3 phút)
@@ -12,12 +11,16 @@
 // ─── Cơ chế lỗi ─────────────────────────────────────────────────
 //   Mỗi nền tảng có 3 phút retry. Hết thời gian → đánh dấu failed
 //   → tiếp tục nền tảng tiếp theo đúng lịch.
+// ─── Ghi chú ────────────────────────────────────────────────────
+//   Flow AI (waiting_for_ai / browser Puter.js) đã TẠM DỪNG.
+//   Import nội dung tại /platforms/content-pool trước khi đến giờ.
 // ============================================================
 import cron from "node-cron";
 import { facebookService } from "@/lib/services/facebook.service";
 import { threadsService } from "@/lib/services/threads.service";
 import { instagramService } from "@/lib/services/instagram.service";
 import { getNextIGImage } from "@/lib/ig-image-pool";
+import { getPoolItemForSlot, markPoolItemUsed } from "@/lib/content-pool";
 import {
   upsertAutoRecord,
   generateAutoId,
@@ -63,6 +66,11 @@ const _g = global as typeof global & { __autoSchedulerStarted?: boolean };
 // ─── Sleep ────────────────────────────────────────────────────
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+/** Trả về ngày hôm nay theo VN timezone: "2026-03-05" */
+function getTodayVNDate(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+}
+
 // ─── Retry helper ─────────────────────────────────────────────
 
 /**
@@ -105,14 +113,28 @@ async function postWithRetry(
   throw new Error(`[Retry hết thời gian 3 phút] ${lastErr}`);
 }
 
-// ─── Phase 1: Cron 11:50 — Yêu cầu browser soạn AI ──────────
+// ─── Phase 1: Cron 11:50/17:50 — Lấy nội dung từ Content Pool ─
 
 /**
- * Tạo record "waiting_for_ai".
- * Browser sẽ detect và generate content FB → Threads → IG tuần tự,
- * sau đó gọi PUT /api/auto-scheduler để lưu kết quả.
+ * Kiểm tra Content Pool cho slot hôm nay.
+ * Nếu có item pending → tạo record content_ready và đăng lúc 12:00/18:00.
+ * Nếu không có → bỏ qua (không tạo record, không đăng).
+ *
+ * ⚠️  Flow waiting_for_ai (browser AI) đã tạm dừng.
  */
-export function startWaitingForAI(slot: AutoPostSlot = "noon"): AutoPostRecord {
+export function startWaitingForAI(
+  slot: AutoPostSlot = "noon",
+): AutoPostRecord | null {
+  const todayDate = getTodayVNDate();
+  const poolItem = getPoolItemForSlot(todayDate, slot);
+
+  if (!poolItem) {
+    console.log(
+      `\n[AutoScheduler] ⏭  [POOL] Không có nội dung cho [${slot}] ngày ${todayDate} — bỏ qua slot này`,
+    );
+    return null;
+  }
+
   const recordId = generateAutoId();
   const triggeredAt = new Date().toISOString();
 
@@ -121,24 +143,26 @@ export function startWaitingForAI(slot: AutoPostSlot = "noon"): AutoPostRecord {
     slot,
     triggeredAt,
     topic: "",
-    topicLabel: undefined,
-    content: "",
-    threadsContent: "",
-    igCaption: "",
-    igImageUrl: undefined,
+    topicLabel: poolItem.topicLabel,
+    content: poolItem.fbContent,
+    threadsContent: poolItem.threadsContent,
+    igCaption: poolItem.igCaption,
+    igImageUrl: poolItem.igImageUrl,
     facebook: { status: "pending" },
     threads: { status: "pending" },
     instagram: { status: "pending" },
-    overallStatus: "waiting_for_ai",
+    overallStatus: "content_ready",
   };
+
   upsertAutoRecord(record);
+  markPoolItemUsed(poolItem.id, recordId);
 
   console.log(
-    `\n[AutoScheduler] ⏳ [CHUẨN BỊ] Chờ browser soạn AI [${slot}] — ${recordId}`,
+    `\n[AutoScheduler] 📦 [POOL] content_ready [${slot}] — ${poolItem.topicLabel}`,
   );
-  console.log(
-    `[AutoScheduler]   11:50 → FB → 11:53 → Threads → 11:55 → IG → content_ready`,
-  );
+  console.log(`[AutoScheduler]   FB: ${poolItem.fbContent.slice(0, 60)}…`);
+  console.log(`[AutoScheduler]   Chờ đến giờ đăng (12:00/18:00)`);
+
   return record;
 }
 
@@ -450,7 +474,7 @@ export async function executePlatformPosts(
 
 export async function executeAutoPost(
   slot: AutoPostSlot = "noon",
-): Promise<AutoPostRecord> {
+): Promise<AutoPostRecord | null> {
   return startWaitingForAI(slot);
 }
 
@@ -479,7 +503,7 @@ export function startAutoScheduler(): void {
   _g.__autoSchedulerStarted = true;
 
   for (const slot of SLOTS) {
-    // Cron 1: 11:50/17:50 — Tạo record waiting_for_ai (browser soạn AI)
+    // Cron 1: 11:50/17:50 — Lấy nội dung từ Content Pool
     const prepJob = cron.schedule(
       slot.prepCron,
       () => {
@@ -514,7 +538,12 @@ export function startAutoScheduler(): void {
   console.log(
     `[AutoScheduler] 🟢 Multi-Platform Auto Scheduler đã khởi động (Timezone: ${TIMEZONE})`,
   );
-  console.log(`[AutoScheduler]   Chuẩn bị: 11:50 (FB→Threads→IG tuần tự)`);
+  console.log(
+    `[AutoScheduler]   Nguồn nội dung: Content Pool (.xlsx) — AI flow tạm dừng`,
+  );
+  console.log(
+    `[AutoScheduler]   Chuẩn bị: 11:50/17:50 → lấy từ pool (bỏ qua nếu không có)`,
+  );
   console.log(
     `[AutoScheduler]   Đăng: 12:00 FB → 12:03 Threads → 12:06 IG (retry 3 phút/platform)`,
   );
@@ -529,10 +558,11 @@ export function stopAutoScheduler(): void {
 
 /**
  * Trigger thủ công (dùng để test trên UI hoặc API).
+ * Trả về null nếu không có content pool item cho slot hôm nay.
  */
 export async function triggerAutoPost(
   slot: AutoPostSlot = "noon",
-): Promise<AutoPostRecord> {
+): Promise<AutoPostRecord | null> {
   console.log(`[AutoScheduler] 🔧 Trigger thủ công [${slot}]`);
   return executeAutoPost(slot);
 }

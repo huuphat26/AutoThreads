@@ -1,6 +1,33 @@
 {
   "records": [
     {
+      "id": "auto-1772686200043-nd5zn",
+      "slot": "noon",
+      "triggeredAt": "2026-03-05T04:50:00.044Z",
+      "topic": "",
+      "topicLabel": "Green Apple Cucumber Juice",
+      "content": "Hôm nay mình thử một món green apple cucumber juice rất dễ làm và cực kỳ dễ uống.\n\nChỉ cần vài nguyên liệu tươi, rửa sạch rồi ép hoặc trộn nhanh là đã có ngay một ly nước ép hoặc bữa ăn nhẹ healthy. Vị thanh, hơi ngọt tự nhiên và rất hợp dùng vào buổi trưa hoặc chiều.\n\nNếu thích vị mát hơn bạn có thể thêm vài viên đá hoặc một lát chanh. Những món đơn giản như thế này rất hợp cho những ngày muốn ăn uống nhẹ nhàng hơn.\n\nLưu lại công thức này để thử hôm nay nhé ",
+      "threadsContent": "Một ý tưởng green apple cucumber juice rất dễ làm.\n\nChỉ cần vài nguyên liệu tươi là có ngay một món healthy nhẹ bụng. Vị thanh, hơi ngọt tự nhiên và rất hợp cho buổi trưa hoặc chiều.\n\nBạn có thể thêm đá hoặc lát chanh để vị tươi hơn.\n\nAi thích đồ healthy nên thử hôm nay ",
+      "igCaption": "Green Apple Cucumber Juice \n\nMột gợi ý healthy đơn giản cho hôm nay.\nDễ làm, dễ uống và rất hợp cho buổi trưa hoặc buổi chiều.\n\nSave lại để thử nhé ✨\n\n#juice #detox #eatclean #healthy",
+      "igImageUrl": "https://images.unsplash.com/photo-1622597467836-f3e8730b90f9?w=1080&q=85&fit=crop",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122099406753240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122099406753240014",
+        "postedAt": "2026-03-05T05:00:03.709Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18113959588712795",
+        "postedAt": "2026-03-05T05:03:09.943Z"
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "[Retry hết thời gian 3 phút] [Meta 9004] Only photo or video can be accepted as media type."
+      },
+      "overallStatus": "partial"
+    },
+    {
       "id": "auto-1772621880050-dw9ac",
       "slot": "evening",
       "triggeredAt": "2026-03-04T10:58:00.050Z",
@@ -171,5 +198,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-04T11:03:09.032Z"
+  "lastUpdated": "2026-03-05T05:08:37.707Z"
 }

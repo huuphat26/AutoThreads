@@ -11,6 +11,7 @@ import {
   FacebookIcon,
   InstagramIcon,
   ThreadsIcon,
+  PoolIcon,
 } from "@/components/ui/icons";
 
 const PLATFORMS = [
@@ -38,6 +39,14 @@ const PLATFORMS = [
     activeClass:
       "bg-linear-to-r from-purple-500 via-pink-500 to-orange-400 text-white shadow-md shadow-pink-200",
     inactiveClass: "text-slate-500 hover:text-pink-500 hover:bg-pink-50",
+  },
+  {
+    id: "content-pool",
+    label: "Sheets nội dung",
+    href: "/platforms/content-pool",
+    icon: PoolIcon,
+    activeClass: "bg-slate-600 text-white shadow-md shadow-slate-300",
+    inactiveClass: "text-slate-500 hover:text-slate-600 hover:bg-slate-100",
   },
 ] as const;
 
