@@ -637,7 +637,20 @@ export function AutoSchedulerMonitor() {
             </div>
           </div>
         </div>
-
+        <div className="flex items-center gap-2">
+          <PuterSignOutButton />
+          <button
+            onClick={() => fetchData(true)}
+            disabled={loading}
+            className="text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            {loading ? (
+              <Spinner className="w-4 h-4" />
+            ) : (
+              <RefreshIcon className="w-4 h-4" />
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="px-5 py-4 space-y-4">
