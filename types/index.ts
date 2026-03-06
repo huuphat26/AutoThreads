@@ -587,11 +587,11 @@ export interface ThreadsManualPostHistory {
 
 // ============================================
 // Auto-Scheduler — 3-platform sequential post (AI)
-// Chạy lúc 12:00 và 18:00 mỗi ngày:
-//   FB → 2 phút → Threads → 2 phút → IG
+// Chạy lúc 06:30, 11:00 và 17:00 mỗi ngày:
+//   FB → 3 phút → Threads → 3 phút → IG
 // ============================================
 
-export type AutoPostSlot = "noon" | "evening";
+export type AutoPostSlot = "morning" | "noon" | "evening";
 
 export type AutoPostPlatformStatus =
   | "pending"
@@ -623,7 +623,7 @@ export interface AutoPostRecord {
   threadsContent?: string;
   /** Caption riêng cho Instagram */
   igCaption: string;
-  /** URL ảnh đã dùng cho Instagram */
+  /** URL ảnh dùng cho tất cả nền tảng (FB, Threads, IG) — tạo qua Puter.js */
   igImageUrl?: string;
   /** Kết quả từng nền tảng */
   facebook: AutoPostPlatformResult;
@@ -669,7 +669,10 @@ export interface ContentPoolItem {
   fbContent: string;
   threadsContent: string;
   igCaption: string;
+  /** URL ảnh dùng cho tất cả nền tảng khi đăng (tạo qua Puter.js trên UI) */
   igImageUrl?: string;
+  /** AI photography prompt — dùng để tạo ảnh qua puter.ai.txt2img() */
+  imagePrompt?: string;
   status: ContentPoolStatus;
   importedAt: string;
   usedAt?: string;

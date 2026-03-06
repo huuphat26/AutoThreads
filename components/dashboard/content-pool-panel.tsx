@@ -7,8 +7,177 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContentPoolItem } from "@/types";
-import { UploadIcon, TrashIcon } from "@/components/ui/icons";
+import { UploadIcon, TrashIcon, PhotoIcon, SparklesIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
+import { usePuterImageGenerate } from "@/hooks/use-puter-image-generate";
+import { uploadImageToCloud } from "@/lib/cloudinary-upload";
+
+// ── Sub-component: tạo ảnh AI cho 1 pool item ───────────────────
+function PoolItemImageGen({
+  item,
+  onSaved,
+}: {
+  item: ContentPoolItem;
+  onSaved: () => void;
+}) {
+  const { generating, uploading, imageUrl, error, usedModel, generate, reset, PUTER_IMAGE_MODELS } =
+    usePuterImageGenerate();
+  const [saving, setSaving] = useState(false);
+  const [savedUrl, setSavedUrl] = useState(item.igImageUrl ?? "");
+  const [selectedModel, setSelectedModel] = useState<string>(PUTER_IMAGE_MODELS[0]);
+
+  if (!item.imagePrompt) return null;
+
+  const handleGenerate = () => generate(item.imagePrompt!, selectedModel);
+
+  const handleSave = async (url: string) => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/content-pool", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, igImageUrl: url }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSavedUrl(url);
+        onSaved();
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const isBlob = false; // Cloudinary đã upload xong, luôn là HTTPS URL
+
+  return (
+    <div className="mt-2 border border-violet-100 rounded-lg bg-violet-50/40 p-2.5 space-y-2">
+      <div className="flex items-center gap-1.5">
+        <SparklesIcon className="w-3 h-3 text-violet-500" />
+        <p className="text-[10px] font-semibold text-violet-700">Image Prompt (AI)</p>
+      </div>
+      <p className="text-[10px] text-slate-500 italic leading-relaxed">
+        {item.imagePrompt}
+      </p>
+
+      {/* Model selector */}
+      <div className="flex items-center gap-1.5">
+        <label className="text-[10px] text-slate-500 shrink-0">Model:</label>
+        <select
+          value={selectedModel}
+          onChange={(e) => setSelectedModel(e.target.value)}
+          disabled={generating || uploading}
+          className="text-[10px] border border-slate-200 rounded-md px-1.5 py-0.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-300 disabled:opacity-50"
+        >
+          {PUTER_IMAGE_MODELS.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+        <span className="text-[9px] text-slate-400 italic">
+          (tự thử model tiếp theo nếu lỗi)
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <button
+          onClick={handleGenerate}
+          disabled={generating || uploading}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50 transition-colors"
+        >
+          {generating || uploading ? (
+            <Spinner />
+          ) : (
+            <PhotoIcon className="w-3 h-3" />
+          )}
+          {generating ? "Puter đang tạo ảnh..." : uploading ? "Đang upload Cloudinary..." : "Tạo ảnh AI"}
+        </button>
+
+        {imageUrl && (
+          <button
+            onClick={reset}
+            className="text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            Xoá
+          </button>
+        )}
+
+        {usedModel && imageUrl && (
+          <span className="text-[9px] text-violet-500 italic">
+            ✓ {usedModel} → Cloudinary
+          </span>
+        )}
+
+        {savedUrl && !imageUrl && (
+          <span className="text-[10px] text-green-600 font-medium">
+            ✓ Đã lưu ảnh IG
+          </span>
+        )}
+      </div>
+
+      {error && (
+        <p className="text-[10px] text-red-500">{error}</p>
+      )}
+
+      {imageUrl && (
+        <div className="space-y-1.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="AI generated"
+            className="rounded-lg w-full max-h-48 object-cover border border-violet-200"
+          />
+          <div className="flex gap-2 flex-wrap">
+            <a
+              href={imageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-1 rounded-lg text-[10px] font-bold border border-violet-300 text-violet-700 hover:bg-violet-100 transition-colors"
+            >
+              Xem ảnh
+            </a>
+            <button
+              onClick={() => handleSave(imageUrl)}
+              disabled={saving}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+            >
+              {saving ? <Spinner /> : null}
+              Lưu làm ảnh IG
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Standalone: tạo ảnh với fallback model (không cần React state) ─
+const FALLBACK_MODELS = [
+  "dall-e-3",
+  "gpt-image-1",
+  "gpt-image-1.5",
+  "gpt-image-1-mini",
+  "dall-e-2",
+] as const;
+
+async function puterGenerateWithFallback(
+  puter: NonNullable<Window["puter"]>,
+  prompt: string,
+): Promise<string> {
+  let lastErr: unknown;
+  for (const model of FALLBACK_MODELS) {
+    try {
+      const img = await puter.ai.txt2img(prompt, { model });
+      // Upload lên Cloudinary — lấy HTTPS public URL
+      const cloudUrl = await uploadImageToCloud(img.src);
+      return cloudUrl;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw new Error(
+    lastErr instanceof Error ? lastErr.message : "Tất cả model đều lỗi",
+  );
+}
 
 interface PoolStats {
   total: number;
@@ -73,6 +242,63 @@ export function ContentPoolPanel() {
   const PAGE_SIZE = 5;
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // ── Bulk image generation ──────────────────────────────────
+  const [allPending, setAllPending] = useState<ContentPoolItem[]>([]);
+  const [bulkGenerating, setBulkGenerating] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    current: number;
+    total: number;
+    errors: string[];
+  } | null>(null);
+  // Tránh auto-start chạy nhiều lần
+  const autoStartedRef = useRef(false);
+
+  const fetchAllPending = useCallback(async () => {
+    const res = await fetch("/api/content-pool?status=pending");
+    const json = await res.json();
+    if (json.success) setAllPending(json.data.items ?? []);
+  }, []);
+
+  /** Item hôm nay (VN timezone) có imagePrompt nhưng chưa có igImageUrl */
+  const todayVN = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  });
+  const todayItemsNeedingImages = allPending.filter(
+    (item) => item.date === todayVN && item.imagePrompt && !item.igImageUrl,
+  );
+
+  const handleBulkGenerate = useCallback(async (items: ContentPoolItem[]) => {
+    const puter = typeof window !== "undefined" ? window.puter : undefined;
+    if (!puter || items.length === 0) return;
+
+    setBulkGenerating(true);
+    setBulkProgress({ current: 0, total: items.length, errors: [] });
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      try {
+        const url = await puterGenerateWithFallback(puter, item.imagePrompt!);
+        await fetch("/api/content-pool", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: item.id, igImageUrl: url }),
+        });
+      } catch {
+        setBulkProgress((p) =>
+          p
+            ? { ...p, errors: [...p.errors, item.topicLabel || item.id] }
+            : p,
+        );
+      }
+      setBulkProgress((p) => (p ? { ...p, current: i + 1 } : p));
+    }
+
+    setBulkGenerating(false);
+    await fetchAllPending();
+    await fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAllPending]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -89,7 +315,23 @@ export function ContentPoolPanel() {
   useEffect(() => {
     setVisibleCount(5);
     fetchData();
-  }, [fetchData]);
+    fetchAllPending();
+  }, [fetchData, fetchAllPending]);
+
+  // ── Auto-start: tự tạo ảnh khi mở trang nếu còn item thiếu ảnh ──
+  useEffect(() => {
+    if (
+      autoStartedRef.current ||
+      bulkGenerating ||
+      todayItemsNeedingImages.length === 0
+    )
+      return;
+    const puter = typeof window !== "undefined" ? window.puter : undefined;
+    if (!puter) return;
+    autoStartedRef.current = true;
+    handleBulkGenerate(todayItemsNeedingImages);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayItemsNeedingImages.length]);
 
   // ── Upload xlsx ──────────────────────────────────────────────
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +428,76 @@ export function ContentPoolPanel() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* ── Banner: item hôm nay chưa có ảnh IG ── */}
+      {todayItemsNeedingImages.length > 0 && !bulkGenerating && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <div className="flex-1 text-[11px] text-amber-800">
+            <span className="font-bold">
+              ⚠️ {todayItemsNeedingImages.length} item hôm nay
+            </span>{" "}
+            chưa có ảnh — đang chuẩn bị tạo tự động trước giờ đăng.
+          </div>
+          <button
+            onClick={() => handleBulkGenerate(todayItemsNeedingImages)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shrink-0"
+          >
+            <SparklesIcon className="w-3 h-3" />
+            Tạo ngay ({todayItemsNeedingImages.length})
+          </button>
+        </div>
+      )}
+
+      {/* ── Bulk progress ── */}
+      {bulkGenerating && bulkProgress && (
+        <div className="bg-violet-50 border border-violet-200 rounded-xl px-4 py-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <Spinner />
+            <span className="text-[11px] text-violet-700 font-semibold">
+              Đang tạo ảnh {bulkProgress.current}/{bulkProgress.total}…
+            </span>
+          </div>
+          <div className="w-full bg-violet-100 rounded-full h-1.5">
+            <div
+              className="bg-violet-600 h-1.5 rounded-full transition-all duration-300"
+              style={{
+                width: `${bulkProgress.total > 0
+                  ? Math.round(
+                    (bulkProgress.current / bulkProgress.total) * 100,
+                  )
+                  : 0
+                  }%`,
+              }}
+            />
+          </div>
+          {bulkProgress.errors.length > 0 && (
+            <p className="text-[10px] text-red-500">
+              ⚠️ Lỗi: {bulkProgress.errors.join(", ")}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Sau khi bulk xong: tóm tắt */}
+      {!bulkGenerating && bulkProgress && bulkProgress.current > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
+          <span className="text-[11px] text-green-700">
+            ✅ Hoàn tất:{" "}
+            <strong>{bulkProgress.current - bulkProgress.errors.length}</strong> ảnh đã lưu
+            {bulkProgress.errors.length > 0 && (
+              <span className="text-red-500">
+                {" "}| ⚠️ {bulkProgress.errors.length} lỗi
+              </span>
+            )}
+          </span>
+          <button
+            onClick={() => setBulkProgress(null)}
+            className="text-[10px] text-slate-400 hover:text-slate-600"
+          >
+            Ẩn
+          </button>
+        </div>
+      )}
+
       {/* ── Stats bar ── */}
       {stats && (
         <div className="grid grid-cols-4 gap-2">
@@ -309,11 +621,8 @@ export function ContentPoolPanel() {
                       >
                         <div className="flex items-start gap-3">
                           <div className="shrink-0 text-center min-w-16">
-                            <p className="text-[11px] font-bold text-slate-700 capitalize">
-                              {item.slot}
-                            </p>
-                            <p className="text-[10px] text-slate-400">
-                              {item.id.slice(-6)}
+                            <p className="text-[11px] font-bold text-slate-700">
+                              {item.slot === "morning" ? "Sáng" : item.slot === "noon" ? "Trưa" : "Tối"}
                             </p>
                           </div>
 
@@ -397,8 +706,13 @@ export function ContentPoolPanel() {
 
                                 <div className="flex  flex-wrap gap-2 text-slate-500">
                                   <span>ID record: {item.recordId || "-"}</span>
-                                  <span>Ảnh IG: {item.igImageUrl || "-"}</span>
+                                  <span>Ảnh (FB/Threads/IG): {item.igImageUrl || "-"}</span>
                                 </div>
+
+                                <PoolItemImageGen
+                                  item={item}
+                                  onSaved={fetchData}
+                                />
                               </div>
                             )}
                           </div>

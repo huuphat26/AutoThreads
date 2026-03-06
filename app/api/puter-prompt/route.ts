@@ -13,11 +13,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveTopicOrRandom } from "@/lib/topics";
 import {
-  buildSystemPromptOpenAI,
+  buildSystemPromptPuter,
   buildSystemPromptThreads,
   buildSystemPromptIGCaption,
 } from "@/lib/prompts/system";
-import { buildUserPromptOpenAI, type PromptContext } from "@/lib/prompts/user";
+import { buildUserPromptPuter, type PromptContext } from "@/lib/prompts/user";
 
 // Reuse DAY_MAP thay vì re-declare — giữ DRY với content-generator
 const DAY_MAP: Record<number, string> = {
@@ -72,11 +72,11 @@ export async function POST(req: NextRequest) {
     } else if (platform === "threads") {
       // Threads: cùng chủ đề nhưng tối đa 480 ký tự
       systemPrompt = buildSystemPromptThreads();
-      userPrompt = buildUserPromptOpenAI(ctx);
+      userPrompt = buildUserPromptPuter(ctx);
     } else {
-      // Facebook (default): giữ prompt hiện tại (550-850 ký tự)
-      systemPrompt = buildSystemPromptOpenAI();
-      userPrompt = buildUserPromptOpenAI(ctx);
+      // Facebook (default)
+      systemPrompt = buildSystemPromptPuter();
+      userPrompt = buildUserPromptPuter(ctx);
     }
 
     return NextResponse.json({

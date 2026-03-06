@@ -9,6 +9,33 @@ import { RefreshIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
 import type { AutoPostRecord, AutoPostPlatformStatus } from "@/types";
 
+function usePuterUser() {
+  const [username, setUsername] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const tryLoad = async () => {
+      // Thử nhiều lần vì Puter CDN load async
+      for (let i = 0; i < 10; i++) {
+        try {
+          const puter = (window as Window & { puter?: { auth?: { getUser?: () => Promise<{ username?: string }> } } }).puter;
+          if (puter?.auth?.getUser) {
+            const u = await puter.auth.getUser();
+            if (!cancelled && u?.username) { setUsername(u.username); return; }
+          }
+        } catch { /* chưa đăng nhập hoặc chưa load */ }
+        await new Promise((r) => setTimeout(r, 800));
+      }
+    };
+    tryLoad();
+    return () => { cancelled = true; };
+  }, []);
+  return username;
+}
+
+async function puterSignOut() {
+  try { await (window as Window & { puter?: { auth?: { signOut?: () => Promise<void> } } }).puter?.auth?.signOut?.(); } finally { window.location.reload(); }
+}
+
 // ─── Types ───────────────────────────────────────────────────
 
 type SchedulerStatus = {
@@ -32,13 +59,14 @@ type SchedulerStatus = {
 };
 
 const SLOT_HOURS: Record<string, { h: number; m: number }> = {
-  noon: { h: 12, m: 0 },
-  evening: { h: 18, m: 0 },
+  morning: { h: 6, m: 30 },
+  noon: { h: 11, m: 30 },
+  evening: { h: 17, m: 0 },
 };
 /** Khoảng cách giữa các nền tảng khi đăng (phút) */
 const DELAY_MINUTES = 3;
-/** Thời gian chuẩn bị AI trước giờ đăng (phút) */
-const PREP_BEFORE_POST_MIN = 10;
+/** Thời gian chuẩn bị content + tạo ảnh AI trước giờ đăng (phút) */
+const PREP_BEFORE_POST_MIN = 15;
 const PLATFORMS = [
   { key: "facebook", label: "Facebook", delayMin: 0 },
   { key: "threads", label: "Threads", delayMin: DELAY_MINUTES },
@@ -246,14 +274,17 @@ function TodaySlotCard({
   record: AutoPostRecord | null;
 }) {
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
-  const slotName = slotId === "noon" ? "Buổi trưa" : "Buổi tối";
+  const slotName =
+    slotId === "morning"
+      ? "Buổi sáng"
+      : slotId === "noon"
+        ? "Buổi trưa"
+        : "Buổi tối";
   const baseTime = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-  // Giờ chuẩn bị AI: 10 phút trước giờ đăng
+  // Giờ chuẩn bị: 15 phút trước giờ đăng (lấy pool + tạo ảnh AI)
   const prepH = m - PREP_BEFORE_POST_MIN >= 0 ? h : h - 1;
   const prepM = (60 + m - PREP_BEFORE_POST_MIN) % 60;
   const prepTime = `${String(prepH).padStart(2, "0")}:${String(prepM).padStart(2, "0")}`;
-  const prep3 = `${String(prepH).padStart(2, "0")}:${String(prepM + 3).padStart(2, "0")}`;
-  const prep5 = `${String(prepH).padStart(2, "0")}:${String(prepM + 5).padStart(2, "0")}`;
   const now = new Date();
   const isRunning = record?.overallStatus === "running";
   const isContentReady = record?.overallStatus === "content_ready";
@@ -291,12 +322,15 @@ function TodaySlotCard({
       {/* Prep timeline */}
       <div className="flex items-center gap-1 px-4 py-1.5 bg-slate-50/60 border-b border-slate-100 text-[9px] text-slate-400">
         <span className="font-mono font-semibold">{prepTime}</span>
+        <span>→ Chuẩn bị</span>
+        <span className="mx-0.5 text-slate-200">·</span>
+        <span className="font-mono font-semibold">{baseTime}</span>
         <span>→ FB</span>
         <span className="mx-0.5 text-slate-200">·</span>
-        <span className="font-mono font-semibold">{prep3}</span>
+        <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES)}</span>
         <span>→ Threads</span>
         <span className="mx-0.5 text-slate-200">·</span>
-        <span className="font-mono font-semibold">{prep5}</span>
+        <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES * 2)}</span>
         <span>→ IG</span>
         {isContentReady && (
           <span className="ml-auto text-sky-500 font-semibold">
@@ -329,6 +363,27 @@ function TodaySlotCard({
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// ─── Puter sign-out button ────────────────────────────────────
+
+function PuterSignOutButton() {
+  const username = usePuterUser();
+  return (
+    <div className="flex items-center gap-1.5">
+      {username && (
+        <span className="text-[10px] text-violet-400 font-mono hidden sm:inline">
+          @{username}
+        </span>
+      )}
+      <button
+        onClick={puterSignOut}
+        className="text-[10px] px-2 py-0.5 rounded-md border border-rose-200 text-rose-500 hover:bg-rose-50 transition-colors whitespace-nowrap"
+      >
+        Đăng xuất Puter
+      </button>
     </div>
   );
 }
@@ -582,17 +637,7 @@ export function AutoSchedulerMonitor() {
             </div>
           </div>
         </div>
-        <button
-          onClick={() => fetchData(true)}
-          disabled={loading}
-          className="text-slate-400 hover:text-slate-600 transition-colors"
-        >
-          {loading ? (
-            <Spinner className="w-4 h-4" />
-          ) : (
-            <RefreshIcon className="w-4 h-4" />
-          )}
-        </button>
+
       </div>
 
       <div className="px-5 py-4 space-y-4">
@@ -616,6 +661,7 @@ export function AutoSchedulerMonitor() {
             </div>
           ) : (
             <div className="space-y-2">
+                <TodaySlotCard slotId="morning" record={todayRecord("morning")} />
               <TodaySlotCard slotId="noon" record={todayRecord("noon")} />
               <TodaySlotCard slotId="evening" record={todayRecord("evening")} />
             </div>

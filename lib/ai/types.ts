@@ -5,9 +5,9 @@
 
 /**
  * "gemini"  → dùng buildSystemPromptGemini / buildUserPromptGemini
- * "openai"  → dùng buildSystemPromptOpenAI  / buildUserPromptOpenAI
+ * "puter"   → dùng buildSystemPromptPuter   / buildUserPromptPuter
  */
-export type PromptVariant = "gemini" | "openai";
+export type PromptVariant = "gemini" | "puter";
 
 export interface AIProvider {
   readonly name: string;

@@ -11,10 +11,8 @@ import type {
   FBAttachment,
 } from "@/types";
 
-// ─── Constants ────────────────────────────────────────────────
 const BASE_URL = "https://graph.facebook.com/v25.0";
 
-// ─── Custom Error ─────────────────────────────────────────────
 export class FBApiError extends Error {
   constructor(
     public readonly code: number,
@@ -27,7 +25,6 @@ export class FBApiError extends Error {
   }
 }
 
-// ─── Parse Meta error ─────────────────────────────────────────
 function parseMetaError(err: unknown): FBApiError {
   if (err instanceof AxiosError && err.response?.data?.error) {
     const e = err.response.data.error as {

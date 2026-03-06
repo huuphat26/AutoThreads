@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  FacebookIcon,
-  PlusIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-} from "@/components/ui/icons";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { FacebookIcon } from "@/components/ui/icons";
 import { FacebookComposeForm } from "./compose-form";
 import { FacebookPostsList } from "./posts-list";
 import { useFacebookDashboard } from "@/hooks/use-facebook-dashboard";
-
-// Spinner dùng lại từ IG
-function Spinner() {
-  return (
-    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-    </svg>
-  );
-}
+import {
+  PlatformMonitorShell,
+  PlatformTokenBadge,
+  PlatformLoadingState,
+  PlatformErrorState,
+  PlatformProfileRow,
+  PlatformStatsGrid,
+  PlatformComposeButton,
+} from "@/components/shared/platform-monitor";
+import { ImageGeneratorCard } from "@/components/shared/image-generator-card";
 
 type PageInfo = {
   id: string;
@@ -49,80 +45,39 @@ type FBData = {
   error: string | null;
 };
 
-function TokenBadge({ token }: { token: TokenInfo }) {
-  const days = token.daysLeft;
-  const urgent = days !== null && days <= 7;
-  const warn = days !== null && days <= 14 && !urgent;
-
-  return (
-    <div
-      className={`flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-        !token.isValid
-          ? "bg-rose-50 text-rose-600 border-rose-200"
-          : urgent
-            ? "bg-amber-50 text-amber-600 border-amber-200"
-            : warn
-              ? "bg-yellow-50 text-yellow-600 border-yellow-200"
-              : "bg-emerald-50 text-emerald-600 border-emerald-200"
-      }`}
-    >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${
-          !token.isValid
-            ? "bg-rose-500"
-            : urgent
-              ? "bg-amber-500"
-              : warn
-                ? "bg-yellow-500"
-                : "bg-emerald-500"
-        }`}
-      />
-      {!token.isValid
-        ? "Token hết hạn"
-        : days === null
-          ? "Không giới hạn"
-          : `Còn ${days} ngày`}
-    </div>
-  );
-}
-
 export function FacebookMonitorBlock({
   aiProviderId = "puter",
   aiModel = "gpt-5.2",
 }: {
   aiProviderId?: string;
   aiModel?: string;
-}) {
-  // ── Page info state ─────────────────────────────────────────────────────────
+  }) {
   const [data, setData] = useState<FBData | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
-  const fetched = useRef(false);
-
-  // ── Compose section open/close ──────────────────────────────────────────────
   const [composeOpen, setComposeOpen] = useState(false);
-
-  // ── Facebook dashboard hook ─────────────────────────────────────────────────
   const fb = useFacebookDashboard(aiProviderId, aiModel);
 
-  useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
-    fetch("/api/platforms/facebook")
-      .then((r) => r.json())
-      .then((j: FBData) => setData(j))
-      .catch(() =>
-        setData({
-          connected: false,
-          page: null,
-          token: null,
-          error: "Không thể kết nối",
-        }),
-      )
-      .finally(() => setPageLoading(false));
+  const fetchPageInfo = useCallback(async () => {
+    setPageLoading(true);
+    try {
+      const { data: json } = await axios.get<FBData>("/api/platforms/facebook");
+      setData(json);
+    } catch {
+      setData({
+        connected: false,
+        page: null,
+        token: null,
+        error: "Không thể kết nối",
+      });
+    } finally {
+      setPageLoading(false);
+    }
   }, []);
 
-  // Tải danh sách bài đăng khi component mount
+  useEffect(() => {
+    fetchPageInfo();
+  }, []);
+
   useEffect(() => {
     fb.ensureFetched();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,119 +87,56 @@ export function FacebookMonitorBlock({
   const token = data?.token;
 
   return (
-    <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[#1877F2]">
-          <FacebookIcon className="w-5 h-5" />
-          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            Facebook Page
-          </h2>
-        </div>
-        {token && <TokenBadge token={token} />}
-      </div>
+    <PlatformMonitorShell
+      icon={<FacebookIcon className="w-5 h-5 text-[#1877F2]" />}
+      title="Facebook Page"
+      badge={token && <PlatformTokenBadge token={token} />}
+    >
+      {pageLoading && <PlatformLoadingState />}
 
-      {/* Body */}
-      <div className="px-5 py-4">
-        {pageLoading && (
-          <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
-            <Spinner />
-            Đang tải thông tin...
-          </div>
-        )}
+      {!pageLoading && !data?.connected && (
+        <PlatformErrorState
+          title="Chưa kết nối"
+          message={data?.error ?? "Kiểm tra FB_PAGE_ACCESS_TOKEN trong .env"}
+        />
+      )}
 
-        {!pageLoading && !data?.connected && (
-          <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3">
-            <p className="text-xs font-semibold text-rose-600">Chưa kết nối</p>
-            <p className="text-[11px] text-rose-500 mt-0.5">
-              {data?.error ?? "Kiểm tra FB_PAGE_ACCESS_TOKEN trong .env"}
-            </p>
-          </div>
-        )}
+      {!pageLoading && data?.connected && page && (
+        <div className="space-y-4">
+          <PlatformProfileRow
+            pictureUrl={page.pictureUrl}
+            name={page.name}
+            category={page.category}
+            bio={page.about}
+            link={page.link}
+            fallbackIcon={<FacebookIcon className="w-5 h-5" />}
+            fallbackBg="bg-blue-100 text-[#1877F2]"
+          />
 
-        {!pageLoading && data?.connected && page && (
-          <div className="space-y-4">
-            {/* Profile row */}
-            <div className="flex items-center gap-3">
-              {page.pictureUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={page.pictureUrl}
-                  alt="page"
-                  className="w-12 h-12 rounded-xl object-cover border border-slate-100"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-[#1877F2]">
-                  <FacebookIcon className="w-5 h-5" />
-                </div>
-              )}
-              <div className="min-w-0">
-                <p className="font-semibold text-slate-800 text-sm truncate">
-                  {page.name}
-                </p>
-                {page.category && (
-                  <p className="text-[11px] text-slate-400">{page.category}</p>
-                )}
-                {page.about && (
-                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
-                    {page.about}
-                  </p>
-                )}
-                {page.link && (
-                  <a
-                    href={page.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[11px] text-blue-500 hover:text-blue-600 underline truncate block"
-                  >
-                    {page.link}
-                  </a>
-                )}
-              </div>
-            </div>
+          <PlatformStatsGrid
+            stats={[
+              {
+                label: "Người thích",
+                value: page.fanCount.toLocaleString("vi-VN"),
+              },
+              {
+                label: "Theo dõi",
+                value: page.followersCount.toLocaleString("vi-VN"),
+              },
+            ]}
+          />
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                  Người thích
-                </p>
-                <p className="text-xl font-bold text-slate-800 mt-0.5">
-                  {page.fanCount.toLocaleString("vi-VN")}
-                </p>
-              </div>
-              <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                  Theo dõi
-                </p>
-                <p className="text-xl font-bold text-slate-800 mt-0.5">
-                  {page.followersCount.toLocaleString("vi-VN")}
-                </p>
-              </div>
-            </div>
+          <PlatformComposeButton
+            open={composeOpen}
+            onToggle={() => setComposeOpen((o) => !o)}
+            className="bg-[#1877F2] hover:bg-[#1463cc] text-white transition-colors"
+          />
 
-
-            {/* Compose button */}
-            <div className="border-t border-slate-50 pt-3">
-              <button
-                onClick={() => setComposeOpen((o) => !o)}
-                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold text-white bg-[#1877F2] hover:bg-[#1463cc] transition-colors"
-              >
-                {composeOpen ? (
-                  <>
-                    <ChevronUpIcon className="w-3.5 h-3.5" />
-                    Đóng
-                  </>
-                ) : (
-                  <>
-                    <PlusIcon className="w-3.5 h-3.5" />
-                    Tạo bài đăng
-                  </>
-                )}
-              </button>
-            </div>
-
-            {composeOpen && (
+          {composeOpen && (
+            <div className="space-y-3">
+              <ImageGeneratorCard
+                onImageGenerated={(url) => fb.setImageUrl(url)}
+              />
               <FacebookComposeForm
                 keywords={fb.keywords}
                 content={fb.content}
@@ -265,20 +157,19 @@ export function FacebookMonitorBlock({
                 onGenerate={fb.handleGenerate}
                 onPost={fb.handlePost}
               />
-            )}
+            </div>
+          )}
 
-            {/* Posts list */}
-            <FacebookPostsList
-              posts={fb.fbPosts}
-              stats={fb.fbStats}
-              loading={fb.postsLoading}
-              error={fb.postsError}
-              onFetch={fb.fetchFBPosts}
-              onCancel={fb.handleCancelPost}
-            />
-          </div>
-        )}
-      </div>
-    </section>
+          <FacebookPostsList
+            posts={fb.fbPosts}
+            stats={fb.fbStats}
+            loading={fb.postsLoading}
+            error={fb.postsError}
+            onFetch={fb.fetchFBPosts}
+            onCancel={fb.handleCancelPost}
+          />
+        </div>
+      )}
+    </PlatformMonitorShell>
   );
 }

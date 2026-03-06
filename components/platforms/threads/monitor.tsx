@@ -1,35 +1,20 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import {
-  ThreadsIcon,
-  PlusIcon,
-  ChevronUpIcon,
-} from "@/components/ui/icons";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { ThreadsIcon } from "@/components/ui/icons";
 import { ComposeForm } from "@/components/dashboard/compose-form";
 import { useDashboard } from "@/hooks/use-dashboard";
 import type { ThreadsUser } from "@/types";
-
-
-function Spinner() {
-  return (
-    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8z"
-      />
-    </svg>
-  );
-}
-
+import {
+  PlatformMonitorShell,
+  PlatformTokenBadge,
+  PlatformLoadingState,
+  PlatformErrorState,
+  PlatformProfileRow,
+  PlatformStatsGrid,
+  PlatformComposeButton,
+} from "@/components/shared/platform-monitor";
+import { ImageGeneratorCard } from "@/components/shared/image-generator-card";
 
 type TokenInfo = {
   isValid: boolean;
@@ -51,51 +36,10 @@ type ProfileData = {
   tokenExpired?: boolean;
 };
 
-// ─── TokenBadge ───────────────────────────────────────────────
-
-function TokenBadge({ token }: { token: TokenInfo }) {
-  const days = token.daysLeft;
-  const urgent = token.isValid && days > 0 && days <= 7;
-  const warn = token.isValid && days > 0 && days <= 14 && !urgent;
-  return (
-    <div
-      className={`flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-        !token.isValid
-          ? "bg-rose-50 text-rose-600 border-rose-200"
-          : urgent
-            ? "bg-amber-50 text-amber-600 border-amber-200"
-            : warn
-              ? "bg-yellow-50 text-yellow-600 border-yellow-200"
-              : "bg-emerald-50 text-emerald-600 border-emerald-200"
-      }`}
-    >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${
-          !token.isValid
-            ? "bg-rose-500"
-            : urgent
-              ? "bg-amber-500"
-              : warn
-                ? "bg-yellow-500"
-                : "bg-emerald-500"
-        }`}
-      />
-      {!token.isValid
-        ? "Token hết hạn"
-        : days === -1
-          ? "Đang hoạt động"
-          : days === 0
-            ? "Không giới hạn"
-            : `Còn ${days} ngày`}
-    </div>
-  );
-}
-
 
 export function ThreadsMonitorBlock() {
   const [data, setData] = useState<ProfileData | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
-  const fetched = useRef(false);
   const [composeOpen, setComposeOpen] = useState(false);
 
   const {
@@ -103,6 +47,8 @@ export function ThreadsMonitorBlock() {
     setContent,
     keywords,
     setKeywords,
+    customPrompt: _cp,
+    setCustomPrompt,
     mediaType,
     setMediaType,
     imageUrl,
@@ -122,32 +68,25 @@ export function ThreadsMonitorBlock() {
     ensureManualFetched,
   } = useDashboard();
 
+  const fetchProfileData = useCallback(async () => {
+    setProfileLoading(true);
+    try {
+      const { data: json } = await axios.get<{ success: boolean; data: ProfileData; error?: string }>("/api/threads/user");
+      if (json.success) {
+        setData(json.data);
+      } else {
+        setData({ profile: null, token: null, quota: null, profileError: json.error });
+      }
+    } catch {
+      setData({ profile: null, token: null, quota: null, profileError: "Không thể kết nối" });
+    } finally {
+      setProfileLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchProfileData(); }, []);
+
   useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
-    fetch("/api/threads/user")
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.success) setData(j.data as ProfileData);
-        else
-          setData({
-            profile: null,
-            token: null,
-            quota: null,
-            profileError: j.error,
-          });
-      })
-      .catch(() =>
-        setData({
-          profile: null,
-          token: null,
-          quota: null,
-          profileError: "Không thể kết nối",
-        }),
-      )
-      .finally(() => setProfileLoading(false));
-
     ensureManualFetched();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -157,135 +96,74 @@ export function ThreadsMonitorBlock() {
   const quota = data?.quota;
 
   return (
-    <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="px-5 py-3.5 border-b border-slate-50 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-800">
-          <ThreadsIcon className="w-4 h-4" />
-          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            Tài khoản Threads
-          </h2>
-        </div>
-        {token && <TokenBadge token={token} />}
-      </div>
+    <PlatformMonitorShell
+      icon={<ThreadsIcon className="w-4 h-4 text-slate-800" />}
+      title="Tài khoản Threads"
+      badge={token && <PlatformTokenBadge token={token} />}
+    >
+      {profileLoading && <PlatformLoadingState />}
 
-      {/* Body */}
-      <div className="px-5 py-4">
-        {profileLoading && (
-          <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
-            <Spinner />
-            Đang tải thông tin...
-          </div>
-        )}
+      {!profileLoading && data?.tokenExpired && (
+        <PlatformErrorState title="⚠️ Token đã hết hạn">
+          <code className="text-[10px] text-rose-500 font-mono mt-1 block">
+            bash get-token.sh YOUR_AUTH_CODE
+          </code>
+        </PlatformErrorState>
+      )}
 
-        {!profileLoading && data?.tokenExpired && (
-          <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3">
-            <p className="text-xs font-semibold text-rose-600">
-              ⚠️ Token đã hết hạn
-            </p>
-            <code className="text-[10px] text-rose-500 font-mono mt-1 block">
-              bash get-token.sh YOUR_AUTH_CODE
-            </code>
-          </div>
-        )}
+      {!profileLoading && data?.profileError && !data?.tokenExpired && (
+        <PlatformErrorState
+          title="Không thể tải profile"
+          message={data.profileError}
+        />
+      )}
 
-        {!profileLoading && data?.profileError && !data?.tokenExpired && (
-          <div className="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3">
-            <p className="text-xs font-semibold text-rose-600">
-              Không thể tải profile
-            </p>
-            <p className="text-[11px] text-rose-500 mt-0.5">
-              {data.profileError}
-            </p>
-          </div>
-        )}
+      {!profileLoading && profile && (
+        <div className="space-y-4">
+          <PlatformProfileRow
+            pictureUrl={profile.threads_profile_picture_url}
+            name={profile.name || profile.username}
+            username={profile.username}
+            bio={profile.threads_biography}
+            link={`https://www.threads.com/@${profile.username}`}
+            fallbackIcon={
+              <span className="text-slate-500 text-base font-bold">
+                {(profile.username ?? "?")[0].toUpperCase()}
+              </span>
+            }
+            fallbackBg="bg-slate-100"
+          />
 
-        {!profileLoading && profile && (
-          <div className="space-y-4">
-            {/* Profile row */}
-            <div className="flex items-center gap-3">
-              {profile.threads_profile_picture_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profile.threads_profile_picture_url}
-                  alt={profile.username}
-                  className="w-12 h-12 rounded-xl object-cover border border-slate-100"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 text-base font-bold">
-                  {(profile.username ?? "?")[0].toUpperCase()}
-                </div>
-              )}
-              <div className="min-w-0">
-                <p className="font-semibold text-slate-800 text-sm truncate">
-                  {profile.name || profile.username}
-                </p>
-                <p className="text-[11px] text-slate-400">
-                  @{profile.username}
-                </p>
-                {profile.threads_biography && (
-                  <p className="text-[11px] text-slate-500 truncate mt-0.5 max-w-55">
-                    {profile.threads_biography}
-                  </p>
-                )}
-                <a
-                  href={`https://www.threads.com/@${profile.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-blue-500 hover:text-blue-600 underline"
-                >
-                  https://www.threads.com/@{profile.username}
-                </a>
-              </div>
-            </div>
+          {quota && (
+            <PlatformStatsGrid
+              stats={[
+                {
+                  label: "Đã đăng hôm nay",
+                  value: (
+                    <>
+                      {quota.used}
+                      <span className="text-sm font-normal text-slate-400">
+                        /{quota.total}
+                      </span>
+                    </>
+                  ),
+                },
+                { label: "Còn lại", value: quota.remaining },
+              ]}
+            />
+          )}
 
-            {/* Stats — quota */}
-            {quota && (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                    Đã đăng hôm nay
-                  </p>
-                  <p className="text-xl font-bold text-slate-800 mt-0.5">
-                    {quota.used}
-                    <span className="text-sm font-normal text-slate-400">
-                      /{quota.total}
-                    </span>
-                  </p>
-                </div>
-                <div className="bg-slate-50 rounded-xl px-3 py-2.5">
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                    Còn lại
-                  </p>
-                  <p className="text-xl font-bold text-slate-800 mt-0.5">
-                    {quota.remaining}
-                  </p>
-                </div>
-              </div>
-            )}
+          <PlatformComposeButton
+            open={composeOpen}
+            onToggle={() => setComposeOpen((o) => !o)}
+            openLabel="Thu gọn"
+          />
 
-
-
-            <div className="border-t border-slate-50 pt-3">
-              <button
-                onClick={() => setComposeOpen((o) => !o)}
-                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-colors"
-              >
-                {composeOpen ? (
-                  <>
-                    <ChevronUpIcon className="w-3.5 h-3.5" />
-                    Thu gọn
-                  </>
-                ) : (
-                  <>
-                    <PlusIcon className="w-3.5 h-3.5" />
-                    Tạo bài đăng
-                  </>
-                )}
-              </button>
-            </div>
-
-            {composeOpen && (
+          {composeOpen && (
+            <div className="space-y-3">
+              <ImageGeneratorCard
+                onImageGenerated={(url) => setImageUrl(url)}
+              />
               <ComposeForm
                 content={content}
                 keywords={keywords}
@@ -308,10 +186,10 @@ export function ThreadsMonitorBlock() {
                 onGenerate={handleGenerate}
                 onPost={handlePost}
               />
-            )}
-          </div>
-        )}
-      </div>
-    </section>
+            </div>
+          )}
+        </div>
+      )}
+    </PlatformMonitorShell>
   );
 }

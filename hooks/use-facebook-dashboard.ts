@@ -43,6 +43,7 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
 
   const [keywords, setKeywords] = useState("");
   const [content, setContent] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("");
   const [mediaType, setMediaType] = useState<FBMediaType>("TEXT");
   const [imageUrl, setImageUrl] = useState("");
 
@@ -96,48 +97,60 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
   }, [fetchFBPosts]);
 
   // ── Tạo nội dung bằng AI ────────────────────────────────────────────────────
-  const handleGenerate = useCallback(async () => {
-    setError("");
-    const keywordsArr = keywords
-      .split(",")
-      .map((k) => k.trim())
-      .filter(Boolean);
+  const handleGenerate = useCallback(
+    async (overrideCustomPrompt?: string) => {
+      setError("");
+      const keywordsArr = keywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
 
-    // Puter.js path
-    if (aiProviderId === "puter") {
+      // Puter.js path
+      if (aiProviderId === "puter") {
+        try {
+          const result = await puterGenerate(
+            {
+              keywords: keywordsArr,
+              customPrompt:
+                (typeof overrideCustomPrompt === "string"
+                  ? overrideCustomPrompt
+                  : customPrompt
+                ).trim() || undefined,
+            },
+            aiModel,
+            { onChunk: (acc) => setContent(acc) },
+          );
+          if (result) setContent(result.fullPost);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Puter.js lỗi không xác định",
+          );
+        }
+        return;
+      }
+
+      // Backend path (Gemini / OpenAI)
+      setGenerating(true);
       try {
-        const result = await puterGenerate({ keywords: keywordsArr }, aiModel, {
-          onChunk: (acc) => setContent(acc),
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ keywords: keywordsArr }),
         });
-        if (result) setContent(result.fullPost);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Puter.js lỗi không xác định",
-        );
+        const json = await res.json();
+        if (json.success) {
+          setContent(json.data.fullPost);
+        } else {
+          setError(json.error ?? "Lỗi tạo nội dung");
+        }
+      } catch {
+        setError("Không thể kết nối server");
+      } finally {
+        setGenerating(false);
       }
-      return;
-    }
-
-    // Backend path (Gemini / OpenAI)
-    setGenerating(true);
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keywords: keywordsArr }),
-      });
-      const json = await res.json();
-      if (json.success) {
-        setContent(json.data.fullPost);
-      } else {
-        setError(json.error ?? "Lỗi tạo nội dung");
-      }
-    } catch {
-      setError("Không thể kết nối server");
-    } finally {
-      setGenerating(false);
-    }
-  }, [aiProviderId, aiModel, keywords, puterGenerate]);
+    },
+    [aiProviderId, aiModel, keywords, customPrompt, puterGenerate],
+  );
 
   // ── Đăng ngay hoặc hẹn giờ ─────────────────────────────────────────────────
   const handlePost = useCallback(async () => {
@@ -234,6 +247,8 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
     setKeywords,
     content,
     setContent,
+    customPrompt,
+    setCustomPrompt,
     mediaType,
     setMediaType,
     imageUrl,

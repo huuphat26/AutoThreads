@@ -1,26 +1,32 @@
 // ============================================================
 // AUTO THREADS — Multi-Platform Auto Scheduler
 // ─── Nguồn nội dung: CHỈ lấy từ Content Pool (.xlsx) ───────────
-//   11:50/17:50 → Lấy item pending trong day+slot từ pool
-//   Nếu có → content_ready ngay (không cần browser AI)
+//   06:15/11:15/16:45 → lấy item pending trong day+slot từ pool
+//   Nếu có → content_ready (kèm igImageUrl nếu đã tạo thủ công trên UI)
 //   Nếu không có → bỏ qua slot này (không đăng)
-// ─── Lịch ĐĂNG: 12:00 & 18:00 ──────────────────────────────────
-//   12:00 → Đăng FB (retry tối đa 3 phút)
-//   12:03 → Đăng Threads (retry tối đa 3 phút)
-//   12:06 → Đăng IG (retry tối đa 3 phút)
+// ─── Lịch ĐĂNG: 06:30, 11:30 và 17:00 ──────────────────────────
+//   HH:mm     → Đăng FB   (retry tối đa 3 phút)
+//   HH:mm +3  → Đăng Threads (retry tối đa 3 phút)
+//   HH:mm +6  → Đăng IG   (retry tối đa 3 phút)
+//   (Áp dụng cho cả 3 slot: sáng 06:30, trưa 11:00, tối 17:00)
+// ─── Ảnh (BẮT BUỘC cho CẢ 3 nền tảng) ─────────────────────────
+//   Ưu tiên: igImageUrl từ pool item (tạo bằng Puter.js trên UI)
+//   FB: publishPhoto | Threads: publishImagePost | IG: IMAGE media
+//   Fallback IG: lấy từ ig-auto-images.json nếu igImageUrl trống
 // ─── Cơ chế lỗi ─────────────────────────────────────────────────
 //   Mỗi nền tảng có 3 phút retry. Hết thời gian → đánh dấu failed
 //   → tiếp tục nền tảng tiếp theo đúng lịch.
-// ─── Ghi chú ────────────────────────────────────────────────────
-//   Flow AI (waiting_for_ai / browser Puter.js) đã TẠM DỪNG.
-//   Import nội dung tại /platforms/content-pool trước khi đến giờ.
 // ============================================================
 import cron from "node-cron";
 import { facebookService } from "@/lib/services/facebook.service";
 import { threadsService } from "@/lib/services/threads.service";
-import { instagramService } from "@/lib/services/instagram.service";
+import { instagramService, IGApiError } from "@/lib/services/instagram.service";
 import { getNextIGImage } from "@/lib/ig-image-pool";
-import { getPoolItemForSlot, markPoolItemUsed } from "@/lib/content-pool";
+import {
+  getPoolItemForSlot,
+  markPoolItemUsed,
+  getPoolItemByRecordId,
+} from "@/lib/content-pool";
 import {
   upsertAutoRecord,
   generateAutoId,
@@ -43,20 +49,28 @@ const RETRY_INTERVAL_MS = 30 * 1000; // 30 giây
 
 const SLOTS = [
   {
+    id: "morning" as AutoPostSlot,
+    label: "Buổi sáng (06:30)",
+    /** Chuẩn bị nội dung + tạo ảnh AI: 06:15 */
+    prepCron: "15 6 * * *",
+    /** Bắt đầu đăng: 06:30 */
+    postCron: "30 6 * * *",
+  },
+  {
     id: "noon" as AutoPostSlot,
-    label: "Buổi trưa (12:00)",
-    /** Chuẩn bị AI content: 11:50 */
-    prepCron: "50 11 * * *",
-    /** Bắt đầu đăng: 12:00 */
-    postCron: "0 12 * * *",
+    label: "Buổi trưa (11:30)",
+    /** Chuẩn bị nội dung + tạo ảnh AI: 11:15 (15 phút trước giờ đăng) */
+    prepCron: "15 11 * * *",
+    /** Bắt đầu đăng: 11:30 */
+    postCron: "30 11 * * *",
   },
   {
     id: "evening" as AutoPostSlot,
-    label: "Buổi tối (18:00)",
-    /** Chuẩn bị AI content: 17:50 */
-    prepCron: "50 17 * * *",
-    /** Bắt đầu đăng: 18:00 */
-    postCron: "0 18 * * *",
+    label: "Buổi tối (17:00)",
+    /** Chuẩn bị nội dung + tạo ảnh AI: 16:45 */
+    prepCron: "45 16 * * *",
+    /** Bắt đầu đăng: 17:00 */
+    postCron: "0 17 * * *",
   },
 ];
 
@@ -113,18 +127,17 @@ async function postWithRetry(
   throw new Error(`[Retry hết thời gian 3 phút] ${lastErr}`);
 }
 
-// ─── Phase 1: Cron 11:50/17:50 — Lấy nội dung từ Content Pool ─
+// ─── Phase 1: Cron 06:15/10:45/16:45 — Chuẩn bị nội dung ────────
 
 /**
- * Kiểm tra Content Pool cho slot hôm nay.
- * Nếu có item pending → tạo record content_ready và đăng lúc 12:00/18:00.
- * Nếu không có → bỏ qua (không tạo record, không đăng).
- *
- * ⚠️  Flow waiting_for_ai (browser AI) đã tạm dừng.
+ * Chuẩn bị nội dung cho slot: lấy từ Content Pool.
+ * Gọi từ prepCron (06:15 / 11:15 / 16:45).
+ * Nếu không có item trong pool → bỏ qua slot này.
+ * Ảnh IG: tạo thủ công trên UI (Content Pool → Tạo ảnh AI) trước giờ đăng.
  */
-export function startWaitingForAI(
+export async function startWaitingForAI(
   slot: AutoPostSlot = "noon",
-): AutoPostRecord | null {
+): Promise<AutoPostRecord | null> {
   const todayDate = getTodayVNDate();
   const poolItem = getPoolItemForSlot(todayDate, slot);
 
@@ -133,6 +146,12 @@ export function startWaitingForAI(
       `\n[AutoScheduler] ⏭  [POOL] Không có nội dung cho [${slot}] ngày ${todayDate} — bỏ qua slot này`,
     );
     return null;
+  }
+
+  if (poolItem.date !== todayDate) {
+    console.log(
+      `\n[AutoScheduler] ⚠️  [POOL] Không có nội dung cho [${slot}] ngày ${todayDate} — dùng fallback: "${poolItem.topicLabel}" (${poolItem.date})`,
+    );
   }
 
   const recordId = generateAutoId();
@@ -157,11 +176,21 @@ export function startWaitingForAI(
   upsertAutoRecord(record);
   markPoolItemUsed(poolItem.id, recordId);
 
+  const postLabel =
+    slot === "morning" ? "06:30" : slot === "noon" ? "11:30" : "17:00";
+
   console.log(
-    `\n[AutoScheduler] 📦 [POOL] content_ready [${slot}] — ${poolItem.topicLabel}`,
+    `\n[AutoScheduler] 📦 [PREP] content_ready [${slot}] — ${poolItem.topicLabel}`,
   );
-  console.log(`[AutoScheduler]   FB: ${poolItem.fbContent.slice(0, 60)}…`);
-  console.log(`[AutoScheduler]   Chờ đến giờ đăng (12:00/18:00)`);
+  console.log(`[AutoScheduler]   FB     : ${poolItem.fbContent.slice(0, 60)}…`);
+  console.log(
+    `[AutoScheduler]   Ảnh IG : ${
+      poolItem.igImageUrl
+        ? poolItem.igImageUrl.slice(0, 50) + "…"
+        : "chưa có — sẽ fallback sang image pool lúc đăng"
+    }`,
+  );
+  console.log(`[AutoScheduler]   ⏰ Đăng lúc: ${postLabel}`);
 
   return record;
 }
@@ -203,7 +232,7 @@ export function storeContentForRecord(
     `[AutoScheduler] ✅ [CONTENT READY] Đã lưu nội dung cho ${recordId} — chờ đến giờ đăng`,
   );
 
-  // Nếu đã qua giờ đăng của slot → chạy ngay (trường hợp browser submit muộn)
+  // Nếu đã qua giờ đăng của slot → chạy ngay
   const postTime = getSlotPostTime(record.slot);
   if (Date.now() >= postTime.getTime()) {
     console.log(
@@ -217,14 +246,14 @@ export function storeContentForRecord(
   return record;
 }
 
-/** Lấy giờ đăng (12:00 hoặc 18:00) hôm nay theo VN timezone */
+/** Lấy giờ đăng hôm nay theo VN timezone: 06:30 / 11:30 / 17:00 */
 function getSlotPostTime(slot: AutoPostSlot): Date {
   const now = new Date();
   const vnNow = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
-  const d = new Date(now);
   const vnBase = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE }));
-  if (slot === "noon") vnBase.setHours(12, 0, 0, 0);
-  else vnBase.setHours(18, 0, 0, 0);
+  if (slot === "morning") vnBase.setHours(6, 30, 0, 0);
+  else if (slot === "noon") vnBase.setHours(11, 30, 0, 0);
+  else vnBase.setHours(17, 0, 0, 0);
   // Tính offset VN so với UTC để convert về UTC
   const tzOffset = now.getTime() - vnNow.getTime();
   return new Date(vnBase.getTime() + tzOffset);
@@ -280,25 +309,53 @@ export async function executePlatformPosts(
   record.instagram = { status: "pending" };
   upsertAutoRecord(record);
 
+  // ── Last-chance: nếu igImageUrl vẫn trống, thử lấy lại từ pool item ────
+  // Xử lý trường hợp browser tạo ảnh sau khi startWaitingForAI đã chạy
+  if (!record.igImageUrl) {
+    const freshPoolItem = getPoolItemByRecordId(recordId);
+    if (freshPoolItem?.igImageUrl) {
+      record.igImageUrl = freshPoolItem.igImageUrl;
+      console.log(
+        `[AutoScheduler] 🖼  Last-chance: lấy igImageUrl từ pool item → ${record.igImageUrl.slice(0, 60)}…`,
+      );
+      upsertAutoRecord(record);
+    }
+  }
+
   const fbContent = record.content;
   const threadsContent =
     (record.threadsContent?.trim() ? record.threadsContent : record.content) ??
     record.content;
   const igCaption = record.igCaption;
 
+  const slotTime =
+    record.slot === "morning"
+      ? "06:30"
+      : record.slot === "noon"
+        ? "11:30"
+        : "17:00";
   console.log(`\n[AutoScheduler] ═══════════════════════════════════`);
   console.log(`[AutoScheduler] 🚀 BẮT ĐẦU ĐĂNG [${record.slot}] — ${recordId}`);
   console.log(
-    `[AutoScheduler]   12:00 FB → 12:03 Threads → 12:06 IG (retry 3 phút/platform)`,
+    `[AutoScheduler]   ${slotTime} FB → +3min Threads → +6min IG (retry 3 phút/platform)`,
   );
   console.log(`[AutoScheduler] ═══════════════════════════════════`);
 
+  // ── Ảnh chung cho cả 3 nền tảng ─────────────────────────────
+  const sharedImageUrl = record.igImageUrl;
+
   // ── [1/3] Facebook — 12:00 ────────────────────────────────────
   const fbStart = Date.now();
-  console.log(`\n[AutoScheduler] 📘 [1/3] Đăng lên Facebook (retry 3 phút)...`);
+  console.log(
+    `\n[AutoScheduler] 📘 [1/3] Đăng lên Facebook ${
+      sharedImageUrl ? "(ảnh + caption)" : "(text only — chưa có ảnh)"
+    } (retry 3 phút)...`,
+  );
   try {
     await postWithRetry(async () => {
-      const fbResult = await facebookService.publishText(fbContent);
+      const fbResult = sharedImageUrl
+        ? await facebookService.publishPhoto(sharedImageUrl, fbContent)
+        : await facebookService.publishText(fbContent);
       const fbPostId = fbResult.kind !== "video" ? fbResult.postId : undefined;
       const fbPermalink =
         fbResult.kind !== "video"
@@ -315,7 +372,8 @@ export async function executePlatformPosts(
       upsertFBPost({
         id: `auto_fb_${record.id}`,
         message: fbContent,
-        mediaType: "TEXT",
+        mediaType: sharedImageUrl ? "IMAGE" : "TEXT",
+        imageUrl: sharedImageUrl ?? undefined,
         scheduledAt: record.triggeredAt,
         postedAt: fbPostedAt,
         fbPostId: fbPostId ?? undefined,
@@ -326,7 +384,11 @@ export async function executePlatformPosts(
         source: "auto",
       });
       upsertAutoRecord(record);
-      console.log(`[AutoScheduler] ✅ Facebook OK — Post ID: ${fbPostId}`);
+      console.log(
+        `[AutoScheduler] ✅ Facebook OK — Post ID: ${fbPostId}${
+          sharedImageUrl ? " (với ảnh)" : ""
+        }`,
+      );
     }, "Facebook");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -347,19 +409,30 @@ export async function executePlatformPosts(
 
   // ── [2/3] Threads — 12:03 ─────────────────────────────────────
   const thStart = Date.now();
-  console.log(`\n[AutoScheduler] 🧵 [2/3] Đăng lên Threads (retry 3 phút)...`);
+  console.log(
+    `\n[AutoScheduler] 🧵 [2/3] Đăng lên Threads ${
+      sharedImageUrl ? "(ảnh + caption)" : "(text only — chưa có ảnh)"
+    } (retry 3 phút)...`,
+  );
   try {
     await postWithRetry(async () => {
-      const tResult = await threadsService.publishTextPost(
-        threadsContent.slice(0, 480),
-      );
+      const tResult = sharedImageUrl
+        ? await threadsService.publishImagePost(
+            sharedImageUrl,
+            threadsContent.slice(0, 500),
+          )
+        : await threadsService.publishTextPost(threadsContent.slice(0, 500));
       record.threads = {
         status: "posted",
         postId: tResult.postId,
         postedAt: new Date().toISOString(),
       };
       upsertAutoRecord(record);
-      console.log(`[AutoScheduler] ✅ Threads OK — Post ID: ${tResult.postId}`);
+      console.log(
+        `[AutoScheduler] ✅ Threads OK — Post ID: ${tResult.postId}${
+          sharedImageUrl ? " (với ảnh)" : ""
+        }`,
+      );
     }, "Threads");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -378,62 +451,106 @@ export async function executePlatformPosts(
     await sleep(thWait);
   }
 
-  // ── [3/3] Instagram — 12:06 ───────────────────────────────────
+  // ── [3/3] Instagram — sau Threads 3 phút ─────────────────────
   console.log(
     `\n[AutoScheduler] 📸 [3/3] Đăng lên Instagram (retry 3 phút)...`,
   );
-  const igImage = getNextIGImage();
-  if (!igImage) {
-    record.instagram = {
-      status: "failed",
-      errorMessage: "Pool ảnh IG trống. Thêm URL vào data/ig-auto-images.json",
-    };
-    upsertAutoRecord(record);
-    console.error(`[AutoScheduler] ❌ Instagram thất bại: pool ảnh trống`);
-  } else {
-    record.igImageUrl = igImage.url;
-    try {
-      await postWithRetry(async () => {
-        const igResult = await instagramService.publish({
-          caption: igCaption,
-          mediaType: "IMAGE",
-          imageUrl: igImage.url,
-        });
-        const igPostedAt = new Date().toISOString();
-        record.instagram = {
-          status: "posted",
-          postId: igResult.mediaId,
-          permalinkUrl: igResult.permalink ?? undefined,
-          postedAt: igPostedAt,
-        };
-        upsertIGPost({
-          id: `auto_ig_${record.id}`,
-          caption: igCaption,
-          mediaType: "IMAGE",
-          imageUrl: igImage.url,
-          scheduledAt: record.triggeredAt,
-          postedAt: igPostedAt,
-          igContainerId: undefined,
-          igMediaId: igResult.mediaId,
-          igPermalinkUrl: igResult.permalink ?? undefined,
-          status: "posted",
-          topic: record.topic || undefined,
-          topicLabel: record.topicLabel || undefined,
-          source: "auto",
-        });
-        upsertAutoRecord(record);
-        console.log(
-          `[AutoScheduler] ✅ Instagram OK — Media ID: ${igResult.mediaId}`,
-        );
-      }, "Instagram");
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      record.instagram = { status: "failed", errorMessage: msg };
-      upsertAutoRecord(record);
-      console.error(
-        `[AutoScheduler] ❌ Instagram thất bại (hết retry): ${msg}`,
-      );
+  const igDeadline = Date.now() + RETRY_WINDOW_MS;
+  const igTriedUrls = new Set<string>();
+  let igPosted = false;
+  let igLastErr = "";
+  let igAttempt = 0;
+
+  // Ảnh ưu tiên: ảnh chung đã dùng cho FB/Threads (từ pool item / Puter.js UI)
+  const preferredImageUrl = sharedImageUrl;
+
+  while (Date.now() < igDeadline) {
+    // Lần đầu thử preferredImageUrl; nếu Meta từ chối (9004) mới fallback sang pool
+    const igImage =
+      preferredImageUrl && !igTriedUrls.has(preferredImageUrl)
+        ? { url: preferredImageUrl }
+        : getNextIGImage();
+
+    if (!igImage) {
+      igLastErr = "Pool ảnh IG trống. Thêm URL vào data/ig-auto-images.json";
+      break;
     }
+
+    // Đã thử hết tất cả ảnh trong pool → dừng tránh vòng lặp vô hạn
+    if (igTriedUrls.has(igImage.url)) {
+      igLastErr = `Đã thử tất cả ảnh trong pool nhưng Meta từ chối tất cả. Lỗi cuối: ${igLastErr}`;
+      break;
+    }
+    igTriedUrls.add(igImage.url);
+    igAttempt++;
+    record.igImageUrl = igImage.url;
+
+    try {
+      const igResult = await instagramService.publish({
+        caption: igCaption,
+        mediaType: "IMAGE",
+        imageUrl: igImage.url,
+      });
+      const igPostedAt = new Date().toISOString();
+      record.instagram = {
+        status: "posted",
+        postId: igResult.mediaId,
+        permalinkUrl: igResult.permalink ?? undefined,
+        postedAt: igPostedAt,
+      };
+      upsertIGPost({
+        id: `auto_ig_${record.id}`,
+        caption: igCaption,
+        mediaType: "IMAGE",
+        imageUrl: igImage.url,
+        scheduledAt: record.triggeredAt,
+        postedAt: igPostedAt,
+        igContainerId: undefined,
+        igMediaId: igResult.mediaId,
+        igPermalinkUrl: igResult.permalink ?? undefined,
+        status: "posted",
+        topic: record.topic || undefined,
+        topicLabel: record.topicLabel || undefined,
+        source: "auto",
+      });
+      upsertAutoRecord(record);
+      console.log(
+        `[AutoScheduler] ✅ Instagram OK — Media ID: ${igResult.mediaId}${
+          igAttempt > 1 ? ` (ảnh thứ ${igAttempt})` : ""
+        }`,
+      );
+      igPosted = true;
+      break;
+    } catch (err) {
+      const apiErr = err instanceof IGApiError ? err : null;
+      igLastErr = err instanceof Error ? err.message : String(err);
+      const remaining = Math.round((igDeadline - Date.now()) / 1000);
+
+      // Lỗi 9004: URL ảnh bị Meta từ chối → xoay sang ảnh tiếp theo ngay lập tức
+      if (apiErr?.code === 9004) {
+        console.warn(
+          `[AutoScheduler] ⚠️  IG ảnh bị Meta từ chối (9004): ${igImage.url} — thử ảnh tiếp theo...`,
+        );
+        continue;
+      }
+
+      // Các lỗi khác → chờ rồi retry
+      console.warn(
+        `[AutoScheduler] ⚠️  Instagram thất bại lần ${igAttempt} (còn ${remaining}s): ${igLastErr}`,
+      );
+      if (Date.now() + RETRY_INTERVAL_MS < igDeadline) {
+        await sleep(RETRY_INTERVAL_MS);
+      } else {
+        igLastErr = `[Retry hết thời gian 3 phút] ${igLastErr}`;
+        break;
+      }
+    }
+  }
+
+  if (!igPosted) {
+    record.instagram = { status: "failed", errorMessage: igLastErr };
+    upsertAutoRecord(record);
+    console.error(`[AutoScheduler] ❌ Instagram thất bại: ${igLastErr}`);
   }
 
   // ── Tính overallStatus ────────────────────────────────────────
@@ -507,7 +624,9 @@ export function startAutoScheduler(): void {
     const prepJob = cron.schedule(
       slot.prepCron,
       () => {
-        startWaitingForAI(slot.id);
+        startWaitingForAI(slot.id).catch((err) => {
+          console.error(`[AutoScheduler] ❌ Chuẩn bị [${slot.id}] lỗi:`, err);
+        });
       },
       { timezone: TIMEZONE },
     );
@@ -542,10 +661,10 @@ export function startAutoScheduler(): void {
     `[AutoScheduler]   Nguồn nội dung: Content Pool (.xlsx) — AI flow tạm dừng`,
   );
   console.log(
-    `[AutoScheduler]   Chuẩn bị: 11:50/17:50 → lấy từ pool (bỏ qua nếu không có)`,
+    `[AutoScheduler]   Chuẩn bị: 06:15/10:45/16:45 → lấy pool (ảnh chung cho FB+Threads+IG từ UI hoặc fallback image pool)`,
   );
   console.log(
-    `[AutoScheduler]   Đăng: 12:00 FB → 12:03 Threads → 12:06 IG (retry 3 phút/platform)`,
+    `[AutoScheduler]   Đăng: HH:mm FB → +3min Threads → +6min IG (retry 3 phút/platform)`,
   );
 }
 

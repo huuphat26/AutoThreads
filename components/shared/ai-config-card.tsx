@@ -103,7 +103,8 @@ export function AIConfigCard({
             </div>
 
             {isPuter && (
-              <div className="px-3 py-2.5 flex flex-wrap gap-1.5">
+              <div className="px-3 py-2.5">
+                <div className="flex flex-wrap gap-1.5">
                 {puterProvider.models.map((m) => {
                   const active = m === aiProvider.model;
                   return (
@@ -126,6 +127,7 @@ export function AIConfigCard({
                     </button>
                   );
                 })}
+              </div>
               </div>
             )}
           </div>

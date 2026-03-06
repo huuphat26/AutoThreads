@@ -58,7 +58,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const slot: AutoPostSlot = body.slot === "evening" ? "evening" : "noon";
+    const slot: AutoPostSlot =
+      body.slot === "morning"
+        ? "morning"
+        : body.slot === "evening"
+          ? "evening"
+          : "noon";
 
     // Chạy bất đồng bộ — trả về ngay để tránh timeout 30s của serverless
     triggerAutoPost(slot).catch((err) => {

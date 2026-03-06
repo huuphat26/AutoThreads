@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
       dateNF: "yyyy-mm-dd",
     }) as unknown[][];
 
-    // ── Map rows → ContentPoolItem (skip header row) ────────────────────────
-    // Column order:
-    // 0=Date | 1=Slot | 2=FB Post Time | 3=Threads Post Time | 4=IG Post Time
-    // 5=Topic Label | 6=FB Content | 7=Threads Content | 8=IG Caption
-    // 9=IG Image URL | 10=Status
+    // ── Map rows → ContentPoolItem (skip header row) ————————————————
+    // Column order (new format):
+    // 0=Date | 1=Slot (morning/lunch/evening) | 2=FB Post Time
+    // 3=Threads Post Time | 4=IG Post Time | 5=Title (topicLabel)
+    // 6=Dish Name (skip) | 7=Ingredients (skip) | 8=Caption_Formatted
+    // 9=Hashtags | 10=Image_URL | 11=Image_Prompt
 
     const items: Omit<ContentPoolItem, "id" | "importedAt">[] = [];
     const errors: string[] = [];
@@ -47,12 +48,27 @@ export async function POST(req: NextRequest) {
       if (!row || !row[0]) continue; // skip empty rows
 
       const rawDate = String(row[0] ?? "").trim();
-      const rawSlot = String(row[1] ?? "").trim().toLowerCase();
+      const rawSlot = String(row[1] ?? "")
+        .trim()
+        .toLowerCase();
       const topicLabel = String(row[5] ?? "").trim();
-      const fbContent = String(row[6] ?? "").trim();
-      const threadsContent = String(row[7] ?? "").trim();
-      const igCaption = String(row[8] ?? "").trim();
-      const igImageUrl = String(row[9] ?? "").trim() || undefined;
+      const caption = String(row[8] ?? "").trim();
+      const hashtags = String(row[9] ?? "").trim();
+      const rawImageUrl = String(row[10] ?? "").trim();
+      const imagePrompt = String(row[11] ?? "").trim() || undefined;
+      const igImageUrl: string | undefined =
+        rawImageUrl && rawImageUrl !== "None" && rawImageUrl.startsWith("http")
+          ? rawImageUrl
+          : undefined;
+
+      // Assemble platform content from caption + hashtags
+      const fbContent = hashtags ? `${caption}\n\n${hashtags}` : caption;
+      const threadsContent =
+        caption.length > 480 ? caption.slice(0, 477) + "..." : caption;
+      const igCaption = hashtags
+        ? `${caption.slice(0, 250)}\n\n${hashtags}`
+        : caption.slice(0, 250);
+      // igImageUrl already set above from Image_URL column
 
       // Validate date format yyyy-mm-dd
       if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
@@ -60,14 +76,24 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Normalize slot
-      const slot: AutoPostSlot = rawSlot.includes("noon")
-        ? "noon"
-        : rawSlot.includes("evening")
-          ? "evening"
-          : rawSlot === "noon" || rawSlot === "evening"
-            ? (rawSlot as AutoPostSlot)
-            : null!;
+      // Normalize slot: Excel dùng "morning"/"lunch"/"evening"
+      // "lunch" và các biến thể → "noon" (tên nội bộ)
+      const slot: AutoPostSlot =
+        rawSlot === "morning" ||
+        rawSlot === "sang" ||
+        rawSlot.includes("morning")
+          ? "morning"
+          : rawSlot === "lunch" ||
+              rawSlot === "noon" ||
+              rawSlot === "trua" ||
+              rawSlot.includes("noon") ||
+              rawSlot.includes("lunch")
+            ? "noon"
+            : rawSlot === "evening" ||
+                rawSlot === "toi" ||
+                rawSlot.includes("evening")
+              ? "evening"
+              : null!;
 
       if (!slot) {
         errors.push(`Row ${i + 1}: slot không hợp lệ "${rawSlot}"`);
@@ -75,7 +101,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (!fbContent && !threadsContent && !igCaption) {
-        errors.push(`Row ${i + 1}: không có nội dung nào`);
+        errors.push(`Row ${i + 1}: caption trống`);
         continue;
       }
 
@@ -87,6 +113,7 @@ export async function POST(req: NextRequest) {
         threadsContent,
         igCaption,
         igImageUrl,
+        imagePrompt,
         status: "pending",
       });
     }

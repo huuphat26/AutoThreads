@@ -29,9 +29,9 @@ export const PUTER_MODELS: string[] = ["gpt-4o-mini", "gpt-5.2"];
 export const PUTER_DEFAULT_MODEL = "gpt-5.2";
 
 // ─── PromptVariant ────────────────────────────────────────────────────────────
-// Puter proxy OpenAI API → dùng cùng prompt template với OpenAI provider
+// Puter là provider duy nhất → dùng prompt template "puter"
 
-export const PUTER_PROMPT_VARIANT = "openai" as const;
+export const PUTER_PROMPT_VARIANT = "puter" as const;
 
 // ─── Provider Info (dùng trong getAvailableProviders) ────────────────────────
 

@@ -4,11 +4,11 @@ import { createProvider } from "@/lib/ai/provider";
 import { parseAIResponse } from "@/lib/ai/parser";
 import {
   buildSystemPromptGemini,
-  buildSystemPromptOpenAI,
+  buildSystemPromptPuter,
 } from "@/lib/prompts/system";
 import {
   buildUserPromptGemini,
-  buildUserPromptOpenAI,
+  buildUserPromptPuter,
   type PromptContext,
 } from "@/lib/prompts/user";
 
@@ -33,13 +33,13 @@ function getNowContext(): { currentTime: string; dayOfWeek: string } {
 }
 
 function buildPrompts(
-  variant: "gemini" | "openai",
+  variant: "gemini" | "puter",
   ctx: PromptContext,
 ): { systemPrompt: string; userPrompt: string } {
-  if (variant === "openai") {
+  if (variant === "puter") {
     return {
-      systemPrompt: buildSystemPromptOpenAI(),
-      userPrompt: buildUserPromptOpenAI(ctx),
+      systemPrompt: buildSystemPromptPuter(),
+      userPrompt: buildUserPromptPuter(ctx),
     };
   }
   return {

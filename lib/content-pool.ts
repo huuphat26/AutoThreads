@@ -41,18 +41,24 @@ export function generatePoolId(): string {
 
 // ─── Public API ───────────────────────────────────────────────
 
-/** Lấy item đang pending cho ngày + slot cụ thể */
+/** Lấy item đang pending cho ngày + slot cụ thể.
+ *  Nếu không có item đúng ngày → fallback sang item pending gần nhất cùng slot. */
 export function getPoolItemForSlot(
   date: string,
   slot: AutoPostSlot,
 ): ContentPoolItem | null {
   const store = readPool();
-  return (
-    store.items.find(
-      (item) =>
-        item.date === date && item.slot === slot && item.status === "pending",
-    ) ?? null
+  const exact = store.items.find(
+    (item) =>
+      item.date === date && item.slot === slot && item.status === "pending",
   );
+  if (exact) return exact;
+
+  // Fallback: oldest pending item for the same slot (any date)
+  const pending = store.items
+    .filter((item) => item.slot === slot && item.status === "pending")
+    .sort((a, b) => a.date.localeCompare(b.date));
+  return pending[0] ?? null;
 }
 
 /** Đánh dấu đã dùng và link với AutoPostRecord */
@@ -112,10 +118,15 @@ export function importPoolItems(
     }
   }
 
-  // Sắp xếp theo ngày → slot (noon trước evening)
+  // Sắp xếp theo ngày → slot (morning → noon → evening)
+  const SLOT_ORDER: Record<string, number> = {
+    morning: 0,
+    noon: 1,
+    evening: 2,
+  };
   store.items.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return a.slot === "noon" ? -1 : 1;
+    return (SLOT_ORDER[a.slot] ?? 1) - (SLOT_ORDER[b.slot] ?? 1);
   });
 
   writePool(store);
@@ -145,6 +156,27 @@ export function deletePoolItem(id: string): boolean {
   store.items.splice(idx, 1);
   writePool(store);
   return true;
+}
+
+/** Cập nhật igImageUrl cho một pool item */
+export function updatePoolItemImageUrl(
+  id: string,
+  igImageUrl: string,
+): boolean {
+  const store = readPool();
+  const idx = store.items.findIndex((i) => i.id === id);
+  if (idx < 0) return false;
+  store.items[idx].igImageUrl = igImageUrl;
+  writePool(store);
+  return true;
+}
+
+/** Trả về pool item đã liên kết với AutoPostRecord id (sau khi startWaitingForAI chạy) */
+export function getPoolItemByRecordId(
+  recordId: string,
+): ContentPoolItem | null {
+  const store = readPool();
+  return store.items.find((i) => i.recordId === recordId) ?? null;
 }
 
 /** Xoá tất cả items pending (giữ lại đã used) */

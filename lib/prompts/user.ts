@@ -22,44 +22,29 @@ export interface PromptContext {
  * Thông tin chủ đề được mô tả rõ để bổ sung cho responseSchema.
  */
 export function buildUserPromptGemini(ctx: PromptContext): string {
-  return `
-  Bạn là người viết nội dung mạng xã hội chuyên đăng series “Mỗi ngày 1 công thức nước ép”.
-Mục tiêu: người đọc lướt thấy → hiểu công thức trong vài giây → muốn lưu bài để làm thử.
-  Viết 1 bài cho series “Mỗi ngày 1 công thức nước ép”.
-Thông tin (có thể trống):
-TenCongThuc:
-NguyenLieuChinh:
-DungCu: ép chậm hoặc xay
-Yêu cầu:
-Công thức là trung tâm.
-Không kể chuyện.
-Không nói detox, giảm cân, trị mụn.
-Không chèn thời gian/ngày.
-Không dùng ký hiệu in đậm.
-Đọc là làm được ngay.`;
+  if (ctx.customPrompt) {
+    return `Hãy viết 1 bài cho series "Hôm nay ăn gì" (#homnayangi) dựa trên mô tả sau:\n${ctx.customPrompt}\n\nThời gian: ${ctx.currentTime} — ${ctx.dayOfWeek}.`;
+  }
+  const [h] = ctx.currentTime.split(":").map(Number);
+  const meal = h < 10 ? "bữa sáng" : h < 14 ? "bữa trưa" : "bữa tối";
+  return `Viết 1 bài nhật ký ${meal} cho series "Hôm nay ăn gì" (#homnayangi).
+Chủ đề: ${ctx.topic.label}
+Gợi ý nội dung: ${ctx.topic.description}${ctx.keywords?.length ? "\nƯu tiên nhắc đến: " + ctx.keywords.join(", ") : ""}${ctx.lastTopic ? "\nBài trước nói về: " + ctx.lastTopic + " — tránh chọn lại." : ""}`;
 }
 
-// ─── OpenAI ──────────────────────────────────────────────────────────────────
+// ─── Puter.js ──────────────────────────────────────────────────────────────────────
 
 /**
- * User prompt cho OpenAI.
+ * User prompt cho Puter.js (browser) và Puter API (server).
  * Cấu trúc tối giản — system prompt đã chứa toàn bộ quy tắc.
  */
-export function buildUserPromptOpenAI(ctx: PromptContext): string {
-  return `
-  Bạn là người viết nội dung mạng xã hội chuyên đăng series “Mỗi ngày 1 công thức nước ép”.
-Mục tiêu: người đọc lướt thấy → hiểu công thức trong vài giây → muốn lưu bài để làm thử.
-  Viết 1 bài cho series “Mỗi ngày 1 công thức nước ép”.
-Thông tin (có thể trống):
-TenCongThuc:
-NguyenLieuChinh:
-DungCu: ép chậm hoặc xay
-Yêu cầu:
-Công thức là trung tâm.
-Không kể chuyện.
-Không nói detox, giảm cân, trị mụn.
-Không chèn thời gian/ngày.
-Không dùng ký hiệu in đậm.
-Đọc là làm được ngay.
-`;
+export function buildUserPromptPuter(ctx: PromptContext): string {
+  if (ctx.customPrompt) {
+    return `Hãy viết 1 bài cho series "Hôm nay ăn gì" dựa trên mô tả sau:\n${ctx.customPrompt}`;
+  }
+  const [h] = ctx.currentTime.split(":").map(Number);
+  const meal = h < 10 ? "bữa sáng" : h < 14 ? "bữa trưa" : "bữa tối";
+  return `Viết 1 bài nhật ký ${meal} cho series "Hôm nay ăn gì" (#homnayangi).
+Chủ đề: ${ctx.topic.label}
+Gợi ý nội dung: ${ctx.topic.description}${ctx.keywords?.length ? "\nƯu tiên nhắm đến: " + ctx.keywords.join(", ") : ""}${ctx.lastTopic ? "\nBài trước nói về: " + ctx.lastTopic + " — chọn món khác." : ""}`;
 }

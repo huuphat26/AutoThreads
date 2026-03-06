@@ -12,79 +12,80 @@ export interface TopicConfig {
 }
 
 // ─── Danh sách chủ đề — chỉnh sửa tuỳ ý ────────────────────────────────────
+// Series: "Hôm nay ăn gì" (#homnayangi) — Eat Clean mỗi ngày 3 bữa
 
 export const TOPICS: TopicConfig[] = [
   {
-    id: "detox",
-    label: "Thanh lọc & Cơ thể",
+    id: "sang",
+    label: "Bữa sáng Eat Clean",
     description:
-      "cơ thể phụ nữ văn phòng hay đầy bụng, táo bón, mỡ bụng dưới, gan nhiễm mỡ nhẹ — chia sẻ nhẹ nhàng, đồng cảm, không giảng giải",
+      "bữa sáng nhẹ mà no lâu: yến mạch, toast bơ trứng, cháo dinh dưỡng, smoothie xanh, cơm nắm — ưu tiên protein + tinh bột phức để có năng lượng cả buổi sáng",
   },
   {
-    id: "gut_health",
-    label: "Sức khoẻ đường ruột",
+    id: "trua",
+    label: "Bữa trưa Bento",
     description:
-      "vi khuẩn đường ruột, hội chứng ruột kích thích, đầy hơi sau bữa ăn — viết gần gũi như người đã trải qua, không dùng thuật ngữ y khoa",
+      "hộp cơm bento văn phòng: cơm + protein (gà, cá, thịt nạc, đậu hũ, bò) + rau — cân bằng đủ chất, no vừa phải, không buồn ngủ sau ăn",
   },
   {
-    id: "beauty",
-    label: "Da dẻ & Sắc vóc",
+    id: "toi",
+    label: "Bữa tối nhẹ dạ",
     description:
-      "da xỉn màu, thiếu nước, ngủ muộn làm hỏng sắc vóc — gợi ý chăm sóc từ bên trong bằng rau củ quả, không bán kem/serum",
+      "bữa tối nhẹ nhàng, ăn xong không nặng bụng: canh, súp, salad, cháo — nấu đơn giản dưới 20 phút, không béo no, dễ ngủ",
   },
   {
-    id: "energy",
-    label: "Năng lượng & Tinh thần",
+    id: "bento",
+    label: "Mealprep & Bento",
     description:
-      "mệt mỏi buổi chiều, não sương mù, uống cà phê vẫn buồn ngủ — liên hệ tới dinh dưỡng và hydration, không bán thuốc bổ",
+      "chuẩn bị thức ăn theo tuần, xếp hộp bento ngăn nắp, tiết kiệm thời gian buổi sáng — chia sẻ cách prep thực tế và ideas xếp ngăn đẹp",
   },
   {
-    id: "weight",
-    label: "Giảm mỡ & Vóc dáng",
+    id: "viet_clean",
+    label: "Món Việt Eat Clean",
     description:
-      "mỡ bụng dưới chai lì, bụng to dù ăn ít — phân tích đơn giản về insulin, cortisol mà không dùng từ chuyên môn; gợi ý thực phẩm",
+      "biến tấu món Việt truyền thống theo kiểu nhẹ hơn: ít dầu, ít muối, giữ nguyên vị — canh, xào, hấp, kho nhẹ với nguyên liệu dễ tìm ở chợ",
   },
   {
-    id: "habit",
-    label: "Thói quen lành mạnh",
+    id: "nhat_han",
+    label: "Món Nhật & Hàn",
     description:
-      "thói quen nhỏ dễ làm: uống nước ấm sáng, ăn rau trước cơm, đi bộ 10 phút sau ăn — tone truyền động lực, không phán xét",
+      "bento kiểu Nhật, mì soba, udon, kimbap, kimchi, teriyaki, trứng hấp chawanmushi — nguồn cảm hứng Đông Á, nguyên liệu mua được ở siêu thị Việt Nam",
   },
   {
-    id: "myth",
-    label: "Sai lầm phổ biến",
+    id: "protein",
+    label: "Protein mỗi ngày",
     description:
-      "nhịn ăn sáng để giảm cân, uống nước đá hại dạ dày, kiêng trái cây vì đường — debunk nhẹ nhàng, không khoa trương",
+      "nguồn đạm đa dạng: trứng, ức gà, cá hồi, tôm, đậu hũ, thịt nạc, cá thu — cách chế biến đơn giản để ăn đủ đạm mà không ngán",
   },
   {
-    id: "drink_choice",
-    label: "Lựa chọn đồ uống",
+    id: "quick",
+    label: "Nhanh 5–15 phút",
     description:
-      "so sánh nước ngọt / cà phê / trà sữa vs nước ép rau củ — không phán xét lựa chọn của người đọc, chỉ gợi mở thay đổi nhỏ",
+      "công thức cho ngày bận rộn: xào nhanh, salad trộn, cháo sẵn, cơm nắm — không cần kỹ năng nấu cao, nguyên liệu ít, dọn dẹp nhanh",
+  },
+  {
+    id: "budget",
+    label: "Budget lành mạnh",
+    description:
+      "ăn ngon, đủ chất với 50–70k/bữa: lựa nguyên liệu rẻ, dinh dưỡng cao — trứng, đậu hũ, rau cải, gạo lứt, cá biển, thịt nạc xay",
+  },
+  {
+    id: "eat_clean",
+    label: "Nguyên tắc Eat Clean",
+    description:
+      "ăn thật, ít chế biến: hạn chế đường tinh, dầu nhiều, thức ăn đóng gói — chia sẻ nhẹ nhàng, không phán xét, chỉ gợi ý thay thế đơn giản",
   },
   {
     id: "story",
-    label: "Câu chuyện đời thường",
+    label: "Nhật ký ăn uống",
     description:
-      "quan sát đời thường: bữa trưa văn phòng, giờ nghỉ ngắn, áp lực deadline — xây dựng đồng cảm, dẫn dắt tự nhiên sang healthy",
+      "ghi chép thật: hôm nay ăn gì, cảm giác thế nào, ngày lười thì ra sao — tone chân thật, gần gũi, không hoàn hảo cũng không sao",
   },
   {
-    id: "community",
-    label: "Kết nối & Chia sẻ",
+    id: "chay",
+    label: "Bữa chay nhẹ",
     description:
-      "hành trình chăm sóc bản thân không hoàn hảo, lắng nghe cơ thể, chia sẻ thật — tạo cảm giác cộng đồng phụ nữ đồng hành",
-  },
-  {
-    id: "season",
-    label: "Theo mùa & Thời tiết",
-    description:
-      "nóng bức mất nước, trời lạnh ít uống nước, giao mùa dễ ốm — gắn với thực tế thời tiết để nội dung luôn tươi mới",
-  },
-  {
-    id: "sleep",
-    label: "Giấc ngủ & Phục hồi",
-    description:
-      "ngủ muộn sau 12h, khó ngủ vì lo nghĩ, dậy vẫn mệt — kết nối với ăn uống và detox nhẹ, không bán thực phẩm chức năng",
+      "ngày ăn chay hoặc ăn thực vật: đậu hũ non, nấm, rau củ, cháo chay, salad — không cần mỗi ngày, một bữa đổi vị cũng ổn",
   },
 ];
 

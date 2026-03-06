@@ -63,6 +63,7 @@ export function useDashboard() {
   // Compose form state
   const [content, setContent] = useState("");
   const [keywords, setKeywords] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("");
   const [mediaType, setMediaType] = useState<ThreadsManualMediaType>("TEXT");
   const [imageUrl, setImageUrl] = useState("");
   const [topicTag, setTopicTag] = useState("");
@@ -372,7 +373,7 @@ export function useDashboard() {
   );
 
   // ── Tạo nội dung AI ──
-  const handleGenerate = async () => {
+  const handleGenerate = async (overrideCustomPrompt?: string) => {
     setError("");
 
     // ── Puter.js path: client-side, không cần API key ──
@@ -383,7 +384,14 @@ export function useDashboard() {
         .filter(Boolean);
       try {
         const result = await puterGenerate(
-          { keywords: keywordsArr },
+          {
+            keywords: keywordsArr,
+            customPrompt:
+              (typeof overrideCustomPrompt === "string"
+                ? overrideCustomPrompt
+                : customPrompt
+              ).trim() || undefined,
+          },
           aiProvider.model,
           {
             // Cập nhật content thờ real-time trong khi stream
@@ -507,6 +515,8 @@ export function useDashboard() {
     setContent,
     keywords,
     setKeywords,
+    customPrompt,
+    setCustomPrompt,
     // AI provider
     aiProvider,
     aiProviders,
