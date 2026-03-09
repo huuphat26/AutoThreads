@@ -48,8 +48,8 @@ function PlatformScheduleRow({
           onClose={() => setModal(null)}
         />
       )}
-      <div className="flex items-center gap-3 px-4 py-2 border-b border-slate-50 last:border-0">
-        <span className="text-xs text-slate-500 w-20 shrink-0">
+      <div className="flex items-center gap-2 px-2 sm:px-4 py-2 border-b border-slate-50 last:border-0">
+        <span className="text-xs text-slate-500 w-14 sm:w-20 shrink-0">
           {platformLabel}
         </span>
         <span className="text-xs font-mono font-semibold text-slate-600 shrink-0">
@@ -67,7 +67,7 @@ function PlatformScheduleRow({
             onClick={() => setModal("error")}
             className="text-[10px] text-rose-400 hover:text-rose-600 shrink-0 underline"
           >
-            Xem lỗi
+            Lỗi
           </button>
         )}
         {result?.status === "posted" && (
@@ -75,7 +75,7 @@ function PlatformScheduleRow({
             onClick={() => setModal("success")}
             className="text-[10px] text-emerald-500 hover:text-emerald-700 shrink-0 underline"
           >
-            Xem bài
+            Xem
           </button>
         )}
       </div>
@@ -143,31 +143,33 @@ export function TodaySlotCard({
       </div>
 
       {/* Timeline bar */}
-      <div className="flex items-center gap-1 px-4 py-1.5 bg-slate-50/60 border-b border-slate-100 text-[9px] text-slate-400">
-        <span className="font-mono font-semibold">{prepTime}</span>
-        <span>→ Chuẩn bị</span>
-        <span className="mx-0.5 text-slate-200">·</span>
-        <span className="font-mono font-semibold">{baseTime}</span>
-        <span>→ FB</span>
-        <span className="mx-0.5 text-slate-200">·</span>
-        <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES)}</span>
-        <span>→ Threads</span>
-        <span className="mx-0.5 text-slate-200">·</span>
-        <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES * 2)}</span>
-        <span>→ IG</span>
-        {isContentReady && (
-          <span className="ml-auto text-sky-500 font-semibold">✓ Sẵn sàng đăng</span>
-        )}
-        {record?.overallStatus === "waiting_for_ai" && (
-          <span className="ml-auto text-violet-500 font-semibold animate-pulse">
-            ⚡ Đang soạn AI…
-          </span>
-        )}
-        {record?.overallStatus === "no_image" && (
-          <span className="ml-auto text-rose-500 font-semibold">
-            ❌ Thiếu ảnh
-          </span>
-        )}
+      <div className="overflow-x-auto px-2 sm:px-4 py-1.5 bg-slate-50/60 border-b border-slate-100 text-[9px] sm:text-[9px] text-slate-400">
+        <div className="flex items-center gap-1 min-w-max">
+          <span className="font-mono font-semibold">{prepTime}</span>
+          <span>→</span>
+          <span className="hidden sm:inline">Chuẩn bị</span>
+          <span className="sm:hidden">Prep</span>
+          <span className="mx-0.5 text-slate-200">·</span>
+          <span className="font-mono font-semibold">{baseTime}</span>
+          <span>→FB</span>
+          <span className="mx-0.5 text-slate-200">·</span>
+          <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES)}</span>
+          <span>→Threads</span>
+          <span className="mx-0.5 text-slate-200">·</span>
+          <span className="font-mono font-semibold">{slotTimeLabel(slotId, DELAY_MINUTES * 2)}</span>
+          <span>→IG</span>
+          {isContentReady && (
+            <span className="ml-auto text-sky-500 font-semibold whitespace-nowrap">✓ Sẵn sàng</span>
+          )}
+          {record?.overallStatus === "waiting_for_ai" && (
+            <span className="ml-auto text-violet-500 font-semibold animate-pulse whitespace-nowrap">
+              ⚡ AI…
+            </span>
+          )}
+          {record?.overallStatus === "no_image" && (
+            <span className="ml-auto text-rose-500 font-semibold whitespace-nowrap">❌ Thiếu ảnh</span>
+          )}
+        </div>
       </div>
 
       {/* Retry banner khi slot bị bỏ qua (không có record) */}

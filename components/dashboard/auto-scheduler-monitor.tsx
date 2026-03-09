@@ -189,30 +189,31 @@ export function AutoSchedulerMonitor() {
 
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
-        <div>
-          <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            Đăng tự động 3 nền tảng
-          </h2>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            {[
-              { label: "Facebook", color: "text-blue-500 bg-blue-50 border-blue-100" },
-              { label: "Threads", color: "text-slate-600 bg-slate-50 border-slate-200" },
-              { label: "Instagram", color: "text-pink-500 bg-pink-50 border-pink-100" },
-            ].map((p) => (
-              <span key={p.label} className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${p.color}`}>
-                {p.label}
-              </span>
-            ))}
-            {status?.slots && (
-              <span className="text-[10px] text-slate-400">· {status.slots.length} khung giờ/ngày</span>
-            )}
+      <div className="px-3 sm:px-5 py-3 border-b border-slate-100">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+              Đăng tự động 3 nền tảng
+            </h2>
+            <div className="flex flex-wrap items-center gap-1 mt-0.5">
+              {[
+                { label: "Facebook", color: "text-blue-500 bg-blue-50 border-blue-100" },
+                { label: "Threads", color: "text-slate-600 bg-slate-50 border-slate-200" },
+                { label: "Instagram", color: "text-pink-500 bg-pink-50 border-pink-100" },
+              ].map((p) => (
+                <span key={p.label} className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${p.color}`}>
+                  {p.label}
+                </span>
+              ))}
+              {status?.slots && (
+                <span className="text-[10px] text-slate-400">· {status.slots.length} khung giờ/ngày</span>
+              )}
+            </div>
           </div>
         </div>
-
       </div>
 
-      <div className="px-5 py-4 space-y-4">
+      <div className="px-3 sm:px-5 py-4 space-y-4">
         {error && <p className="text-xs text-rose-500">{error}</p>}
         <div className="space-y-2">
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
