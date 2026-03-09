@@ -50,6 +50,22 @@
     "autothreads": {
       "description": "AutoThreads - Social media automation for Threads, Facebook, Instagram",
       "path": ".opencode/skills/autothreads.md"
+    },
+    "nextjs-component-pattern": {
+      "description": "Next.js component patterns - Server/Client components, props, Tailwind styling",
+      "path": ".opencode/skills/nextjs-component-pattern/SKILL.md"
+    },
+    "nextjs-route-handler": {
+      "description": "Next.js API route handler patterns - GET/POST/PATCH/DELETE methods, security",
+      "path": ".opencode/skills/nextjs-route-handler/SKILL.md"
+    },
+    "nextjs-data-fetching": {
+      "description": "Data fetching patterns - Server Components, hooks, API routes, caching",
+      "path": ".opencode/skills/nextjs-data-fetching/SKILL.md"
+    },
+    "nextjs-bug-triage": {
+      "description": "Bug debugging and fixing - common errors, debug commands, quick fixes",
+      "path": ".opencode/skills/nextjs-bug-triage/SKILL.md"
     }
   },
 
