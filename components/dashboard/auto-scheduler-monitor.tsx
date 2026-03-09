@@ -28,6 +28,7 @@ export function AutoSchedulerMonitor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [aiGeneratingId, setAiGeneratingId] = useState<string | null>(null);
+  const [dismissedSlots, setDismissedSlots] = useState<Set<string>>(new Set());
   const processingRef = useRef<Set<string>>(new Set());
   const initialFetched = useRef(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -155,6 +156,37 @@ export function AutoSchedulerMonitor() {
     return records.find((r) => r.slot === slotId && isTodayVN(r.triggeredAt)) ?? null;
   }
 
+  const handleRetrySlot = useCallback(async (slotId: string) => {
+    try {
+      await fetch("/api/auto-scheduler", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "retry-slot", slot: slotId }),
+      });
+      // Refresh data sau 2s để thấy record mới
+      setTimeout(() => fetchData(false), 2000);
+    } catch (err) {
+      console.error("[AutoSchedulerMonitor] Retry slot lỗi:", err);
+    }
+  }, [fetchData]);
+
+  const handleDismissSlot = useCallback(async (slotId: string, recordId?: string) => {
+    // Ẩn banner ngay lập tức ở client
+    setDismissedSlots((prev) => new Set(prev).add(slotId));
+    try {
+      if (recordId) {
+        await fetch("/api/auto-scheduler", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "dismiss-slot", slot: slotId, recordId }),
+        });
+        await fetchData(false);
+      }
+    } catch (err) {
+      console.error("[AutoSchedulerMonitor] Dismiss slot lỗi:", err);
+    }
+  }, [fetchData]);
+
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
@@ -198,9 +230,9 @@ export function AutoSchedulerMonitor() {
             </div>
           ) : (
             <div className="space-y-2">
-                <TodaySlotCard slotId="morning" record={todayRecord("morning")} />
-              <TodaySlotCard slotId="noon" record={todayRecord("noon")} />
-              <TodaySlotCard slotId="evening" record={todayRecord("evening")} />
+              <TodaySlotCard slotId="morning" record={todayRecord("morning")} onRetry={handleRetrySlot} onDismiss={handleDismissSlot} dismissed={dismissedSlots.has("morning")} />
+              <TodaySlotCard slotId="lunch" record={todayRecord("lunch")} onRetry={handleRetrySlot} onDismiss={handleDismissSlot} dismissed={dismissedSlots.has("lunch")} />
+              <TodaySlotCard slotId="evening" record={todayRecord("evening")} onRetry={handleRetrySlot} onDismiss={handleDismissSlot} dismissed={dismissedSlots.has("evening")} />
             </div>
           )}
         </div>

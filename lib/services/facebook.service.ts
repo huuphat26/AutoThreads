@@ -70,9 +70,19 @@ class FacebookService {
   private http: AxiosInstance;
   /** Scoped page ID resolved from the Page Access Token (not the global FB_PAGE_ID). */
   private _resolvedPageId: string | null = null;
+  private _overridePageToken?: string;
+  private _overridePageId?: string;
 
   constructor() {
     this.http = axios.create({ baseURL: BASE_URL, timeout: 20_000 });
+  }
+
+  /** Tạo instance mới với credentials override (multi-account) */
+  withCredentials(pageToken: string, pageId: string): FacebookService {
+    const svc = new FacebookService();
+    svc._overridePageToken = pageToken;
+    svc._overridePageId = pageId;
+    return svc;
   }
 
   /**
@@ -107,12 +117,14 @@ class FacebookService {
 
   /** Page Access Token — dùng cho tất cả post/insights trên page */
   private get pageToken(): string {
+    if (this._overridePageToken) return this._overridePageToken;
     const t = process.env.FB_PAGE_ACCESS_TOKEN;
     if (!t) throw new Error("FB_PAGE_ACCESS_TOKEN chưa cấu hình trong .env");
     return t.trim();
   }
 
   private get pageId(): string {
+    if (this._overridePageId) return this._overridePageId;
     const id = process.env.FB_PAGE_ID;
     if (!id) throw new Error("FB_PAGE_ID chưa cấu hình trong .env");
     return id.trim();

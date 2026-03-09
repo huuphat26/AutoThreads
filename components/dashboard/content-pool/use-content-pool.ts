@@ -52,7 +52,7 @@ async function puterGenerateWithFallback(
 }
 
 // ── Hook ───────────────────────────────────────────────────────
-export function useContentPool(filterStatus: string) {
+export function useContentPool(filterStatus: string, accountId?: string) {
   const [data, setData] = useState<PoolData | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -134,7 +134,12 @@ export function useContentPool(filterStatus: string) {
 
   // ── Auto-start on mount if today has items needing images ────
   useEffect(() => {
-    if (autoStartedRef.current || bulkGenerating || todayItemsNeedingImages.length === 0) return;
+    if (
+      autoStartedRef.current ||
+      bulkGenerating ||
+      todayItemsNeedingImages.length === 0
+    )
+      return;
     const puter = typeof window !== "undefined" ? window.puter : undefined;
     if (!puter) return;
     autoStartedRef.current = true;
@@ -151,6 +156,7 @@ export function useContentPool(filterStatus: string) {
 
     const form = new FormData();
     form.append("file", file);
+    if (accountId) form.append("accountId", accountId);
     e.target.value = "";
 
     try {

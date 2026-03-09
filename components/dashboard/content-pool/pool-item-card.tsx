@@ -8,7 +8,7 @@ import { PoolImageGen } from "./pool-image-gen";
 // ── Helpers ────────────────────────────────────────────────────
 const SLOT_LABEL: Record<string, string> = {
   morning: "Sáng",
-  noon: "Trưa",
+  lunch: "Trưa",
   evening: "Tối",
 };
 

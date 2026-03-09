@@ -12,6 +12,7 @@ import {
   InstagramIcon,
   ThreadsIcon,
   PoolIcon,
+  UsersIcon,
 } from "@/components/ui/icons";
 
 const PLATFORMS = [
@@ -47,6 +48,14 @@ const PLATFORMS = [
     icon: PoolIcon,
     activeClass: "bg-slate-600 text-white shadow-md shadow-slate-300",
     inactiveClass: "text-slate-500 hover:text-slate-600 hover:bg-slate-100",
+  },
+  {
+    id: "accounts",
+    label: "Tài khoản",
+    href: "/platforms/accounts",
+    icon: UsersIcon,
+    activeClass: "bg-indigo-600 text-white shadow-md shadow-indigo-200",
+    inactiveClass: "text-slate-500 hover:text-indigo-600 hover:bg-indigo-50",
   },
 ] as const;
 

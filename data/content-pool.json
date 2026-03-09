@@ -2,7 +2,7 @@
   "items": [
     {
       "date": "2026-03-05",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "Green Apple Cucumber Juice",
       "fbContent": "Hôm nay mình thử một món green apple cucumber juice rất dễ làm và cực kỳ dễ uống.\n\nChỉ cần vài nguyên liệu tươi, rửa sạch rồi ép hoặc trộn nhanh là đã có ngay một ly nước ép hoặc bữa ăn nhẹ healthy. Vị thanh, hơi ngọt tự nhiên và rất hợp dùng vào buổi trưa hoặc chiều.\n\nNếu thích vị mát hơn bạn có thể thêm vài viên đá hoặc một lát chanh. Những món đơn giản như thế này rất hợp cho những ngày muốn ăn uống nhẹ nhàng hơn.\n\nLưu lại công thức này để thử hôm nay nhé ",
       "threadsContent": "Một ý tưởng green apple cucumber juice rất dễ làm.\n\nChỉ cần vài nguyên liệu tươi là có ngay một món healthy nhẹ bụng. Vị thanh, hơi ngọt tự nhiên và rất hợp cho buổi trưa hoặc chiều.\n\nBạn có thể thêm đá hoặc lát chanh để vị tươi hơn.\n\nAi thích đồ healthy nên thử hôm nay ",
@@ -30,7 +30,7 @@
     },
     {
       "date": "2026-03-06",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm gạo lứt + ức gà sốt nấm**.\n\nThành phần:\n- gạo lứt\n- ức gà\n- nấm\n- hành\n- tiêu\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm gạo lứt + ức gà sốt nấm**.\n\nThành phần:\n- gạo lứt\n- ức gà\n- nấm\n- hành\n- tiêu\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?",
@@ -51,34 +51,27 @@
       "threadsContent": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Salad ức gà + bơ**.\n\nThành phần:\n- ức gà\n- bơ\n- rau xanh\n- sốt chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?",
       "igCaption": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Salad ức gà + bơ**.\n\nThành phần:\n- ức gà\n- bơ\n- rau xanh\n- sốt chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Salad ức gà + bơ.\nINGREDIENTS (visible on plate/box): ức gà, bơ, rau xanh, sốt chanh.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
+      "status": "used",
       "id": "pool_1772769631522_arvml",
       "importedAt": "2026-03-06T04:07:47.499Z",
-      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772777254/autothreads/hvqbldcmrlxbbreggkze.png"
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772777254/autothreads/hvqbldcmrlxbbreggkze.png",
+      "usedAt": "2026-03-06T09:45:00.074Z",
+      "recordId": "auto-1772790300044-1r3i4"
     },
     {
       "date": "2026-03-07",
-      "slot": "morning",
-      "topicLabel": "What I eat in a day — Sáng",
-      "fbContent": "Chào buổi sáng! Mình bắt đầu ngày mới bằng **Overnight oats cacao + chuối** cho nhẹ bụng.\n\nThành phần:\n- yến mạch\n- sữa hạt\n- cacao\n- chuối\n- hạt chia\n\nMình gọi đây là combo ‘đánh thức não’.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn muốn mai mình làm món kiểu Việt hay kiểu Nhật? Vote 1 chữ nhé.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
-      "threadsContent": "Chào buổi sáng! Mình bắt đầu ngày mới bằng **Overnight oats cacao + chuối** cho nhẹ bụng.\n\nThành phần:\n- yến mạch\n- sữa hạt\n- cacao\n- chuối\n- hạt chia\n\nMình gọi đây là combo ‘đánh thức não’.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn muốn mai mình làm món kiểu Việt hay kiểu Nhật? Vote 1 chữ nhé.",
-      "igCaption": "Chào buổi sáng! Mình bắt đầu ngày mới bằng **Overnight oats cacao + chuối** cho nhẹ bụng.\n\nThành phần:\n- yến mạch\n- sữa hạt\n- cacao\n- chuối\n- hạt chia\n\nMình gọi đây là combo ‘đánh thức não’.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn muốn mai mình làm m\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
-      "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Overnight oats cacao + chuối.\nINGREDIENTS (visible on plate/box): yến mạch, sữa hạt, cacao, chuối, hạt chia.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
-      "id": "pool_1772769631522_viyet",
-      "importedAt": "2026-03-06T04:07:47.499Z"
-    },
-    {
-      "date": "2026-03-07",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm trắng + bò xào bông cải** đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm trắng + bò xào bông cải** đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.",
       "igCaption": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm trắng + bò xào bông cải** đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm trắng + bò xào bông cải.\nINGREDIENTS (visible on plate/box): cơm, bò nạc, bông cải, tỏi.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
-      "id": "pool_1772769631522_xpykq",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "status": "used",
+      "id": "pool_1772854919766_igh12",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772855009/autothreads/q0zy1ycphstl8sujthgz.png",
+      "usedAt": "2026-03-07T03:45:00.064Z",
+      "recordId": "auto-1772855100038-aofdk"
     },
     {
       "date": "2026-03-07",
@@ -88,9 +81,12 @@
       "threadsContent": "Kết ngày bằng một bữa tối êm bụng: **Miến gà nấm**.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.",
       "igCaption": "Kết ngày bằng một bữa tối êm bụng: **Miến gà nấm**.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Miến gà nấm.\nINGREDIENTS (visible on plate/box): miến, gà, nấm, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
+      "status": "used",
       "id": "pool_1772769631522_986uf",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "importedAt": "2026-03-06T04:07:47.499Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772794898/autothreads/iormhmtvm9jg2dcxi2va.jpg",
+      "usedAt": "2026-03-07T14:37:00.315Z",
+      "recordId": "auto-1772894220280-5kml7"
     },
     {
       "date": "2026-03-08",
@@ -101,20 +97,22 @@
       "igCaption": "Sáng nay mình làm món nhanh-gọn-mlem: **Sữa chua Hy Lạp + granola + dâu**. \n\nThành phần:\n- sữa chua Hy Lạp\n- granola\n- dâu tây\n- mật ong ít\n\nGợi ý nhỏ: cắn miếng đầu tiên là thấy ‘đúng bài’.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thí\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Sữa chua Hy Lạp + granola + dâu.\nINGREDIENTS (visible on plate/box): sữa chua Hy Lạp, granola, dâu tây, mật ong ít.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_2xcy5",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_obq2n",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772935532/autothreads/roafgf7hps5n4f4xxlkr.png"
     },
     {
       "date": "2026-03-08",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá hồi nướng + rau luộc**.\n\nThành phần:\n- cá hồi\n- rau củ\n- chanh\n- tiêu\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá hồi nướng + rau luộc**.\n\nThành phần:\n- cá hồi\n- rau củ\n- chanh\n- tiêu\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?",
       "igCaption": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá hồi nướng + rau luộc**.\n\nThành phần:\n- cá hồi\n- rau củ\n- chanh\n- tiêu\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + cá hồi nướng + rau luộc.\nINGREDIENTS (visible on plate/box): cá hồi, rau củ, chanh, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_qtxeb",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_jilmc",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772935560/autothreads/bfeggzjdsjuciuktlh4i.png"
     },
     {
       "date": "2026-03-08",
@@ -124,9 +122,12 @@
       "threadsContent": "Tối nay mình chọn combo ‘nhẹ mà đã’: **Súp lơ xào tỏi + trứng**.\n\nThành phần:\n- súp lơ\n- tỏi\n- trứng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?",
       "igCaption": "Tối nay mình chọn combo ‘nhẹ mà đã’: **Súp lơ xào tỏi + trứng**.\n\nThành phần:\n- súp lơ\n- tỏi\n- trứng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Súp lơ xào tỏi + trứng.\nINGREDIENTS (visible on plate/box): súp lơ, tỏi, trứng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
-      "id": "pool_1772769631522_g79b4",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "status": "used",
+      "id": "pool_1772854919766_ix4n5",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772935587/autothreads/scwchjhch4wat4i4f1fh.png",
+      "usedAt": "2026-03-08T14:28:09.010Z",
+      "recordId": "auto-1772980088974-iii1r"
     },
     {
       "date": "2026-03-09",
@@ -136,21 +137,27 @@
       "threadsContent": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn **Bún gạo lứt trộn gà xé**.\n\nThành phần:\n- bún gạo lứt\n- ức gà xé\n- rau thơm\n- dưa leo\n- nước mắm chua ngọt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứng hay team không trứng?",
       "igCaption": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn **Bún gạo lứt trộn gà xé**.\n\nThành phần:\n- bún gạo lứt\n- ức gà xé\n- rau thơm\n- dưa leo\n- nước mắm chua ngọt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứ\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bún gạo lứt trộn gà xé.\nINGREDIENTS (visible on plate/box): bún gạo lứt, ức gà xé, rau thơm, dưa leo, nước mắm chua ngọt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
-      "id": "pool_1772769631522_uvw8p",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "status": "used",
+      "id": "pool_1772854919766_lr306",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990447/autothreads/mwglipm9scwfoxoehvyc.png",
+      "usedAt": "2026-03-09T02:36:32.900Z",
+      "recordId": "auto-1773023792866-stkha"
     },
     {
       "date": "2026-03-09",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Đến giờ nạp năng lượng! Trưa nay là **Bún thịt nướng bento**.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Đến giờ nạp năng lượng! Trưa nay là **Bún thịt nướng bento**.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?",
       "igCaption": "Đến giờ nạp năng lượng! Trưa nay là **Bún thịt nướng bento**.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Bún thịt nướng bento.\nINGREDIENTS (visible on plate/box): bún, thịt nướng nạc, rau sống, nước mắm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
-      "id": "pool_1772769631522_y2ev5",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "status": "used",
+      "id": "pool_1772854919766_y4g6g",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990475/autothreads/fghamdtfdkjezds4qoxh.png",
+      "usedAt": "2026-03-09T03:45:00.074Z",
+      "recordId": "auto-1773027900042-fgrzh"
     },
     {
       "date": "2026-03-09",
@@ -161,8 +168,9 @@
       "igCaption": "Đến giờ chill rồi, tối nay mình ăn **Lẩu nấm mini**. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Lẩu nấm mini.\nINGREDIENTS (visible on plate/box): nấm tổng hợp, rau, đậu hũ, nước dùng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_gpheo",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_0am87",
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990501/autothreads/gpxcktwlt1075aztbkjo.png"
     },
     {
       "date": "2026-03-10",
@@ -173,20 +181,20 @@
       "igCaption": "Sáng nay mình đổi gió chút: **Trứng cuộn rau củ kiểu bento**.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa s\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Trứng cuộn rau củ kiểu bento.\nINGREDIENTS (visible on plate/box): trứng, cà rốt, hành lá, nấm, phô mai ít.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_hasf5",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_rujs3",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-10",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + thịt kho trứng (ít mỡ)**.\n\nThành phần:\n- thịt nạc\n- trứng\n- nước dừa\n- dưa leo\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + thịt kho trứng (ít mỡ)**.\n\nThành phần:\n- thịt nạc\n- trứng\n- nước dừa\n- dưa leo\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?",
       "igCaption": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + thịt kho trứng (ít mỡ)**.\n\nThành phần:\n- thịt nạc\n- trứng\n- nước dừa\n- dưa leo\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + thịt kho trứng (ít mỡ).\nINGREDIENTS (visible on plate/box): thịt nạc, trứng, nước dừa, dưa leo.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_bmk43",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_6g0rc",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-10",
@@ -197,8 +205,8 @@
       "igCaption": "Tối nay mình không ăn nặng, chọn **Cá hấp gừng + rau luộc** cho dễ ngủ.\n\nThành phần:\n- cá\n- gừng\n- hành\n- rau\n\nTối nay mình ưu tiên ‘êm bụng’.\nNo vừa đủ, không bị quá đầy.\n\nBạn thích tối ăn canh hay salad?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Cá hấp gừng + rau luộc.\nINGREDIENTS (visible on plate/box): cá, gừng, hành, rau.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_ll4se",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_loqb3",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-11",
@@ -209,20 +217,20 @@
       "igCaption": "Bật mí bữa sáng hôm nay của mình: **Khoai lang + bơ đậu phộng + chuối** (nhìn là muốn ăn ngay).\n\nThành phần:\n- khoai lang\n- bơ đậu phộng\n- chuối\n- mè rang\n\nTeam mặn hay team ngọt, món này đứng giữa luôn đó.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn có \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Khoai lang + bơ đậu phộng + chuối.\nINGREDIENTS (visible on plate/box): khoai lang, bơ đậu phộng, chuối, mè rang.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631522_j5fnt",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_g9beq",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-11",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + tôm rim mặn ngọt**.\n\nThành phần:\n- tôm\n- tỏi\n- nước mắm\n- mè\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + tôm rim mặn ngọt**.\n\nThành phần:\n- tôm\n- tỏi\n- nước mắm\n- mè\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?",
       "igCaption": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + tôm rim mặn ngọt**.\n\nThành phần:\n- tôm\n- tỏi\n- nước mắm\n- mè\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + tôm rim mặn ngọt.\nINGREDIENTS (visible on plate/box): tôm, tỏi, nước mắm, mè.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_oz132",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_a4qxo",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-11",
@@ -233,8 +241,8 @@
       "igCaption": "Bữa tối hôm nay của mình: **Đậu hũ non sốt mè** (ngon kiểu nhẹ nhàng).\n\nThành phần:\n- đậu hũ non\n- sốt mè\n- hành\n- mè rang\n\nMình làm món này vì tối nay… lười.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn mai mình làm món có trứng hay không trứng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Đậu hũ non sốt mè.\nINGREDIENTS (visible on plate/box): đậu hũ non, sốt mè, hành, mè rang.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_wccjj",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_zlldk",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-12",
@@ -245,20 +253,20 @@
       "igCaption": "Sáng nay mình cho bản thân một bữa ‘tử tế’: **Cơm nắm rong biển + cá hồi áp chảo**.\n\nThành phần:\n- gạo lứt\n- rong biển\n- cá hồi\n- mè\n\nSáng nay mình quyết tâm ăn ngon cho tử tế.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn đoán hôm nay trưa \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Cơm nắm rong biển + cá hồi áp chảo.\nINGREDIENTS (visible on plate/box): gạo lứt, rong biển, cá hồi, mè.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_3xsep",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_w93i6",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-12",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + sườn nướng mật ong** nè.\n\nThành phần:\n- sườn nạc\n- mật ong ít\n- rau\n- bắp\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + sườn nướng mật ong** nè.\n\nThành phần:\n- sườn nạc\n- mật ong ít\n- rau\n- bắp\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?",
       "igCaption": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + sườn nướng mật ong** nè.\n\nThành phần:\n- sườn nạc\n- mật ong ít\n- rau\n- bắp\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + sườn nướng mật ong.\nINGREDIENTS (visible on plate/box): sườn nạc, mật ong ít, rau, bắp.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_mzrff",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_n2byo",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-12",
@@ -269,8 +277,8 @@
       "igCaption": "Tối nay mình làm món nhanh, sạch, gọn: **Cháo cá**.\n\nThành phần:\n- gạo\n- cá\n- gừng\n- hành\n\nTối nay mình ăn kiểu thanh đạm chút.\nNo vừa đủ, không bị quá đầy.\n\nBạn hay ăn tối trước mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Cháo cá.\nINGREDIENTS (visible on plate/box): gạo, cá, gừng, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_kq8uf",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_08g4z",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-13",
@@ -281,20 +289,20 @@
       "igCaption": "Nếu sáng bạn hay lười ăn, thử kiểu này nè: **Phở cuốn healthy**.\n\nThành phần:\n- bánh phở\n- bò nạc\n- rau sống\n- nước chấm\n\nNhìn vậy thôi chứ ăn vô là tỉnh cả người.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nMuốn mình ghi định lượng/mealprep cho món này khôn\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Phở cuốn healthy.\nINGREDIENTS (visible on plate/box): bánh phở, bò nạc, rau sống, nước chấm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_t7oqv",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_n3e9o",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-13",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình đổi vị chút cho đỡ chán: **Mì soba + gà teriyaki**. \n\nThành phần:\n- mì soba\n- gà\n- sốt teriyaki\n- rong biển\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút không? Comment “NHANH”.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình đổi vị chút cho đỡ chán: **Mì soba + gà teriyaki**. \n\nThành phần:\n- mì soba\n- gà\n- sốt teriyaki\n- rong biển\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút không? Comment “NHANH”.",
       "igCaption": "Trưa nay mình đổi vị chút cho đỡ chán: **Mì soba + gà teriyaki**. \n\nThành phần:\n- mì soba\n- gà\n- sốt teriyaki\n- rong biển\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Mì soba + gà teriyaki.\nINGREDIENTS (visible on plate/box): mì soba, gà, sốt teriyaki, rong biển.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_zzogn",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_qs3jo",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-13",
@@ -305,8 +313,8 @@
       "igCaption": "Nếu tối bạn hay thèm linh tinh, thử **Gỏi cuốn tôm** nè.\n\nThành phần:\n- tôm\n- bún\n- rau\n- chấm đậu phộng\n\nVị nhẹ, không ngấy, hợp tối.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn ăn tối nhẹ hay ăn tối no?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Gỏi cuốn tôm.\nINGREDIENTS (visible on plate/box): tôm, bún, rau, chấm đậu phộng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_xkvit",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_sr2wr",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-14",
@@ -317,20 +325,20 @@
       "igCaption": "Sáng nay mình chơi hệ ‘no lâu nhưng nhẹ’: **Toast bơ + trứng lòng đào**.\n\nThành phần:\n- toast\n- bơ\n- trứng\n- tiêu\n- muối hồng\n\nBạn có ăn được món này 3 ngày/tuần không?\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thấy bữa sáng này hợp đi h\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Toast bơ + trứng lòng đào.\nINGREDIENTS (visible on plate/box): toast, bơ, trứng, tiêu, muối hồng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_fsafy",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_tt3fw",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-14",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + đậu hũ sốt cà**.\n\nThành phần:\n- đậu hũ\n- cà chua\n- hành\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + đậu hũ sốt cà**.\n\nThành phần:\n- đậu hũ\n- cà chua\n- hành\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?",
       "igCaption": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + đậu hũ sốt cà**.\n\nThành phần:\n- đậu hũ\n- cà chua\n- hành\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + đậu hũ sốt cà.\nINGREDIENTS (visible on plate/box): đậu hũ, cà chua, hành, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_b2lz0",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_jdrm9",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-14",
@@ -341,8 +349,8 @@
       "igCaption": "Tối nay mình chọn món ăn xong thấy ‘dễ chịu’: **Trứng hấp kiểu Nhật**.\n\nThành phần:\n- trứng\n- nấm\n- nước dùng\n- hành\n\nĂn xong thấy thoải mái, không bị nặng người.\nNo vừa đủ, không bị quá đầy.\n\nBạn chọn ‘cá’ hay ‘gà’ cho bữa tối mai?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Trứng hấp kiểu Nhật.\nINGREDIENTS (visible on plate/box): trứng, nấm, nước dùng, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_ghn30",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_ixqfo",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-15",
@@ -353,20 +361,20 @@
       "igCaption": "Một bữa sáng nhỏ xíu nhưng có võ: **Cháo yến mạch gà nấm**. \n\nThành phần:\n- yến mạch\n- ức gà\n- nấm\n- hành\n\nMón này làm xong nhìn ‘xịn’ hơn công sức bỏ ra.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nNếu bạn ăn món này, bạn chấm với gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Cháo yến mạch gà nấm.\nINGREDIENTS (visible on plate/box): yến mạch, ức gà, nấm, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_e0fa7",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_aznvs",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-15",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + cá thu áp chảo**.\n\nThành phần:\n- cá thu\n- nghệ\n- tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + cá thu áp chảo**.\n\nThành phần:\n- cá thu\n- nghệ\n- tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?",
       "igCaption": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + cá thu áp chảo**.\n\nThành phần:\n- cá thu\n- nghệ\n- tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + cá thu áp chảo.\nINGREDIENTS (visible on plate/box): cá thu, nghệ, tiêu, rau.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_5ufqu",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_rcsyq",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-15",
@@ -377,8 +385,8 @@
       "igCaption": "Đơn giản thôi nhưng hợp tối lắm: **Cải thìa xào nấm + thịt nạc**.\n\nThành phần:\n- cải thìa\n- nấm\n- thịt nạc\n- tỏi\n\nNhìn hiền vậy thôi, ăn vô là ‘mlem’.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn thích vị chua nhẹ hay vị thanh ngọt?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Cải thìa xào nấm + thịt nạc.\nINGREDIENTS (visible on plate/box): cải thìa, nấm, thịt nạc, tỏi.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_mpqch",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_aywbs",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-16",
@@ -389,20 +397,20 @@
       "igCaption": "Sáng nay trời hơi dịu, mình mở hộp ra là thơm phức luôn: **Bánh cuốn trứng mini**.\n\nThành phần:\n- bánh cuốn\n- trứng\n- hành phi ít\n- rau thơm\n\nAi đoán đúng thành phần ‘bí mật’ mình thả trong đây?\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh cuốn trứng mini.\nINGREDIENTS (visible on plate/box): bánh cuốn, trứng, hành phi ít, rau thơm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_6bxwb",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_royx5",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-16",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + bò lúc lắc**.\n\nThành phần:\n- bò nạc\n- ớt chuông\n- hành tây\n- tiêu\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + bò lúc lắc**.\n\nThành phần:\n- bò nạc\n- ớt chuông\n- hành tây\n- tiêu\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?",
       "igCaption": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + bò lúc lắc**.\n\nThành phần:\n- bò nạc\n- ớt chuông\n- hành tây\n- tiêu\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + bò lúc lắc.\nINGREDIENTS (visible on plate/box): bò nạc, ớt chuông, hành tây, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_7foum",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_72tc0",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-16",
@@ -413,8 +421,8 @@
       "igCaption": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Súp cua bắp**.\n\nThành phần:\n- cua\n- bắp\n- trứng\n- hành\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Súp cua bắp.\nINGREDIENTS (visible on plate/box): cua, bắp, trứng, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_rnojl",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_qfu2z",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-17",
@@ -425,20 +433,20 @@
       "igCaption": "Chào buổi sáng! Mình bắt đầu ngày mới bằng **Smoothie xanh** cho nhẹ bụng.\n\nThành phần:\n- chuối\n- cải bó xôi\n- sữa hạt\n- hạt chia\n\nMình gọi đây là combo ‘đánh thức não’.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn muốn mai mình làm món kiểu Việt hay kiểu\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Smoothie xanh.\nINGREDIENTS (visible on plate/box): chuối, cải bó xôi, sữa hạt, hạt chia.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_tg326",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_9chme",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-17",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + gà sốt cam** đây.\n\nThành phần:\n- gà\n- cam\n- mật ong ít\n- vừng\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + gà sốt cam** đây.\n\nThành phần:\n- gà\n- cam\n- mật ong ít\n- vừng\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.",
       "igCaption": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + gà sốt cam** đây.\n\nThành phần:\n- gà\n- cam\n- mật ong ít\n- vừng\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + gà sốt cam.\nINGREDIENTS (visible on plate/box): gà, cam, mật ong ít, vừng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_8afmv",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_twih0",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-17",
@@ -449,8 +457,8 @@
       "igCaption": "Kết ngày bằng một bữa tối êm bụng: **Bí xanh nhồi thịt**. \n\nThành phần:\n- bí xanh\n- thịt nạc\n- hành\n- tiêu\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Bí xanh nhồi thịt.\nINGREDIENTS (visible on plate/box): bí xanh, thịt nạc, hành, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_tzqeb",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_ajmup",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-18",
@@ -461,20 +469,20 @@
       "igCaption": "Sáng nay mình làm món nhanh-gọn-mlem: **Salad cá ngừ bắp**.\n\nThành phần:\n- cá ngừ\n- bắp\n- xà lách\n- cà chua bi\n- sốt mè\n\nGợi ý nhỏ: cắn miếng đầu tiên là thấy ‘đúng bài’.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích vị cay, mặn hay ch\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Salad cá ngừ bắp.\nINGREDIENTS (visible on plate/box): cá ngừ, bắp, xà lách, cà chua bi, sốt mè.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_hqzj5",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_env9l",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-18",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + thịt heo xào kimchi**.\n\nThành phần:\n- thịt nạc\n- kimchi\n- hành\n- mè\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + thịt heo xào kimchi**.\n\nThành phần:\n- thịt nạc\n- kimchi\n- hành\n- mè\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?",
       "igCaption": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + thịt heo xào kimchi**.\n\nThành phần:\n- thịt nạc\n- kimchi\n- hành\n- mè\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + thịt heo xào kimchi.\nINGREDIENTS (visible on plate/box): thịt nạc, kimchi, hành, mè.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_4932b",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_ud55g",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-18",
@@ -485,8 +493,8 @@
       "igCaption": "Tối nay mình chọn combo ‘nhẹ mà đã’: **Salad cá hồi hun khói**.\n\nThành phần:\n- cá hồi hun khói\n- rau\n- sốt\n- chanh\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Salad cá hồi hun khói.\nINGREDIENTS (visible on plate/box): cá hồi hun khói, rau, sốt, chanh.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_hkhzk",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_gkufl",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-19",
@@ -497,20 +505,20 @@
       "igCaption": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn **Bánh mì cuộn thịt nạc**.\n\nThành phần:\n- bánh mì\n- thịt nạc\n- xà lách\n- dưa leo\n- sốt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứng hay team không trứ\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh mì cuộn thịt nạc.\nINGREDIENTS (visible on plate/box): bánh mì, thịt nạc, xà lách, dưa leo, sốt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_8gr9q",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_sub2e",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-19",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + cá sốt me**. \n\nThành phần:\n- cá\n- me\n- tỏi\n- ớt\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + cá sốt me**. \n\nThành phần:\n- cá\n- me\n- tỏi\n- ớt\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?",
       "igCaption": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + cá sốt me**. \n\nThành phần:\n- cá\n- me\n- tỏi\n- ớt\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + cá sốt me.\nINGREDIENTS (visible on plate/box): cá, me, tỏi, ớt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_51tk9",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_ahv1x",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-19",
@@ -521,8 +529,8 @@
       "igCaption": "Đến giờ chill rồi, tối nay mình ăn **Canh bí đỏ + cá áp chảo**.\n\nThành phần:\n- bí đỏ\n- cá nạc\n- hành\n- tiêu\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Canh bí đỏ + cá áp chảo.\nINGREDIENTS (visible on plate/box): bí đỏ, cá nạc, hành, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_drrad",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_j3t1d",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-20",
@@ -533,20 +541,20 @@
       "igCaption": "Sáng nay mình đổi gió chút: **Miến trộn gà xé**.\n\nThành phần:\n- miến\n- ức gà\n- cà rốt\n- dưa leo\n- nước mắm\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa sáng ‘chăm’? Co\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Miến trộn gà xé.\nINGREDIENTS (visible on plate/box): miến, ức gà, cà rốt, dưa leo, nước mắm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_9dih5",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_836x1",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-20",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + gà xào sả ớt**.\n\nThành phần:\n- gà\n- sả\n- ớt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + gà xào sả ớt**.\n\nThành phần:\n- gà\n- sả\n- ớt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?",
       "igCaption": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + gà xào sả ớt**.\n\nThành phần:\n- gà\n- sả\n- ớt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + gà xào sả ớt.\nINGREDIENTS (visible on plate/box): gà, sả, ớt, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_31lfu",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_3fs52",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-20",
@@ -557,8 +565,8 @@
       "igCaption": "Tối nay mình không ăn nặng, chọn **Đậu bắp luộc + kho quẹt nhẹ** cho dễ ngủ.\n\nThành phần:\n- đậu bắp\n- kho quẹt ít mỡ\n\nTối nay mình ưu tiên ‘êm bụng’.\nNo vừa đủ, không bị quá đầy.\n\nBạn thích tối ăn canh hay salad?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Đậu bắp luộc + kho quẹt nhẹ.\nINGREDIENTS (visible on plate/box): đậu bắp, kho quẹt ít mỡ.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_1zrzz",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_lz71v",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-21",
@@ -569,20 +577,20 @@
       "igCaption": "Bật mí bữa sáng hôm nay của mình: **Bánh pancake yến mạch** (nhìn là muốn ăn ngay).\n\nThành phần:\n- yến mạch xay\n- trứng\n- sữa\n- chuối\n\nTeam mặn hay team ngọt, món này đứng giữa luôn đó.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn có muốn mình làm series \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh pancake yến mạch.\nINGREDIENTS (visible on plate/box): yến mạch xay, trứng, sữa, chuối.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_yzbw6",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_n1an1",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-21",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + cá basa kho tiêu**.\n\nThành phần:\n- cá basa\n- tiêu\n- hành\n- nước mắm\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + cá basa kho tiêu**.\n\nThành phần:\n- cá basa\n- tiêu\n- hành\n- nước mắm\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?",
       "igCaption": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + cá basa kho tiêu**.\n\nThành phần:\n- cá basa\n- tiêu\n- hành\n- nước mắm\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + cá basa kho tiêu.\nINGREDIENTS (visible on plate/box): cá basa, tiêu, hành, nước mắm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_opfa6",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_rguo1",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-21",
@@ -593,8 +601,8 @@
       "igCaption": "Bữa tối hôm nay của mình: **Canh rong biển thịt băm** (ngon kiểu nhẹ nhàng).\n\nThành phần:\n- rong biển\n- thịt băm nạc\n- đậu hũ\n\nMình làm món này vì tối nay… lười.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn mai mình làm món có trứng hay không trứng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Canh rong biển thịt băm.\nINGREDIENTS (visible on plate/box): rong biển, thịt băm nạc, đậu hũ.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_n0xwv",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_r8my5",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-22",
@@ -605,20 +613,20 @@
       "igCaption": "Sáng nay mình cho bản thân một bữa ‘tử tế’: **Xôi gà nạc phiên bản nhẹ**. \n\nThành phần:\n- xôi\n- gà nạc\n- hành\n- dưa leo\n\nSáng nay mình quyết tâm ăn ngon cho tử tế.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn đoán hôm nay trưa mình ăn gì? \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Xôi gà nạc phiên bản nhẹ.\nINGREDIENTS (visible on plate/box): xôi, gà nạc, hành, dưa leo.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_erquc",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_4m7sz",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-22",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + trứng chiên thịt băm** nè.\n\nThành phần:\n- trứng\n- thịt băm nạc\n- hành lá\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + trứng chiên thịt băm** nè.\n\nThành phần:\n- trứng\n- thịt băm nạc\n- hành lá\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?",
       "igCaption": "Ai hay buồn ngủ sau ăn trưa, thử combo **Cơm + trứng chiên thịt băm** nè.\n\nThành phần:\n- trứng\n- thịt băm nạc\n- hành lá\n\nCắn miếng đầu tiên là muốn ăn hết sạch.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nNếu thêm 1 món phụ, bạn muốn thêm gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + trứng chiên thịt băm.\nINGREDIENTS (visible on plate/box): trứng, thịt băm nạc, hành lá.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_z8xso",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_q45fb",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-22",
@@ -629,8 +637,8 @@
       "igCaption": "Tối nay mình làm món nhanh, sạch, gọn: **Súp bí đỏ**.\n\nThành phần:\n- bí đỏ\n- sữa tươi ít\n- tiêu\n\nTối nay mình ăn kiểu thanh đạm chút.\nNo vừa đủ, không bị quá đầy.\n\nBạn hay ăn tối trước mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Súp bí đỏ.\nINGREDIENTS (visible on plate/box): bí đỏ, sữa tươi ít, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_p7pan",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_nx4jz",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-23",
@@ -641,20 +649,20 @@
       "igCaption": "Nếu sáng bạn hay lười ăn, thử kiểu này nè: **Bún riêu chay mini**.\n\nThành phần:\n- bún\n- đậu hũ\n- cà chua\n- rau sống\n\nNhìn vậy thôi chứ ăn vô là tỉnh cả người.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nMuốn mình ghi định lượng/mealprep cho món này không? Co\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bún riêu chay mini.\nINGREDIENTS (visible on plate/box): bún, đậu hũ, cà chua, rau sống.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_9tjq0",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_q0767",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-23",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình đổi vị chút cho đỡ chán: **Cơm + canh chua cá**.\n\nThành phần:\n- cá\n- dứa\n- cà chua\n- giá\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút không? Comment “NHANH”.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình đổi vị chút cho đỡ chán: **Cơm + canh chua cá**.\n\nThành phần:\n- cá\n- dứa\n- cà chua\n- giá\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút không? Comment “NHANH”.",
       "igCaption": "Trưa nay mình đổi vị chút cho đỡ chán: **Cơm + canh chua cá**.\n\nThành phần:\n- cá\n- dứa\n- cà chua\n- giá\n\nCó một miếng mình để dành ăn cuối, ai đoán là gì?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nMuốn mình share cách làm nhanh 10 phút không? Comment “NHAN\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + canh chua cá.\nINGREDIENTS (visible on plate/box): cá, dứa, cà chua, giá.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_xxeir",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_jmk5p",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-23",
@@ -665,8 +673,8 @@
       "igCaption": "Nếu tối bạn hay thèm linh tinh, thử **Nui gà rau củ** nè.\n\nThành phần:\n- nui\n- gà\n- cà rốt\n- bông cải\n\nVị nhẹ, không ngấy, hợp tối.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn ăn tối nhẹ hay ăn tối no?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Nui gà rau củ.\nINGREDIENTS (visible on plate/box): nui, gà, cà rốt, bông cải.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_q1m1y",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_bt4zi",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-24",
@@ -677,20 +685,20 @@
       "igCaption": "Sáng nay mình chơi hệ ‘no lâu nhưng nhẹ’: **Bánh bao nhân trứng cút**.\n\nThành phần:\n- bánh bao\n- thịt nạc\n- trứng cút\n- nấm\n\nBạn có ăn được món này 3 ngày/tuần không?\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thấy bữa sáng này hợp đi học\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh bao nhân trứng cút.\nINGREDIENTS (visible on plate/box): bánh bao, thịt nạc, trứng cút, nấm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_ew8eu",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_lqusz",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-24",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + bò xào hành cần**.\n\nThành phần:\n- bò\n- hành cần\n- tỏi\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + bò xào hành cần**.\n\nThành phần:\n- bò\n- hành cần\n- tỏi\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?",
       "igCaption": "Nắng hay mưa cũng phải ăn trưa ngon: **Cơm + bò xào hành cần**.\n\nThành phần:\n- bò\n- hành cần\n- tỏi\n- tiêu\n\nBạn có hay chuẩn bị lunchbox không?\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mình làm lunchbox theo budget 50k/70k không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + bò xào hành cần.\nINGREDIENTS (visible on plate/box): bò, hành cần, tỏi, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_ez3yz",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_mru59",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-24",
@@ -701,8 +709,8 @@
       "igCaption": "Tối nay mình chọn món ăn xong thấy ‘dễ chịu’: **Bún cá thì là**.\n\nThành phần:\n- bún\n- cá\n- thì là\n- cà chua\n\nĂn xong thấy thoải mái, không bị nặng người.\nNo vừa đủ, không bị quá đầy.\n\nBạn chọn ‘cá’ hay ‘gà’ cho bữa tối mai?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Bún cá thì là.\nINGREDIENTS (visible on plate/box): bún, cá, thì là, cà chua.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_oot4x",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_jp10j",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-25",
@@ -713,20 +721,20 @@
       "igCaption": "Một bữa sáng nhỏ xíu nhưng có võ: **Cơm cuộn kimbap mini**.\n\nThành phần:\n- cơm\n- rong biển\n- trứng\n- dưa leo\n- cà rốt\n\nMón này làm xong nhìn ‘xịn’ hơn công sức bỏ ra.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nNếu bạn ăn món này, bạn chấm với gì?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Cơm cuộn kimbap mini.\nINGREDIENTS (visible on plate/box): cơm, rong biển, trứng, dưa leo, cà rốt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_95ijy",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_p411y",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-25",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + gà nướng lá chanh**. \n\nThành phần:\n- gà\n- lá chanh\n- muối tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + gà nướng lá chanh**. \n\nThành phần:\n- gà\n- lá chanh\n- muối tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?",
       "igCaption": "Hôm nay mình làm bữa trưa ‘đúng chuẩn công sở’: **Cơm + gà nướng lá chanh**. \n\nThành phần:\n- gà\n- lá chanh\n- muối tiêu\n- rau\n\nĐố bạn món này hợp uống gì nhất?\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn có hay bị buồn ngủ sau ăn trưa không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + gà nướng lá chanh.\nINGREDIENTS (visible on plate/box): gà, lá chanh, muối tiêu, rau.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_fwu19",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_bmi3f",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-25",
@@ -737,8 +745,8 @@
       "igCaption": "Đơn giản thôi nhưng hợp tối lắm: **Cháo yến mạch tôm**. \n\nThành phần:\n- yến mạch\n- tôm\n- hành\n- tiêu\n\nNhìn hiền vậy thôi, ăn vô là ‘mlem’.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn thích vị chua nhẹ hay vị thanh ngọt?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Cháo yến mạch tôm.\nINGREDIENTS (visible on plate/box): yến mạch, tôm, hành, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_yznmf",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_rnlmq",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-26",
@@ -749,20 +757,20 @@
       "igCaption": "Sáng nay trời hơi dịu, mình mở hộp ra là thơm phức luôn: **Trứng hấp kiểu Nhật**.\n\nThành phần:\n- trứng\n- nấm\n- nước dùng\n- hành\n\nAi đoán đúng thành phần ‘bí mật’ mình thả trong đây?\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn sẽ thêm toppi\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Trứng hấp kiểu Nhật.\nINGREDIENTS (visible on plate/box): trứng, nấm, nước dùng, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_jg9z0",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_gsjqv",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-26",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + thịt nạc rim gừng**.\n\nThành phần:\n- thịt nạc\n- gừng\n- hành\n- nước mắm\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + thịt nạc rim gừng**.\n\nThành phần:\n- thịt nạc\n- gừng\n- hành\n- nước mắm\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?",
       "igCaption": "Trưa tới rồi, cứu đói thôi! Hôm nay mình có **Cơm + thịt nạc rim gừng**.\n\nThành phần:\n- thịt nạc\n- gừng\n- hành\n- nước mắm\n\nNhìn đơn giản nhưng ăn vô là ‘đủ đô’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn muốn mai trưa món gà hay món cá?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + thịt nạc rim gừng.\nINGREDIENTS (visible on plate/box): thịt nạc, gừng, hành, nước mắm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_u0y1d",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_ext23",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-26",
@@ -773,8 +781,8 @@
       "igCaption": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Rau củ hấp + ức gà**.\n\nThành phần:\n- rau củ\n- ức gà\n- sốt tiêu chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Rau củ hấp + ức gà.\nINGREDIENTS (visible on plate/box): rau củ, ức gà, sốt tiêu chanh.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_a4epa",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_pp5xv",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-27",
@@ -785,20 +793,20 @@
       "igCaption": "Chào buổi sáng! Mình bắt đầu ngày mới bằng **Bánh mì pate nạc + rau** cho nhẹ bụng.\n\nThành phần:\n- bánh mì\n- pate ít mỡ\n- dưa leo\n- rau thơm\n\nMình gọi đây là combo ‘đánh thức não’.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn muốn mai mình làm món kiểu Vi\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh mì pate nạc + rau.\nINGREDIENTS (visible on plate/box): bánh mì, pate ít mỡ, dưa leo, rau thơm.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_r7dhu",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_pfquu",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-27",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + đậu que xào tỏi + thịt** đây.\n\nThành phần:\n- đậu que\n- tỏi\n- thịt nạc\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + đậu que xào tỏi + thịt** đây.\n\nThành phần:\n- đậu que\n- tỏi\n- thịt nạc\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.",
       "igCaption": "Ủa… mới đó mà trưa rồi. Mình mở hộp **Cơm + đậu que xào tỏi + thịt** đây.\n\nThành phần:\n- đậu que\n- tỏi\n- thịt nạc\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + đậu que xào tỏi + thịt.\nINGREDIENTS (visible on plate/box): đậu que, tỏi, thịt nạc.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_jccv3",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_i06wk",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-27",
@@ -809,8 +817,8 @@
       "igCaption": "Kết ngày bằng một bữa tối êm bụng: **Mì udon rau + trứng**.\n\nThành phần:\n- udon\n- rau\n- trứng\n- nước dùng\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Mì udon rau + trứng.\nINGREDIENTS (visible on plate/box): udon, rau, trứng, nước dùng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_5tz97",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_1erh9",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-28",
@@ -821,20 +829,20 @@
       "igCaption": "Sáng nay mình làm món nhanh-gọn-mlem: **Chè yến mạch nóng**.\n\nThành phần:\n- yến mạch\n- sữa\n- hạt sen\n- ít đường\n\nGợi ý nhỏ: cắn miếng đầu tiên là thấy ‘đúng bài’.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích vị cay, mặn hay chua nhẹ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Chè yến mạch nóng.\nINGREDIENTS (visible on plate/box): yến mạch, sữa, hạt sen, ít đường.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_xn0y9",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_vxm9i",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-28",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá trứng chiên**.\n\nThành phần:\n- cá trứng\n- trứng\n- tiêu\n- chanh\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá trứng chiên**.\n\nThành phần:\n- cá trứng\n- trứng\n- tiêu\n- chanh\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?",
       "igCaption": "Trưa nay mình ăn kiểu ‘gọn mà chất’: **Cơm + cá trứng chiên**.\n\nThành phần:\n- cá trứng\n- trứng\n- tiêu\n- chanh\n\nHôm nay hộp cơm nhìn ‘đáng tiền’ ghê.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích cơm gạo lứt hay cơm trắng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + cá trứng chiên.\nINGREDIENTS (visible on plate/box): cá trứng, trứng, tiêu, chanh.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_cjirq",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_77157",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-28",
@@ -845,8 +853,8 @@
       "igCaption": "Tối nay mình chọn combo ‘nhẹ mà đã’: **Canh cải xanh nấu thịt**.\n\nThành phần:\n- cải xanh\n- thịt nạc\n- gừng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Canh cải xanh nấu thịt.\nINGREDIENTS (visible on plate/box): cải xanh, thịt nạc, gừng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_jpxkr",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_bocqq",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-29",
@@ -857,20 +865,20 @@
       "igCaption": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn **Bánh mì gà xé sốt sữa chua**. \n\nThành phần:\n- bánh mì\n- gà xé\n- xà lách\n- sốt sữa chua\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứng hay team không \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bánh mì gà xé sốt sữa chua.\nINGREDIENTS (visible on plate/box): bánh mì, gà xé, xà lách, sốt sữa chua.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_3bwl7",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_kji1c",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-29",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + heo quay (phần nạc) + dưa chua**.\n\nThành phần:\n- heo quay phần nạc\n- dưa chua\n- rau\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + heo quay (phần nạc) + dưa chua**.\n\nThành phần:\n- heo quay phần nạc\n- dưa chua\n- rau\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?",
       "igCaption": "Đến giờ nạp năng lượng! Trưa nay là **Cơm + heo quay (phần nạc) + dưa chua**.\n\nThành phần:\n- heo quay phần nạc\n- dưa chua\n- rau\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + heo quay (phần nạc) + dưa chua.\nINGREDIENTS (visible on plate/box): heo quay phần nạc, dưa chua, rau.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_qsg8s",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_62ogt",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-29",
@@ -881,8 +889,8 @@
       "igCaption": "Đến giờ chill rồi, tối nay mình ăn **Nấm xào bơ tỏi + trứng**.\n\nThành phần:\n- nấm\n- bơ\n- tỏi\n- trứng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Nấm xào bơ tỏi + trứng.\nINGREDIENTS (visible on plate/box): nấm, bơ, tỏi, trứng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_pd8jq",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_hzh6l",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-30",
@@ -893,20 +901,20 @@
       "igCaption": "Sáng nay mình đổi gió chút: **Bắp luộc + trứng + dưa leo**.\n\nThành phần:\n- bắp\n- trứng\n- dưa leo\n- muối tiêu\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa sáng ‘chăm’? \n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Bắp luộc + trứng + dưa leo.\nINGREDIENTS (visible on plate/box): bắp, trứng, dưa leo, muối tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_uryga",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_qfdlu",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-30",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + bò khoai tây**.\n\nThành phần:\n- bò nạc\n- khoai tây\n- cà rốt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + bò khoai tây**.\n\nThành phần:\n- bò nạc\n- khoai tây\n- cà rốt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?",
       "igCaption": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + bò khoai tây**.\n\nThành phần:\n- bò nạc\n- khoai tây\n- cà rốt\n- hành\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + bò khoai tây.\nINGREDIENTS (visible on plate/box): bò nạc, khoai tây, cà rốt, hành.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_hfwyn",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_9bmf3",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-30",
@@ -917,8 +925,8 @@
       "igCaption": "Tối nay mình không ăn nặng, chọn **Sữa chua + trái cây (ăn tối nhẹ)** cho dễ ngủ.\n\nThành phần:\n- sữa chua\n- trái cây theo mùa\n- hạt\n\nTối nay mình ưu tiên ‘êm bụng’.\nNo vừa đủ, không bị quá đầy.\n\nBạn thích tối ăn canh hay salad?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Sữa chua + trái cây (ăn tối nhẹ).\nINGREDIENTS (visible on plate/box): sữa chua, trái cây theo mùa, hạt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_i1wrm",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_90g0z",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-31",
@@ -929,20 +937,20 @@
       "igCaption": "Bật mí bữa sáng hôm nay của mình: **Cháo trứng hành** (nhìn là muốn ăn ngay).\n\nThành phần:\n- gạo\n- trứng\n- hành lá\n- tiêu\n\nTeam mặn hay team ngọt, món này đứng giữa luôn đó.\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn có muốn mình làm series ‘5 phút là x\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Cháo trứng hành.\nINGREDIENTS (visible on plate/box): gạo, trứng, hành lá, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_z04qk",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_oz4k7",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-31",
-      "slot": "noon",
+      "slot": "lunch",
       "topicLabel": "What I eat in a day — Trưa",
       "fbContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + gà rang gừng**. \n\nThành phần:\n- gà\n- gừng\n- hành\n- tiêu\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "threadsContent": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + gà rang gừng**. \n\nThành phần:\n- gà\n- gừng\n- hành\n- tiêu\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?",
       "igCaption": "Trưa nay mình chọn món dễ ăn, dễ no: **Cơm + gà rang gừng**. \n\nThành phần:\n- gà\n- gừng\n- hành\n- tiêu\n\nTrưa nay mình cố tình làm vị đậm hơn chút cho đã.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn chọn ‘xào’ hay ‘nướng’?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + gà rang gừng.\nINGREDIENTS (visible on plate/box): gà, gừng, hành, tiêu.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_i2eji",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_skyow",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     },
     {
       "date": "2026-03-31",
@@ -953,9 +961,9 @@
       "igCaption": "Bữa tối hôm nay của mình: **Salad trứng + bắp** (ngon kiểu nhẹ nhàng).\n\nThành phần:\n- trứng\n- bắp\n- rau\n- sốt\n\nMình làm món này vì tối nay… lười.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn mai mình làm món có trứng hay không trứng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Salad trứng + bắp.\nINGREDIENTS (visible on plate/box): trứng, bắp, rau, sốt.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
-      "id": "pool_1772769631523_phihp",
-      "importedAt": "2026-03-06T04:07:47.499Z"
+      "id": "pool_1772854919766_6x15o",
+      "importedAt": "2026-03-07T03:41:59.766Z"
     }
   ],
-  "lastUpdated": "2026-03-06T07:06:55.423Z"
+  "lastUpdated": "2026-03-09T03:45:00.074Z"
 }

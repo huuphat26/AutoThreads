@@ -6,6 +6,7 @@
 
 import cron from "node-cron";
 import { facebookService, type FBPublishResult } from "./facebook.service";
+import { getFacebookService } from "@/lib/services/service-resolver";
 import {
   getDueFBPosts,
   upsertFBPost,
@@ -49,7 +50,10 @@ export function startFBScheduler(): void {
  * Đăng một FBScheduledPost lên Facebook.
  * Cập nhật trạng thái trong store sau khi đăng.
  */
-export async function publishFBPost(post: FBScheduledPost): Promise<void> {
+export async function publishFBPost(
+  post: FBScheduledPost,
+  accountId?: string,
+): Promise<void> {
   // Đánh dấu đang xử lý để tránh cron job tiếp theo pick lại
   upsertFBPost({ ...post, status: "pending" });
 
@@ -57,11 +61,12 @@ export async function publishFBPost(post: FBScheduledPost): Promise<void> {
 
   try {
     let result: FBPublishResult;
+    const fbSvc = accountId ? getFacebookService(accountId) : facebookService;
 
     if (post.mediaType === "IMAGE" && post.imageUrl) {
-      result = await facebookService.publishPhoto(post.imageUrl, post.message);
+      result = await fbSvc.publishPhoto(post.imageUrl, post.message);
     } else {
-      result = await facebookService.publishText(post.message);
+      result = await fbSvc.publishText(post.message);
     }
 
     // Extract postId — videos use videoId, text/photo use postId
@@ -95,6 +100,7 @@ export async function postFBNow(params: {
   imageUrl?: string;
   topic?: string;
   topicLabel?: string;
+  accountId?: string;
 }): Promise<FBScheduledPost> {
   const post: FBScheduledPost = {
     id: generateFBId(),
@@ -109,7 +115,7 @@ export async function postFBNow(params: {
   };
   upsertFBPost(post);
 
-  await publishFBPost(post);
+  await publishFBPost(post, params.accountId);
   // Trả về bản mới nhất từ store
   return (
     readFBHistory().posts.find((p) => p.id === post.id) ?? {

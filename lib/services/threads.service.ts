@@ -65,9 +65,19 @@ const sleep = (ms: number) =>
 // ─── THREADS SERVICE ──────────────────────────────────────────
 class ThreadsService {
   private http: AxiosInstance;
+  private _overrideToken?: string;
+  private _overrideUserId?: string;
 
   constructor() {
     this.http = axios.create({ baseURL: BASE_URL, timeout: 15_000 });
+  }
+
+  /** Tạo instance mới với credentials override (multi-account) */
+  withCredentials(token: string, userId: string): ThreadsService {
+    const svc = new ThreadsService();
+    svc._overrideToken = token;
+    svc._overrideUserId = userId;
+    return svc;
   }
 
   // ------------------------------------------------------------------
@@ -75,12 +85,14 @@ class ThreadsService {
   // ------------------------------------------------------------------
 
   private get token(): string {
+    if (this._overrideToken) return this._overrideToken;
     const t = process.env.THREADS_ACCESS_TOKEN;
     if (!t) throw new Error("THREADS_ACCESS_TOKEN chưa cấu hình trong .env");
     return t;
   }
 
   private get userId(): string {
+    if (this._overrideUserId) return this._overrideUserId;
     const id = process.env.THREADS_USER_ID;
     if (!id) throw new Error("THREADS_USER_ID chưa cấu hình trong .env");
     return id;

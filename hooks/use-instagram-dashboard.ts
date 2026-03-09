@@ -50,6 +50,9 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
   const [videoUrl, setVideoUrl] = useState("");
   const [shareToFeed, setShareToFeed] = useState(true);
 
+  // ── Account state (multi-account) ───────────────────────────────────────────
+  const [accountId, setAccountId] = useState<string | undefined>(undefined);
+
   // ── Schedule state ──────────────────────────────────────────────────────────
   const [isScheduled, setIsScheduled] = useState(false);
   const [scheduledTime, setScheduledTime] = useState(defaultScheduledTime);
@@ -181,6 +184,7 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
         scheduledAt: isScheduled
           ? new Date(scheduledTime).toISOString()
           : undefined,
+        accountId,
       };
 
       const res = await fetch("/api/platforms/instagram/schedule", {
@@ -282,5 +286,8 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
     handleGenerate,
     handlePost,
     handleCancelPost,
+    // Account (multi-account)
+    accountId,
+    setAccountId,
   };
 }

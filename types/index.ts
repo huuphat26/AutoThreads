@@ -591,7 +591,7 @@ export interface ThreadsManualPostHistory {
 //   FB → 3 phút → Threads → 3 phút → IG
 // ============================================
 
-export type AutoPostSlot = "morning" | "noon" | "evening";
+export type AutoPostSlot = "morning" | "lunch" | "evening";
 
 export type AutoPostPlatformStatus =
   | "pending"
@@ -612,6 +612,8 @@ export interface AutoPostPlatformResult {
 export interface AutoPostRecord {
   id: string;
   slot: AutoPostSlot;
+  /** ID tài khoản đăng bài — nếu không có thì dùng account mặc định */
+  accountId?: string;
   /** ISO string — thời điểm bắt đầu chạy */
   triggeredAt: string;
   /** Chủ đề AI đã chọn */
@@ -637,6 +639,7 @@ export interface AutoPostRecord {
    *   completed       — cả 3 nền tảng thành công
    *   partial         — ít nhất 1 thành công
    *   failed          — cả 3 thất bại
+   *   dismissed       — người dùng bỏ qua (không muốn đăng lại)
    */
   overallStatus:
     | "waiting_for_ai"
@@ -644,7 +647,9 @@ export interface AutoPostRecord {
     | "running"
     | "completed"
     | "partial"
-    | "failed";
+    | "failed"
+    | "dismissed"
+    | "no_image";
 }
 
 export interface AutoPostHistory {
@@ -665,6 +670,8 @@ export interface ContentPoolItem {
   /** Ngày đăng — "2026-03-05" */
   date: string;
   slot: AutoPostSlot;
+  /** ID tài khoản đăng bài — nếu không có thì dùng account mặc định */
+  accountId?: string;
   topicLabel: string;
   fbContent: string;
   threadsContent: string;
@@ -683,4 +690,78 @@ export interface ContentPoolItem {
 export interface ContentPoolStore {
   items: ContentPoolItem[];
   lastUpdated: string;
+}
+
+// ============================================
+// Multi-Account — Quản lý nhiều tài khoản đăng bài
+// Mỗi account chứa credentials cho 3 nền tảng + niche riêng
+// ============================================
+
+/** Credentials cho một nền tảng cụ thể */
+export interface PlatformCredentials {
+  /** Access token (long-lived) */
+  accessToken: string;
+  /** User ID hoặc Page ID */
+  userId: string;
+  /** App ID (dùng cho token management) */
+  appId?: string;
+  /** App Secret (dùng cho token management) */
+  appSecret?: string;
+}
+
+/** Một tài khoản đăng bài — chứa credentials cả 3 nền tảng */
+export interface PostingAccount {
+  id: string;
+  /** Tên hiển thị — vd: "Food Blog", "Tech Tips" */
+  name: string;
+  /** Niche / chủ đề nội dung — vd: "Món ăn Eat Clean", "Công nghệ" */
+  niche: string;
+  /** Màu hiển thị (hex) để phân biệt account trên UI */
+  color: string;
+  /** Tài khoản mặc định (chỉ có 1 account là default) */
+  isDefault: boolean;
+  /** Tài khoản đọc từ .env (không thể xoá, không hiện credentials) */
+  isEnvAccount: boolean;
+  /** Credentials cho Threads */
+  threads?: PlatformCredentials;
+  /** Credentials cho Facebook */
+  facebook?: PlatformCredentials;
+  /** Credentials cho Instagram */
+  instagram?: PlatformCredentials;
+  /** Ngày tạo */
+  createdAt: string;
+  /** Ghi chú tuỳ chọn */
+  note?: string;
+  /**
+   * Đăng chéo — danh sách account IDs mà tài khoản này có thể
+   * "mượn" nội dung content pool để đăng.
+   * Vd: Account A (món ăn) có contentSources: ["env-acc2"]
+   * → khi auto-post, Account A sẽ lấy nội dung từ pool của A + B
+   */
+  contentSources?: string[];
+}
+
+/** Store lưu danh sách accounts */
+export interface AccountStore {
+  accounts: PostingAccount[];
+  lastUpdated: string;
+}
+
+/** Thông tin account an toàn để gửi xuống client (không chứa token/secret) */
+export interface AccountSafe {
+  id: string;
+  name: string;
+  niche: string;
+  color: string;
+  isDefault: boolean;
+  isEnvAccount: boolean;
+  hasThreads: boolean;
+  hasInstagram: boolean;
+  hasFacebook: boolean;
+  createdAt: string;
+  note?: string;
+  /** Đăng chéo — account IDs mà tài khoản này mượn nội dung */
+  contentSources?: string[];
+  /** Số nội dung pending trong content pool */
+  pendingCount?: number;
 }

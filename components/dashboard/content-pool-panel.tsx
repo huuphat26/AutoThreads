@@ -12,6 +12,7 @@ import {
   BulkSummary,
 } from "./content-pool/pool-bulk-banner";
 import { PoolDateGroup } from "./content-pool/pool-item-card";
+import { AccountSelector } from "./account-selector";
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Chờ đăng",
@@ -24,6 +25,7 @@ const PAGE_SIZE = 5;
 export function ContentPoolPanel() {
   const [filterStatus, setFilterStatus] = useState<string>("pending");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [accountId, setAccountId] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -44,7 +46,7 @@ export function ContentPoolPanel() {
     handleClearPending,
     handleDelete,
     handleBulkGenerate,
-  } = useContentPool(filterStatus);
+  } = useContentPool(filterStatus, accountId || undefined);
 
   const stats = data?.stats;
   const items = data?.items ?? [];
@@ -85,6 +87,12 @@ export function ContentPoolPanel() {
         />
       )}
 
+      {/* Account selector — chọn tài khoản để lọc/import nội dung */}
+      <AccountSelector
+        value={accountId}
+        onChange={setAccountId}
+      />
+
       <PoolStatsBar
         stats={stats}
         allPending={allPending}
@@ -101,11 +109,10 @@ export function ContentPoolPanel() {
                 setFilterStatus(s);
                 setVisibleCount(PAGE_SIZE);
               }}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                filterStatus === s
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${filterStatus === s
                   ? "bg-white text-slate-800 shadow-xs border border-slate-200"
                   : "text-slate-400 hover:text-slate-600"
-              }`}
+                }`}
             >
               {s === "" ? "Tất cả" : STATUS_LABEL[s]}
             </button>
@@ -115,11 +122,10 @@ export function ContentPoolPanel() {
         <div className="flex-1" />
 
         <label
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors ${
-            uploading
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors ${uploading
               ? "opacity-50 pointer-events-none bg-slate-800 text-white"
               : "bg-slate-800 text-white hover:bg-slate-700"
-          }`}
+            }`}
         >
           {uploading ? <Spinner /> : <UploadIcon className="w-3.5 h-3.5" />}
           Import xlsx

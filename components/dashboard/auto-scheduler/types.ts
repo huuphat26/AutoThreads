@@ -29,10 +29,13 @@ export type StatusKey =
   | "running"
   | "completed"
   | "partial"
+  | "failed"
   | "scheduled"
   | "waiting"
   | "waiting_for_ai"
-  | "content_ready";
+  | "content_ready"
+  | "no_image"
+  | "dismissed";
 
 export const STATUS_CFG: Record<
   StatusKey,
@@ -78,6 +81,11 @@ export const STATUS_CFG: Record<
     pill: "bg-slate-100 text-slate-400 border-slate-200",
     label: "Bỏ qua",
   },
+  no_image: {
+    dot: "bg-rose-400",
+    pill: "bg-rose-50 text-rose-600 border-rose-200",
+    label: "Thiếu ảnh",
+  },
   running: {
     dot: "bg-blue-400 animate-pulse",
     pill: "bg-blue-50 text-blue-600 border-blue-200",
@@ -92,5 +100,10 @@ export const STATUS_CFG: Record<
     dot: "bg-amber-400",
     pill: "bg-amber-50 text-amber-600 border-amber-200",
     label: "Một phần",
+  },
+  dismissed: {
+    dot: "bg-slate-300",
+    pill: "bg-slate-100 text-slate-400 border-slate-200",
+    label: "Đã bỏ qua",
   },
 };

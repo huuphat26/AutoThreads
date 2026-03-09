@@ -2,12 +2,12 @@
 
 export const SLOT_HOURS: Record<string, { h: number; m: number }> = {
   morning: { h: 6, m: 30 },
-  noon: { h: 11, m: 30 },
+  lunch: { h: 11, m: 0 },
   evening: { h: 17, m: 0 },
 };
 
 /** Khoảng cách giữa các nền tảng khi đăng (phút) */
-export const DELAY_MINUTES = 3;
+export const DELAY_MINUTES = 5;
 
 /** Thời gian chuẩn bị content trước giờ đăng (phút) */
 export const PREP_BEFORE_POST_MIN = 15;

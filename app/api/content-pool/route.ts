@@ -15,12 +15,19 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const statusFilter = searchParams.get("status") as ContentPoolStatus | null;
+  const accountFilter = searchParams.get("accountId");
 
   const stats = getPoolStats();
   let items = getAllPoolItems();
 
   if (statusFilter) {
     items = items.filter((item) => item.status === statusFilter);
+  }
+
+  if (accountFilter) {
+    items = items.filter(
+      (item) => (item.accountId ?? "env-default") === accountFilter,
+    );
   }
 
   return NextResponse.json({ success: true, data: { stats, items } });

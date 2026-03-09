@@ -88,15 +88,21 @@ function PlatformScheduleRow({
 export function TodaySlotCard({
   slotId,
   record,
+  onRetry,
+  onDismiss,
+  dismissed,
 }: {
   slotId: string;
   record: AutoPostRecord | null;
+  onRetry?: (slotId: string) => void;
+  onDismiss?: (slotId: string, recordId?: string) => void;
+  dismissed?: boolean;
 }) {
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
   const slotName =
     slotId === "morning"
       ? "Buổi sáng"
-      : slotId === "noon"
+      : slotId === "lunch"
         ? "Buổi trưa"
         : "Buổi tối";
 
@@ -157,7 +163,75 @@ export function TodaySlotCard({
             ⚡ Đang soạn AI…
           </span>
         )}
+        {record?.overallStatus === "no_image" && (
+          <span className="ml-auto text-rose-500 font-semibold">
+            ❌ Thiếu ảnh
+          </span>
+        )}
       </div>
+
+      {/* Retry banner khi slot bị bỏ qua (không có record) */}
+      {overallStatus === "skipped" && !record && !dismissed && (
+        <div className="flex items-center justify-between px-4 py-2.5 bg-amber-50 border-b border-amber-100">
+          <span className="text-xs text-amber-700">
+            Slot này đã bị bỏ qua — không có nội dung trong Content Pool lúc chuẩn bị.
+          </span>
+          <div className="flex items-center gap-2 shrink-0 ml-3">
+            {onRetry && (
+              <button
+                onClick={() => onRetry(slotId)}
+                className="text-xs font-semibold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Đăng lại
+              </button>
+            )}
+            {onDismiss && (
+              <button
+                onClick={() => onDismiss(slotId)}
+                className="text-xs font-medium text-slate-400 hover:text-slate-600 px-2 py-1.5 rounded-lg transition-colors"
+              >
+                Bỏ qua
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Retry banner khi slot bị lỗi (failed/partial) */}
+      {record && !dismissed && (record.overallStatus === "failed" || record.overallStatus === "partial") && (
+        <div className={`flex items-center justify-between px-4 py-2.5 border-b ${record.overallStatus === "failed"
+          ? "bg-rose-50 border-rose-100"
+          : "bg-amber-50 border-amber-100"
+          }`}>
+          <span className={`text-xs ${record.overallStatus === "failed" ? "text-rose-700" : "text-amber-700"
+            }`}>
+            {record.overallStatus === "failed"
+              ? "Tất cả nền tảng đều thất bại — bạn có muốn thử đăng lại?"
+              : "Một số nền tảng bị lỗi — bạn có muốn thử đăng lại?"}
+          </span>
+          <div className="flex items-center gap-2 shrink-0 ml-3">
+            {onRetry && (
+              <button
+                onClick={() => onRetry(slotId)}
+                className={`text-xs font-semibold text-white px-3 py-1.5 rounded-lg transition-colors ${record.overallStatus === "failed"
+                  ? "bg-rose-500 hover:bg-rose-600"
+                  : "bg-amber-500 hover:bg-amber-600"
+                  }`}
+              >
+                Đăng lại
+              </button>
+            )}
+            {onDismiss && (
+              <button
+                onClick={() => onDismiss(slotId, record.id)}
+                className="text-xs font-medium text-slate-400 hover:text-slate-600 px-2 py-1.5 rounded-lg transition-colors"
+              >
+                Bỏ qua
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Platform rows */}
       <div>

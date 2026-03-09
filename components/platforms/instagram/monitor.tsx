@@ -15,6 +15,7 @@ import {
   PlatformStatsGrid,
   PlatformComposeButton,
 } from "@/components/shared/platform-monitor";
+import { AccountSelector } from "@/components/dashboard/account-selector";
 
 type IGAccount = {
   id: string;
@@ -128,30 +129,36 @@ export function InstagramMonitorBlock({
           />
 
           {composeOpen && (
-            <InstagramComposeForm
-              keywords={ig.keywords}
-              onKeywordsChange={ig.setKeywords}
-              caption={ig.caption}
-              onCaptionChange={ig.setCaption}
-              mediaType={ig.mediaType}
-              onMediaTypeChange={ig.setMediaType}
-              imageUrl={ig.imageUrl}
-              onImageUrlChange={ig.setImageUrl}
-              videoUrl={ig.videoUrl}
-              onVideoUrlChange={ig.setVideoUrl}
-              shareToFeed={ig.shareToFeed}
-              onShareToFeedChange={ig.setShareToFeed}
-              isScheduled={ig.isScheduled}
-              onIsScheduledChange={ig.setIsScheduled}
-              scheduledTime={ig.scheduledTime}
-              onScheduledTimeChange={ig.setScheduledTime}
-              generating={ig.generating}
-              loading={ig.loading}
-              error={ig.error}
-              success={ig.success}
-              onGenerate={ig.handleGenerate}
-              onPost={ig.handlePost}
-            />
+            <div className="space-y-3">
+              <AccountSelector
+                value={ig.accountId}
+                onChange={ig.setAccountId}
+              />
+              <InstagramComposeForm
+                keywords={ig.keywords}
+                onKeywordsChange={ig.setKeywords}
+                caption={ig.caption}
+                onCaptionChange={ig.setCaption}
+                mediaType={ig.mediaType}
+                onMediaTypeChange={ig.setMediaType}
+                imageUrl={ig.imageUrl}
+                onImageUrlChange={ig.setImageUrl}
+                videoUrl={ig.videoUrl}
+                onVideoUrlChange={ig.setVideoUrl}
+                shareToFeed={ig.shareToFeed}
+                onShareToFeedChange={ig.setShareToFeed}
+                isScheduled={ig.isScheduled}
+                onIsScheduledChange={ig.setIsScheduled}
+                scheduledTime={ig.scheduledTime}
+                onScheduledTimeChange={ig.setScheduledTime}
+                generating={ig.generating}
+                loading={ig.loading}
+                error={ig.error}
+                success={ig.success}
+                onGenerate={ig.handleGenerate}
+                onPost={ig.handlePost}
+              />
+            </div>
           )}
 
           <InstagramPostsList

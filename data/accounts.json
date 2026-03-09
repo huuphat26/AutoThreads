@@ -1,0 +1,27 @@
+{
+  "accounts": [
+    {
+      "id": "env-default",
+      "name": "Tài khoản mặc định",
+      "niche": "Eat Clean / Healthy Food",
+      "color": "#10b981",
+      "isDefault": true,
+      "isEnvAccount": true,
+      "createdAt": "2026-03-08T16:34:03.316Z",
+      "note": "Đọc credentials từ .env — không thể chỉnh sửa token trên UI",
+      "threads": {
+        "accessToken": "__env__",
+        "userId": "__env__"
+      },
+      "facebook": {
+        "accessToken": "__env__",
+        "userId": "__env__"
+      },
+      "instagram": {
+        "accessToken": "__env__",
+        "userId": "__env__"
+      }
+    }
+  ],
+  "lastUpdated": "2026-03-08T16:34:03.316Z"
+}

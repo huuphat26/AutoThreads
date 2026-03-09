@@ -58,12 +58,14 @@ export async function POST(req: NextRequest) {
       imageUrl,
       topicTag, // topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &)
       scheduledAt, // ISO string — nếu truyền → hẹn giờ; không truyền → đăng ngay
+      accountId, // ID tài khoản đăng bài (multi-account)
     } = body as {
       content?: string;
       mediaType?: ThreadsManualMediaType;
       imageUrl?: string;
       topicTag?: string;
       scheduledAt?: string;
+      accountId?: string;
     };
 
     // Validate topicTag
@@ -127,6 +129,7 @@ export async function POST(req: NextRequest) {
         mediaType,
         imageUrl: imageUrl?.trim(),
         topicTag: cleanTopicTag,
+        accountId,
       });
       return NextResponse.json({
         success: post.status === "posted",

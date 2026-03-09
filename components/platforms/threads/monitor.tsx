@@ -15,6 +15,7 @@ import {
   PlatformComposeButton,
 } from "@/components/shared/platform-monitor";
 import { ImageGeneratorCard } from "@/components/shared/image-generator-card";
+import { AccountSelector } from "@/components/dashboard/account-selector";
 
 type TokenInfo = {
   isValid: boolean;
@@ -66,6 +67,8 @@ export function ThreadsMonitorBlock() {
     handleGenerate,
     handlePost,
     ensureManualFetched,
+    accountId,
+    setAccountId,
   } = useDashboard();
 
   const fetchProfileData = useCallback(async () => {
@@ -161,6 +164,10 @@ export function ThreadsMonitorBlock() {
 
           {composeOpen && (
             <div className="space-y-3">
+              <AccountSelector
+                value={accountId}
+                onChange={setAccountId}
+              />
               <ImageGeneratorCard
                 onImageGenerated={(url) => setImageUrl(url)}
               />

@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getAutoSchedulerStatus,
   triggerAutoPost,
+  executePlatformPosts,
+  scheduleOnceForToday,
   startAutoScheduler,
   stopAutoScheduler,
   storeContentForRecord,
@@ -48,6 +50,48 @@ export async function GET(req: NextRequest) {
 
 // ── POST: Trigger thủ công ────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}));
+
+  // ── Retry-slot: gọi từ UI khi slot bị "Bỏ qua" — không cần cron-secret ──
+  if (body.action === "retry-slot") {
+    const slot: AutoPostSlot =
+      body.slot === "morning"
+        ? "morning"
+        : body.slot === "evening"
+          ? "evening"
+          : "lunch";
+    const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
+      Array.isArray(body.platforms) ? body.platforms : undefined;
+    triggerAutoPost(slot, platforms).catch((err) => {
+      console.error("[AutoScheduler API] Retry-slot lỗi:", err);
+    });
+    return NextResponse.json({
+      success: true,
+      data: { message: `Đang retry slot [${slot}]…` },
+    });
+  }
+
+  // ── Dismiss-slot: bỏ qua slot lỗi — đánh dấu "dismissed" ──
+  if (body.action === "dismiss-slot") {
+    const recordId: string | undefined =
+      typeof body.recordId === "string" ? body.recordId : undefined;
+    if (recordId) {
+      const { getAutoRecord, upsertAutoRecord } =
+        await import("@/lib/auto-post-store");
+      const rec = getAutoRecord(recordId);
+      if (
+        rec &&
+        (rec.overallStatus === "failed" || rec.overallStatus === "partial")
+      ) {
+        upsertAutoRecord({ ...rec, overallStatus: "dismissed" });
+      }
+    }
+    return NextResponse.json({
+      success: true,
+      data: { message: "Đã bỏ qua slot này." },
+    });
+  }
+
   const secret = req.headers.get("x-cron-secret");
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json(
@@ -57,23 +101,45 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json().catch(() => ({}));
     const slot: AutoPostSlot =
       body.slot === "morning"
         ? "morning"
         : body.slot === "evening"
           ? "evening"
-          : "noon";
+          : "lunch";
+
+    const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
+      Array.isArray(body.platforms) ? body.platforms : undefined;
+
+    const recordId: string | undefined =
+      typeof body.recordId === "string" ? body.recordId : undefined;
+
+    // Re-run posting for an existing record (e.g., sau khi bị lỗi)
+    if (recordId) {
+      executePlatformPosts(recordId, platforms, true).catch((err) => {
+        console.error("[AutoScheduler API] Re-run lỗi:", err);
+      });
+      const platformsLabel = platforms
+        ? platforms.join(",")
+        : "tất cả nền tảng";
+      return NextResponse.json({
+        success: true,
+        data: {
+          message: `Đang re-run posting cho record ${recordId} — đăng lên ${platformsLabel}`,
+        },
+      });
+    }
 
     // Chạy bất đồng bộ — trả về ngay để tránh timeout 30s của serverless
-    triggerAutoPost(slot).catch((err) => {
+    triggerAutoPost(slot, platforms).catch((err) => {
       console.error("[AutoScheduler API] Trigger lỗi:", err);
     });
 
+    const platformsLabel = platforms ? platforms.join(",") : "FB→Threads→IG";
     return NextResponse.json({
       success: true,
       data: {
-        message: `Đã kích hoạt auto-post [${slot}] — đăng tuần tự FB→Threads→IG trong ~4 phút`,
+        message: `Đã kích hoạt auto-post [${slot}] — đăng ${platformsLabel} trong vài phút`,
       },
     });
   } catch (error) {
@@ -94,7 +160,46 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const action: "start" | "stop" = body.action;
+    const action: "start" | "stop" | "schedule-once" = body.action;
+
+    if (action === "schedule-once") {
+      const slot: AutoPostSlot =
+        body.slot === "morning"
+          ? "morning"
+          : body.slot === "evening"
+            ? "evening"
+            : "lunch";
+      const prepTime: string = body.prepTime;
+      const postTime: string = body.postTime;
+      const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
+        Array.isArray(body.platforms) ? body.platforms : undefined;
+
+      if (!prepTime || !postTime) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Thiếu prepTime hoặc postTime (VD: '18:00')",
+          },
+          { status: 400 },
+        );
+      }
+
+      const { prepAt, postAt } = scheduleOnceForToday(
+        slot,
+        prepTime,
+        postTime,
+        platforms,
+      );
+      const platformsLabel = platforms ? platforms.join(",") : "FB→Threads→IG";
+      return NextResponse.json({
+        success: true,
+        data: {
+          message: `Đã lên lịch one-time [${slot}]: chuẩn bị ${prepTime} VN → đăng ${postTime} VN (${platformsLabel})`,
+          prepAt: prepAt.toISOString(),
+          postAt: postAt.toISOString(),
+        },
+      });
+    }
 
     if (action === "start") {
       startAutoScheduler();

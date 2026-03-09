@@ -7,6 +7,7 @@
 
 import cron from "node-cron";
 import { threadsService } from "./threads.service";
+import { getThreadsService } from "@/lib/services/service-resolver";
 import {
   getDueThreadsManualPosts,
   upsertThreadsManualPost,
@@ -55,6 +56,7 @@ export function startThreadsManualScheduler(): void {
  */
 export async function publishThreadsManualPost(
   post: ThreadsManualPost,
+  accountId?: string,
 ): Promise<void> {
   // Đánh dấu đang xử lý để tránh cron job tiếp theo pick lại
   upsertThreadsManualPost({ ...post, status: "pending" });
@@ -63,20 +65,19 @@ export async function publishThreadsManualPost(
     `[Threads Manual Scheduler] 🚀 Đăng bài ${post.id} (${post.mediaType})...`,
   );
 
+  const thSvc = accountId ? getThreadsService(accountId) : threadsService;
+
   try {
     let result: { postId: string; postedAt: string };
 
     if (post.mediaType === "IMAGE" && post.imageUrl) {
-      result = await threadsService.publishImagePost(
+      result = await thSvc.publishImagePost(
         post.imageUrl,
         post.content || undefined,
         post.topicTag,
       );
     } else {
-      result = await threadsService.publishTextPost(
-        post.content,
-        post.topicTag,
-      );
+      result = await thSvc.publishTextPost(post.content, post.topicTag);
     }
 
     upsertThreadsManualPost({
@@ -107,6 +108,7 @@ export async function postThreadsManualNow(params: {
   mediaType: ThreadsManualMediaType;
   imageUrl?: string;
   topicTag?: string;
+  accountId?: string;
 }): Promise<ThreadsManualPost> {
   const post: ThreadsManualPost = {
     id: generateThreadsManualId(),
@@ -120,7 +122,7 @@ export async function postThreadsManualNow(params: {
   };
   upsertThreadsManualPost(post);
 
-  await publishThreadsManualPost(post);
+  await publishThreadsManualPost(post, params.accountId);
   // Trả về bản mới nhất từ store
   return (
     readThreadsManualHistory().posts.find((p) => p.id === post.id) ?? {

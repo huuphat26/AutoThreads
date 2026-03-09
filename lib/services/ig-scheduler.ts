@@ -12,6 +12,7 @@
 
 import cron from "node-cron";
 import { instagramService, IGApiError } from "./instagram.service";
+import { getInstagramService } from "@/lib/services/service-resolver";
 import {
   getDueIGPosts,
   upsertIGPost,
@@ -54,7 +55,10 @@ export function startIGScheduler(): void {
  * Publish một IGScheduledPost lên Instagram.
  * Cập nhật trạng thái trong store sau mỗi bước.
  */
-export async function publishIGPost(post: IGScheduledPost): Promise<void> {
+export async function publishIGPost(
+  post: IGScheduledPost,
+  accountId?: string,
+): Promise<void> {
   // Đánh dấu pending để tránh cron job tiếp theo pick lại
   upsertIGPost({ ...post, status: "pending" });
 
@@ -62,8 +66,10 @@ export async function publishIGPost(post: IGScheduledPost): Promise<void> {
     `[IG Scheduler] 🚀 Đăng bài IG ${post.id} (${post.mediaType})...`,
   );
 
+  const igSvc = accountId ? getInstagramService(accountId) : instagramService;
+
   try {
-    const result = await instagramService.publish({
+    const result = await igSvc.publish({
       caption: post.caption || undefined,
       mediaType: post.mediaType,
       imageUrl: post.imageUrl,
@@ -110,6 +116,7 @@ export async function postIGNow(params: {
   shareToFeed?: boolean;
   topic?: string;
   topicLabel?: string;
+  accountId?: string;
 }): Promise<IGScheduledPost> {
   const post: IGScheduledPost = {
     id: generateIGId(),
@@ -126,7 +133,7 @@ export async function postIGNow(params: {
   };
   upsertIGPost(post);
 
-  await publishIGPost(post);
+  await publishIGPost(post, params.accountId);
   return (
     readIGHistory().posts.find((p) => p.id === post.id) ?? {
       ...post,

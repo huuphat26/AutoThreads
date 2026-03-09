@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
       useAI = false, // true → tạo nội dung bằng AI
       topic,
       keywords,
+      accountId, // ID tài khoản đăng bài (multi-account)
     } = body as {
       message?: string;
       mediaType?: FBMediaType;
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       useAI?: boolean;
       topic?: string;
       keywords?: string[];
+      accountId?: string;
     };
 
     // ── Tạo nội dung bằng AI nếu yêu cầu ──────────────────────────────────────
@@ -107,6 +109,7 @@ export async function POST(req: NextRequest) {
         imageUrl,
         topic,
         topicLabel,
+        accountId,
       });
       return NextResponse.json({
         success: post.status === "posted",

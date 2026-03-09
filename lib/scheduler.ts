@@ -15,7 +15,7 @@ import type { ScheduledPost } from "@/types";
 
 const DEFAULT_SCHEDULES: Array<{ id: string; label: string; cron: string }> = [
   { id: "morning", label: "Buổi sáng (06:30)", cron: "30 6 * * *" },
-  { id: "noon", label: "Buổi trưa (11:00)", cron: "0 11 * * *" },
+  { id: "lunch", label: "Buổi trưa (11:00)", cron: "0 11 * * *" },
   { id: "evening", label: "Buổi tối  (17:00)", cron: "0 17 * * *" },
 ];
 

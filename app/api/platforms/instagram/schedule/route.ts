@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       useAI = false, // true → tạo caption bằng AI
       topic,
       keywords,
+      accountId, // ID tài khoản đăng bài (multi-account)
     } = body as {
       caption?: string;
       mediaType?: IGScheduleMediaType;
@@ -68,6 +69,7 @@ export async function POST(req: NextRequest) {
       useAI?: boolean;
       topic?: string;
       keywords?: string[];
+      accountId?: string;
     };
 
     // Validate media URL
@@ -128,6 +130,7 @@ export async function POST(req: NextRequest) {
         shareToFeed,
         topic,
         topicLabel,
+        accountId,
       });
       return NextResponse.json({
         success: post.status === "posted",

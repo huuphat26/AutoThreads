@@ -108,10 +108,20 @@ class InstagramService {
   private http: AxiosInstance;
   /** Chỉ dùng cho debug_token — endpoint này nằm trên graph.facebook.com */
   private fbHttp: AxiosInstance;
+  private _overrideToken?: string;
+  private _overrideUserId?: string;
 
   constructor() {
     this.http = axios.create({ baseURL: BASE_URL, timeout: 20_000 });
     this.fbHttp = axios.create({ baseURL: FB_BASE_URL, timeout: 10_000 });
+  }
+
+  /** Tạo instance mới với credentials override (multi-account) */
+  withCredentials(token: string, userId: string): InstagramService {
+    const svc = new InstagramService();
+    svc._overrideToken = token;
+    svc._overrideUserId = userId;
+    return svc;
   }
 
   // ------------------------------------------------------------------
@@ -119,12 +129,14 @@ class InstagramService {
   // ------------------------------------------------------------------
 
   private get token(): string {
+    if (this._overrideToken) return this._overrideToken;
     const t = process.env.IG_ACCESS_TOKEN;
     if (!t) throw new Error("IG_ACCESS_TOKEN chưa cấu hình trong .env");
     return t.trim();
   }
 
   private get userId(): string {
+    if (this._overrideUserId) return this._overrideUserId;
     const id = process.env.IG_USER_ID;
     if (!id) throw new Error("IG_USER_ID chưa cấu hình trong .env");
     return id.trim();

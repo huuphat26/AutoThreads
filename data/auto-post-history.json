@@ -1,8 +1,206 @@
 {
   "records": [
     {
+      "id": "auto-1773027900042-fgrzh",
+      "slot": "lunch",
+      "accountId": "env-default",
+      "triggeredAt": "2026-03-09T03:45:00.042Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Trưa",
+      "content": "Đến giờ nạp năng lượng! Trưa nay là Bún thịt nướng bento.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
+      "threadsContent": "Đến giờ nạp năng lượng! Trưa nay là Bún thịt nướng bento.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?",
+      "igCaption": "Đến giờ nạp năng lượng! Trưa nay là Bún thịt nướng bento.\n\nThành phần:\n- bún\n- thịt nướng nạc\n- rau sống\n- nước mắm\n\nMón này mở nắp ra là thơm liền.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn hay ăn trưa lúc mấy giờ?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990475/autothreads/fghamdtfdkjezds4qoxh.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122102223471240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122102223471240014",
+        "postedAt": "2026-03-09T04:00:07.761Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "17902128270389248",
+        "postedAt": "2026-03-09T04:05:11.109Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18090985286472905",
+        "permalinkUrl": "https://www.instagram.com/p/DVplcbxgWXZ/",
+        "postedAt": "2026-03-09T04:10:15.734Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1773023792866-stkha",
+      "slot": "morning",
+      "triggeredAt": "2026-03-09T02:36:32.866Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Sáng",
+      "content": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn Bún gạo lứt trộn gà xé.\n\nThành phần:\n- bún gạo lứt\n- ức gà xé\n- rau thơm\n- dưa leo\n- nước mắm chua ngọt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứng hay team không trứng?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
+      "threadsContent": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn Bún gạo lứt trộn gà xé.\n\nThành phần:\n- bún gạo lứt\n- ức gà xé\n- rau thơm\n- dưa leo\n- nước mắm chua ngọt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứng hay team không trứng?",
+      "igCaption": "Đầu ngày cần thứ gì đó ‘đã miệng’ mà không ngấy — chọn Bún gạo lứt trộn gà xé.\n\nThành phần:\n- bún gạo lứt\n- ức gà xé\n- rau thơm\n- dưa leo\n- nước mắm chua ngọt\n\nĐố bạn trong hộp có mùi gì thơm nhất?\nĂn xong thấy ấm bụng, dễ chịu hẳn.\n\nBạn team trứ\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990447/autothreads/mwglipm9scwfoxoehvyc.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122102212017240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122102212017240014",
+        "postedAt": "2026-03-09T02:36:40.306Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "17945264982125705",
+        "postedAt": "2026-03-09T02:41:46.036Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "17986811132951818",
+        "permalinkUrl": "https://www.instagram.com/p/DVpb5Q8AWSA/",
+        "postedAt": "2026-03-09T02:46:47.290Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1772980088974-iii1r",
+      "slot": "evening",
+      "triggeredAt": "2026-03-08T14:28:08.974Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Tối",
+      "content": "Tối nay mình chọn combo ‘nhẹ mà đã’: Súp lơ xào tỏi + trứng.\n\nThành phần:\n- súp lơ\n- tỏi\n- trứng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "threadsContent": "Tối nay mình chọn combo ‘nhẹ mà đã’: Súp lơ xào tỏi + trứng.\n\nThành phần:\n- súp lơ\n- tỏi\n- trứng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?",
+      "igCaption": "Tối nay mình chọn combo ‘nhẹ mà đã’: Súp lơ xào tỏi + trứng.\n\nThành phần:\n- súp lơ\n- tỏi\n- trứng\n\nCó một thứ làm vị bùng lên, ai đoán được không?\nNo vừa đủ, không bị quá đầy.\n\nBạn muốn mình làm món 15 phút là xong không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772935587/autothreads/scwchjhch4wat4i4f1fh.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122102055729240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122102055729240014",
+        "postedAt": "2026-03-08T14:28:16.930Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18244622362305607",
+        "postedAt": "2026-03-08T14:33:21.464Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18354204949227889",
+        "permalinkUrl": "https://www.instagram.com/p/DVoIiyOAeMh/",
+        "postedAt": "2026-03-08T14:38:22.522Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1772894220280-5kml7",
+      "slot": "evening",
+      "triggeredAt": "2026-03-07T14:37:00.281Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Tối",
+      "content": "Kết ngày bằng một bữa tối êm bụng: Miến gà nấm.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "threadsContent": "Kết ngày bằng một bữa tối êm bụng: Miến gà nấm.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.",
+      "igCaption": "Kết ngày bằng một bữa tối êm bụng: Miến gà nấm.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772794898/autothreads/iormhmtvm9jg2dcxi2va.jpg",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122101757769240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122101757769240014",
+        "postedAt": "2026-03-07T14:37:05.738Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "17857590513668175",
+        "postedAt": "2026-03-07T14:42:13.198Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "17969806107009358",
+        "permalinkUrl": "https://www.instagram.com/p/DVlkwQVE2CC/",
+        "postedAt": "2026-03-07T14:47:12.942Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1772855100038-aofdk",
+      "slot": "lunch",
+      "triggeredAt": "2026-03-07T03:45:00.038Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Trưa",
+      "content": "Ủa… mới đó mà trưa rồi. Mình mở hộp Cơm trắng + bò xào bông cải đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
+      "threadsContent": "Ủa… mới đó mà trưa rồi. Mình mở hộp Cơm trắng + bò xào bông cải đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.",
+      "igCaption": "Ủa… mới đó mà trưa rồi. Mình mở hộp Cơm trắng + bò xào bông cải đây. \n\nThành phần:\n- cơm\n- bò nạc\n- bông cải\n- tỏi\n\nĂn xong thấy đỡ uể oải hẳn.\nHợp cho ngày bận: gọn, nhanh, ngon.\n\nBạn team cơm hay team bún? Comment 1 chữ nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772855009/autothreads/q0zy1ycphstl8sujthgz.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122101431951240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122101431951240014",
+        "postedAt": "2026-03-07T04:00:07.776Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18100772830922634",
+        "postedAt": "2026-03-07T04:05:12.380Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18102771916918399",
+        "permalinkUrl": "https://www.instagram.com/p/DVkb2uCk9oY/",
+        "postedAt": "2026-03-07T04:10:15.127Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1772794896019-cmijy",
+      "slot": "evening",
+      "triggeredAt": "2026-03-06T11:01:36.019Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Tối",
+      "content": "Kết ngày bằng một bữa tối êm bụng: **Miến gà nấm**.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "threadsContent": "Kết ngày bằng một bữa tối êm bụng: **Miến gà nấm**.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.",
+      "igCaption": "Kết ngày bằng một bữa tối êm bụng: **Miến gà nấm**.\n\nThành phần:\n- miến\n- gà\n- nấm\n- hành\n\nMón này hợp khi muốn reset sau ngày dài.\nHợp cho ngày muốn ăn nhẹ.\n\nNgày mai bạn muốn mình làm món kiểu Việt hay kiểu Nhật? Vote nha.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772794898/autothreads/iormhmtvm9jg2dcxi2va.jpg",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122100740913240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122100740913240014",
+        "postedAt": "2026-03-06T11:01:46.269Z"
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "getaddrinfo ENOTFOUND graph.threads.net"
+      },
+      "instagram": {
+        "status": "failed",
+        "errorMessage": "getaddrinfo ENOTFOUND graph.instagram.com"
+      },
+      "overallStatus": "partial"
+    },
+    {
+      "id": "auto-1772790300044-1r3i4",
+      "slot": "evening",
+      "triggeredAt": "2026-03-06T09:45:00.044Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Tối",
+      "content": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Salad ức gà + bơ**.\n\nThành phần:\n- ức gà\n- bơ\n- rau xanh\n- sốt chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "threadsContent": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Salad ức gà + bơ**.\n\nThành phần:\n- ức gà\n- bơ\n- rau xanh\n- sốt chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?",
+      "igCaption": "Tối nay mình ăn nhẹ thôi, nhưng vẫn ngon: **Salad ức gà + bơ**.\n\nThành phần:\n- ức gà\n- bơ\n- rau xanh\n- sốt chanh\n\nĂn xong chỉ muốn kéo chăn nằm nghe nhạc.\nNo vừa đủ, không bị quá đầy.\n\nNếu mai mình làm món ‘chay nhẹ’, bạn có theo không?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "igImageUrl": "https://i.pinimg.com/736x/ec/5c/7a/ec5c7afbc5fada23d67dfcde18128d31.jpg",
+      "facebook": {
+        "status": "failed",
+        "errorMessage": "[Retry hết thời gian 3 phút] [Meta 324] Missing or invalid image file"
+      },
+      "threads": {
+        "status": "failed",
+        "errorMessage": "[Retry hết thời gian 3 phút] [Meta 1] An unknown error occurred"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "17885187585351413",
+        "permalinkUrl": "https://www.instagram.com/p/DVifzU-AYa7/",
+        "postedAt": "2026-03-06T10:06:12.910Z"
+      },
+      "overallStatus": "partial"
+    },
+    {
       "id": "auto-1772770500053-uh0y5",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-06T04:15:00.053Z",
       "topic": "",
       "topicLabel": "What I eat in a day — Trưa",
@@ -53,7 +251,7 @@
     },
     {
       "id": "auto-1772686200043-nd5zn",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-05T04:50:00.044Z",
       "topic": "",
       "topicLabel": "Green Apple Cucumber Juice",
@@ -106,7 +304,7 @@
     },
     {
       "id": "auto-1772600280072-u1zmq",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-04T04:58:00.072Z",
       "topic": "",
       "content": "Hôm nay mình sẽ giới thiệu một ly nước ép chua chua ngọt ngọt tuyệt vời. Đó chính là nước ép dứa táo. Vị thì chua nhẹ của dứa hòa cùng sự ngọt mát của táo, rất dễ uống luôn.\n\nNguyên liệu cần có:\n- 1 trái dứa chín\n- 2 quả táo\n- 1 ít chanh\n\nCách làm rất đơn giản:\n1. Gọt vỏ dứa, cắt thành miếng nhỏ.\n2. Rửa sạch táo, ngoài việc để nguyên vỏ, bạn cũng có thể cắt nhỏ nếu muốn.\n3. Cho tất cả vào máy ép chậm hoặc máy xay. Nếu xay, hãy cho thêm một chút nước để dễ hơn.\n4. Ép hoặc xay xong, bạn có thể thêm một ít nước cốt chanh cho vị thêm phần tươi mát.\n\nNếu muốn ngọt hơn, bạn có thể thêm chút mật ong hoặc đường.\n\nMẹo nhỏ: Uống ngay để giữ lại nhiều dưỡng chất nhất nhé. Đây là ly nước bạn khó có thể cưỡng lại! Cùng thử ngay nào!",
@@ -161,7 +359,7 @@
     },
     {
       "id": "auto-1772522100037-1tpzd",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-03T07:15:00.037Z",
       "topic": "",
       "content": "Hôm nay thử ngay ly nước ép cà rốt táo siêu ngon và dễ làm nhé! Vị ngọt thanh hòa quyện với chút chua nhẹ rất dễ chịu.\n\nNguyên liệu bạn cần:\n- 2 củ cà rốt\n- 1 quả táo\n- 1 muỗng nước cốt chanh\n\nChỉ cần gọt vỏ cà rốt, cắt nhỏ táo rồi cho tất cả vào máy ép chậm hoặc xay. Nếu xay, đừng quên thêm một chút nước cho dễ nhé! \n\nThích vị ngọt hơn? Thêm một chút mật ong. Muốn mát lạnh hơn? Cho vào tủ lạnh trước khi uống hoặc thêm vài viên đá lạnh. \n\nChỉ cần vài phút là có ngay ly nước ép ngon lành, cùng thử nha!",
@@ -187,7 +385,7 @@
     },
     {
       "id": "auto-1772520900041-0ub3i",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-03T06:55:00.041Z",
       "topic": "",
       "content": "",
@@ -208,7 +406,7 @@
     },
     {
       "id": "auto-1772520300035-x7wym",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-03T06:45:00.035Z",
       "topic": "",
       "content": "",
@@ -229,7 +427,7 @@
     },
     {
       "id": "auto-1772518500019-96buj",
-      "slot": "noon",
+      "slot": "lunch",
       "triggeredAt": "2026-03-03T06:15:00.019Z",
       "topic": "",
       "content": "",
@@ -249,5 +447,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-06T04:35:35.646Z"
+  "lastUpdated": "2026-03-09T04:10:15.760Z"
 }

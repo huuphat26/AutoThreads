@@ -68,6 +68,9 @@ export function useDashboard() {
   const [imageUrl, setImageUrl] = useState("");
   const [topicTag, setTopicTag] = useState("");
 
+  // Account state (multi-account)
+  const [accountId, setAccountId] = useState<string | undefined>(undefined);
+
   // Schedule state
   const [isScheduled, setIsScheduled] = useState(false);
   const [scheduledTime, setScheduledTime] = useState(defaultScheduledTime);
@@ -464,6 +467,7 @@ export function useDashboard() {
         scheduledAt: isScheduled
           ? new Date(scheduledTime).toISOString()
           : undefined,
+        accountId,
       };
 
       const res = await fetch("/api/platforms/threads/schedule", {
@@ -558,5 +562,8 @@ export function useDashboard() {
     fetchManualPosts,
     ensureManualFetched,
     handleCancelManualPost,
+    // Account (multi-account)
+    accountId,
+    setAccountId,
   };
 }

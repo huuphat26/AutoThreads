@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const accountId = (formData.get("accountId") as string | null) || undefined;
 
     if (!file) {
       return NextResponse.json(
@@ -77,7 +78,6 @@ export async function POST(req: NextRequest) {
       }
 
       // Normalize slot: Excel dùng "morning"/"lunch"/"evening"
-      // "lunch" và các biến thể → "noon" (tên nội bộ)
       const slot: AutoPostSlot =
         rawSlot === "morning" ||
         rawSlot === "sang" ||
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
               rawSlot === "trua" ||
               rawSlot.includes("noon") ||
               rawSlot.includes("lunch")
-            ? "noon"
+            ? "lunch"
             : rawSlot === "evening" ||
                 rawSlot === "toi" ||
                 rawSlot.includes("evening")
@@ -115,6 +115,7 @@ export async function POST(req: NextRequest) {
         igImageUrl,
         imagePrompt,
         status: "pending",
+        accountId,
       });
     }
 
@@ -134,7 +135,9 @@ export async function POST(req: NextRequest) {
       {
         success: false,
         error:
-          err instanceof Error ? err.message : "Lỗi không xác định khi parse xlsx",
+          err instanceof Error
+            ? err.message
+            : "Lỗi không xác định khi parse xlsx",
       },
       { status: 500 },
     );

@@ -7,11 +7,7 @@
 
 import fs from "fs";
 import path from "path";
-import type {
-  ContentPoolItem,
-  ContentPoolStore,
-  AutoPostSlot,
-} from "@/types";
+import type { ContentPoolItem, ContentPoolStore, AutoPostSlot } from "@/types";
 
 const POOL_FILE = path.join(process.cwd(), "data", "content-pool.json");
 
@@ -42,21 +38,68 @@ export function generatePoolId(): string {
 // ─── Public API ───────────────────────────────────────────────
 
 /** Lấy item đang pending cho ngày + slot cụ thể.
- *  Nếu không có item đúng ngày → fallback sang item pending gần nhất cùng slot. */
+ *  Nếu không có item đúng ngày → fallback sang item pending gần nhất cùng slot.
+ *  Nếu accountId được truyền → chỉ lấy item của account đó.
+ *  Nếu contentSources được truyền → cũng tìm item từ các account nguồn (đăng chéo). */
 export function getPoolItemForSlot(
   date: string,
   slot: AutoPostSlot,
+  accountId?: string,
+  contentSources?: string[],
 ): ContentPoolItem | null {
   const store = readPool();
+
+  // Build set of accepted account IDs
+  const acceptedIds = new Set<string>();
+  if (accountId) acceptedIds.add(accountId);
+  if (contentSources) contentSources.forEach((s) => acceptedIds.add(s));
+
+  const matchAccount = (item: ContentPoolItem) => {
+    if (acceptedIds.size === 0) return true; // no filter
+    return acceptedIds.has(item.accountId ?? "env-default");
+  };
+
+  // Ưu tiên 1: item của chính account (exact date+slot)
+  if (accountId) {
+    const ownExact = store.items.find(
+      (item) =>
+        item.date === date &&
+        item.slot === slot &&
+        item.status === "pending" &&
+        (item.accountId ?? "env-default") === accountId,
+    );
+    if (ownExact) return ownExact;
+  }
+
+  // Ưu tiên 2: item từ bất kỳ accepted account (exact date+slot)
   const exact = store.items.find(
     (item) =>
-      item.date === date && item.slot === slot && item.status === "pending",
+      item.date === date &&
+      item.slot === slot &&
+      item.status === "pending" &&
+      matchAccount(item),
   );
   if (exact) return exact;
 
-  // Fallback: oldest pending item for the same slot (any date)
+  // Ưu tiên 3: item riêng của account (any date, same slot)
+  if (accountId) {
+    const ownFallback = store.items
+      .filter(
+        (item) =>
+          item.slot === slot &&
+          item.status === "pending" &&
+          (item.accountId ?? "env-default") === accountId,
+      )
+      .sort((a, b) => a.date.localeCompare(b.date));
+    if (ownFallback[0]) return ownFallback[0];
+  }
+
+  // Ưu tiên 4: item từ bất kỳ accepted account (any date, same slot)
   const pending = store.items
-    .filter((item) => item.slot === slot && item.status === "pending")
+    .filter(
+      (item) =>
+        item.slot === slot && item.status === "pending" && matchAccount(item),
+    )
     .sort((a, b) => a.date.localeCompare(b.date));
   return pending[0] ?? null;
 }
@@ -118,10 +161,10 @@ export function importPoolItems(
     }
   }
 
-  // Sắp xếp theo ngày → slot (morning → noon → evening)
+  // Sắp xếp theo ngày → slot (morning → lunch → evening)
   const SLOT_ORDER: Record<string, number> = {
     morning: 0,
-    noon: 1,
+    lunch: 1,
     evening: 2,
   };
   store.items.sort((a, b) => {

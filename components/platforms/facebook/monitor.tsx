@@ -16,6 +16,7 @@ import {
   PlatformComposeButton,
 } from "@/components/shared/platform-monitor";
 import { ImageGeneratorCard } from "@/components/shared/image-generator-card";
+import { AccountSelector } from "@/components/dashboard/account-selector";
 
 type PageInfo = {
   id: string;
@@ -51,7 +52,7 @@ export function FacebookMonitorBlock({
 }: {
   aiProviderId?: string;
   aiModel?: string;
-  }) {
+}) {
   const [data, setData] = useState<FBData | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
@@ -134,6 +135,10 @@ export function FacebookMonitorBlock({
 
           {composeOpen && (
             <div className="space-y-3">
+              <AccountSelector
+                value={fb.accountId}
+                onChange={fb.setAccountId}
+              />
               <ImageGeneratorCard
                 onImageGenerated={(url) => fb.setImageUrl(url)}
               />
