@@ -1,0 +1,68 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "opencode/minimax-m2.5-free",
+  "small_model": "opencode/minimax-m2.5-free",
+
+  "instructions": "Read AGENTS.md first. For Next.js code, prefer App Router conventions, preserve SSR/client boundaries, avoid unnecessary client components, and validate with lint/build before finishing.",
+
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "pwd": "allow",
+      "ls *": "allow",
+      "find *": "allow",
+      "cat *": "allow",
+      "grep *": "allow",
+      "rg *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "bun run lint": "allow",
+      "bun run build": "ask",
+      "bun run dev": "ask",
+    },
+  },
+
+  "agent": {
+    "build": {
+      "description": "Full access agent for implementing scoped changes in the Next.js repo.",
+      "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "bash": {
+          "*": "ask",
+          "bun run lint": "allow",
+          "bun run build": "ask",
+        },
+      },
+    },
+    "plan": {
+      "description": "Planning and analysis agent. Should not modify source code unless explicitly approved.",
+      "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "bash": "ask",
+        "edit": "ask",
+        "write": "ask",
+      },
+    },
+  },
+
+  "skills": {
+    "autothreads": {
+      "description": "AutoThreads - Social media automation for Threads, Facebook, Instagram",
+      "path": ".opencode/skills/autothreads.md"
+    }
+  },
+
+  "command": {
+    "audit-route": {
+      "description": "Audit a Next.js route before making changes",
+      "agent": "plan",
+      "template": "Inspect the route under {{path}}. Explain: route hierarchy, layouts, server/client boundaries, data flow, env usage, and implementation risks. Do not edit files."
+    },
+    "add-route-handler": {
+      "description": "Add a new API route handler",
+      "agent": "build",
+      "template": "Create a new API route at {{path}} with {{method}} method. Follow the patterns in AGENTS.md: use NextRequest/NextResponse, return {success, data} or {success, error}, import singletons from lib/services/. Validate CRON_SECRET if this is a scheduler endpoint."
+    }
+  }
+}
