@@ -21,7 +21,7 @@ export function FacebookPostsList({ stats }: Props) {
       </div>
 
       {stats.total > 0 && (
-        <div className="grid grid-cols-4 gap-1.5 mb-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-3">
           {[
             {
               label: "Hẹn giờ",

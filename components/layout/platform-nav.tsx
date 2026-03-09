@@ -1,10 +1,12 @@
 "use client";
 
 // ============================================================
-// PlatformNav — Thanh điều hướng sticky dành riêng cho từng
-// nền tảng. Xuất hiện cố định trên header khi ở /platforms/*
+// PlatformNav — Thanh điều hướng sticky với dropdown menu
+// Hiển thị 3 platforms chính + dropdown cho Tools
+// Responsive: Desktop show all, Mobile/Tablet show 3 + dropdown
 // ============================================================
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,9 +15,10 @@ import {
   ThreadsIcon,
   PoolIcon,
   UsersIcon,
+  EllipsisHorizontalIcon,
 } from "@/components/ui/icons";
 
-const PLATFORMS = [
+const SOCIAL_PLATFORMS = [
   {
     id: "facebook",
     label: "Facebook",
@@ -41,9 +44,12 @@ const PLATFORMS = [
       "bg-linear-to-r from-purple-500 via-pink-500 to-orange-400 text-white shadow-md shadow-pink-200",
     inactiveClass: "text-slate-500 hover:text-pink-500 hover:bg-pink-50",
   },
+] as const;
+
+const TOOL_MENUS = [
   {
     id: "content-pool",
-    label: "Sheets nội dung",
+    label: "Sheets",
     href: "/platforms/content-pool",
     icon: PoolIcon,
     activeClass: "bg-slate-600 text-white shadow-md shadow-slate-300",
@@ -59,33 +65,147 @@ const PLATFORMS = [
   },
 ] as const;
 
+interface NavItem {
+  id: string;
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  activeClass: string;
+  inactiveClass: string;
+}
+
+function NavButton({
+  item,
+  isActive,
+}: {
+  item: NavItem;
+  isActive: boolean;
+}) {
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      className={`
+        flex-1 flex items-center justify-center gap-2
+        px-5 py-2 rounded-lg text-xs font-bold tracking-wide
+        transition-all duration-200
+        ${isActive ? item.activeClass : item.inactiveClass}
+      `}
+    >
+      <Icon className="w-5 h-5 shrink-0" />
+      <span className="font-medium text-center">{item.label}</span>
+    </Link>
+  );
+}
+
+function DropdownMenu({
+  isOpen,
+  onClose,
+  pathname,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  pathname: string;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
+      {TOOL_MENUS.map((item) => {
+        const isActive =
+          pathname === item.href || pathname.startsWith(item.href + "/");
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.id}
+            href={item.href}
+            onClick={onClose}
+            className={`
+              flex items-center gap-2 w-full px-3 py-2 text-sm
+              transition-colors duration-150
+              ${isActive
+                ? "bg-slate-100 text-slate-900 font-medium"
+                : "text-slate-600 hover:bg-slate-50"
+              }
+            `}
+          >
+            <Icon className="w-4 h-4" />
+            {item.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 export function PlatformNav() {
   const pathname = usePathname();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <nav className="bg-white border-b border-slate-100 sticky top-14.25 z-10">
-      <div className="max-w-2xl mx-auto px-5 py-1.5">
+      <div className="max-w-3xl mx-auto px-5 py-1.5">
         <div className="flex gap-1.5 p-1 bg-slate-50 rounded-xl border border-slate-100">
-          {PLATFORMS.map((p) => {
+          {/* Social Platforms - Always visible */}
+          {SOCIAL_PLATFORMS.map((p) => {
             const isActive =
               pathname === p.href || pathname.startsWith(p.href + "/");
-            const Icon = p.icon;
-            return (
-              <Link
-                key={p.id}
-                href={p.href}
-                className={`
-                  flex-1 flex items-center justify-center gap-1.5
-                  px-3 py-2 rounded-lg text-xs font-bold tracking-wide
-                  transition-all duration-200
-                  ${isActive ? p.activeClass : p.inactiveClass}
-                `}
-              >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
-                <span>{p.label}</span>
-              </Link>
-            );
+            return <NavButton key={p.id} item={p} isActive={isActive} />;
           })}
+
+          {/* Desktop: Show Tools directly (lg and above) */}
+          <div className="hidden lg:flex gap-1.5">
+            {TOOL_MENUS.map((p) => {
+              const isActive =
+                pathname === p.href || pathname.startsWith(p.href + "/");
+              return <NavButton key={p.id} item={p} isActive={isActive} />;
+            })}
+          </div>
+
+          {/* Mobile/Tablet: Show dropdown (below lg) */}
+          <div className="flex lg:hidden relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`
+                flex items-center justify-center gap-1.5
+                px-3 py-2 rounded-lg text-xs font-bold tracking-wide
+                transition-all duration-200
+                ${isDropdownOpen
+                  ? "bg-slate-700 text-white shadow-md"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                }
+              `}
+            >
+              <EllipsisHorizontalIcon className="w-3.5 h-3.5" />
+              <span>More</span>
+            </button>
+            <DropdownMenu
+              isOpen={isDropdownOpen}
+              onClose={() => setIsDropdownOpen(false)}
+              pathname={pathname}
+            />
+          </div>
         </div>
       </div>
     </nav>

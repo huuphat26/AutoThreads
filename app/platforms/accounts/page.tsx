@@ -7,12 +7,12 @@ export const metadata = {
 
 export default function AccountsPage() {
     return (
-        <main className="max-w-2xl mx-auto px-5 py-6 flex flex-col gap-6">
+        <main className="max-w-2xl mx-auto px-3 sm:px-5 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
                     <UsersIcon className="w-5 h-5 text-indigo-600" />
                 </div>
-                <div>
+                <div className="min-w-0">
                     <h1 className="text-lg font-bold text-slate-800">Quản lý tài khoản</h1>
                     <p className="text-xs text-slate-400">
                         Tài khoản được phát hiện tự động từ .env — chọn tài khoản để đăng bài
