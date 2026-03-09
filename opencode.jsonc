@@ -70,6 +70,36 @@
   },
 
   "command": {
+    "lint": {
+      "description": "Run ESLint to check code quality",
+      "agent": "build",
+      "template": "Run bun run lint to check for code quality issues. Report any errors found and their locations."
+    },
+    "test": {
+      "description": "Run tests",
+      "agent": "build",
+      "template": "Run tests for this project. Check if a test framework is configured, and run any available tests."
+    },
+    "component": {
+      "description": "Create a new React component",
+      "agent": "build",
+      "template": "Create a new React component at {{path}}. Follow the component patterns: use \"use client\" only if hooks needed, define props interface, use Tailwind CSS, export as named export. Use .opencode/commands/component.md as reference."
+    },
+    "review-page": {
+      "description": "Review a Next.js page before changes",
+      "agent": "plan",
+      "template": "Analyze the page at {{path}}. Explain: route structure, Server/Client component, data flow, dependencies, styling, and potential issues. Do not edit files. Use .opencode/commands/review-page.md as reference."
+    },
+    "review-route": {
+      "description": "Review a Next.js API route before changes",
+      "agent": "plan",
+      "template": "Analyze the API route at {{path}}. Explain: supported methods, request/response format, security (CRON_SECRET), dependencies, error handling. Do not edit files. Use .opencode/commands/review-route.md as reference."
+    },
+    "review-changes": {
+      "description": "Review changes made in current session",
+      "agent": "plan",
+      "template": "Summarize all files changed in this session. For each file, explain what was modified and why. Identify any issues, security concerns, or follow-ups needed. Use .opencode/commands/review-changes.md as reference."
+    },
     "audit-route": {
       "description": "Audit a Next.js route before making changes",
       "agent": "plan",
