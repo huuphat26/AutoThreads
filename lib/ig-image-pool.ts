@@ -9,6 +9,23 @@ import path from "path";
 
 const POOL_FILE = path.join(process.cwd(), "data", "ig-auto-images.json");
 
+const isVercel = process.env.VERCEL === "1";
+
+async function syncToKV(pool: ImagePool): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    await kv.set("ig-images", pool);
+  } catch (e) {
+    console.error("[KV] Failed to sync ig-images:", e);
+  }
+}
+
+function kvSyncFireAndForget(pool: ImagePool): void {
+  if (!isVercel) return;
+  syncToKV(pool).catch((e) => console.error("[KV] Sync error:", e));
+}
+
 interface ImageEntry {
   url: string;
   label: string;
@@ -33,8 +50,23 @@ function readPool(): ImagePool {
 function writePool(pool: ImagePool): void {
   try {
     fs.writeFileSync(POOL_FILE, JSON.stringify(pool, null, 2), "utf-8");
+    kvSyncFireAndForget(pool);
   } catch (err) {
     console.error("[IG ImagePool] Không thể ghi pool file:", err);
+  }
+}
+
+export async function initIGImagePoolFromKV(): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    const pool = await kv.get<ImagePool>("ig-images");
+    if (pool) {
+      fs.writeFileSync(POOL_FILE, JSON.stringify(pool, null, 2), "utf-8");
+      console.log("[KV] Loaded ig-images from KV");
+    }
+  } catch (e) {
+    console.error("[KV] Failed to load ig-images:", e);
   }
 }
 

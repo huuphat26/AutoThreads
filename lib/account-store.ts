@@ -30,6 +30,23 @@ const COLOR_PRESETS = [
   "#84cc16",
 ];
 
+const isVercel = process.env.VERCEL === "1";
+
+async function syncToKV(store: AccountStore): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    await kv.set("accounts", store);
+  } catch (e) {
+    console.error("[KV] Failed to sync accounts:", e);
+  }
+}
+
+function kvSyncFireAndForget(store: AccountStore): void {
+  if (!isVercel) return;
+  syncToKV(store).catch((e) => console.error("[KV] Sync error:", e));
+}
+
 // ─── Helpers ──────────────────────────────────────────────────
 
 function readStore(): AccountStore {
@@ -48,6 +65,22 @@ function writeStore(store: AccountStore): void {
   store.lastUpdated = new Date().toISOString();
   fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
   fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf-8");
+  kvSyncFireAndForget(store);
+}
+
+export async function initAccountStoreFromKV(): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    const store = await kv.get<AccountStore>("accounts");
+    if (store) {
+      fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
+      fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf-8");
+      console.log("[KV] Loaded accounts from KV");
+    }
+  } catch (e) {
+    console.error("[KV] Failed to load accounts:", e);
+  }
 }
 
 /** Sinh ID duy nhất cho account */

@@ -197,10 +197,12 @@
       "threadsContent": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + thịt kho trứng (ít mỡ)**.\n\nThành phần:\n- thịt nạc\n- trứng\n- nước dừa\n- dưa leo\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?",
       "igCaption": "Bữa trưa hôm nay mình chơi hộp bento: **Cơm + thịt kho trứng (ít mỡ)**.\n\nThành phần:\n- thịt nạc\n- trứng\n- nước dừa\n- dưa leo\n\nMình gọi đây là hộp ‘chống buồn ngủ’.\nĐủ chất để chạy nốt nửa ngày còn lại.\n\nBạn thích mặn vừa hay đậm đà?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anTrua #lunchbox",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + thịt kho trứng (ít mỡ).\nINGREDIENTS (visible on plate/box): thịt nạc, trứng, nước dừa, dưa leo.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
+      "status": "used",
       "id": "pool_1772854919766_6g0rc",
       "importedAt": "2026-03-07T03:41:59.766Z",
-      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076584/autothreads/vdszc3hmu9971xxlanaa.png"
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076584/autothreads/vdszc3hmu9971xxlanaa.png",
+      "usedAt": "2026-03-10T03:45:00.128Z",
+      "recordId": "auto-1773114300053-q47g0"
     },
     {
       "date": "2026-03-10",
@@ -972,5 +974,5 @@
       "importedAt": "2026-03-07T03:41:59.766Z"
     }
   ],
-  "lastUpdated": "2026-03-10T00:49:19.693Z"
+  "lastUpdated": "2026-03-10T03:45:00.128Z"
 }

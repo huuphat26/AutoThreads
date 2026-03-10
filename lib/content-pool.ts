@@ -11,6 +11,23 @@ import type { ContentPoolItem, ContentPoolStore, AutoPostSlot } from "@/types";
 
 const POOL_FILE = path.join(process.cwd(), "data", "content-pool.json");
 
+const isVercel = process.env.VERCEL === "1";
+
+async function syncToKV(store: ContentPoolStore): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    await kv.set("content-pool", store);
+  } catch (e) {
+    console.error("[KV] Failed to sync content-pool:", e);
+  }
+}
+
+function kvSyncFireAndForget(store: ContentPoolStore): void {
+  if (!isVercel) return;
+  syncToKV(store).catch((e) => console.error("[KV] Sync error:", e));
+}
+
 // ─── Helpers ──────────────────────────────────────────────────
 
 export function readPool(): ContentPoolStore {
@@ -29,6 +46,22 @@ function writePool(store: ContentPoolStore): void {
   store.lastUpdated = new Date().toISOString();
   fs.mkdirSync(path.dirname(POOL_FILE), { recursive: true });
   fs.writeFileSync(POOL_FILE, JSON.stringify(store, null, 2), "utf-8");
+  kvSyncFireAndForget(store);
+}
+
+export async function initContentPoolFromKV(): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    const store = await kv.get<ContentPoolStore>("content-pool");
+    if (store) {
+      fs.mkdirSync(path.dirname(POOL_FILE), { recursive: true });
+      fs.writeFileSync(POOL_FILE, JSON.stringify(store, null, 2), "utf-8");
+      console.log("[KV] Loaded content-pool from KV");
+    }
+  } catch (e) {
+    console.error("[KV] Failed to load content-pool:", e);
+  }
 }
 
 export function generatePoolId(): string {
