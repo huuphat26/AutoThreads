@@ -4,7 +4,9 @@
   "model": "opencode/minimax-m2.5-free",
   "small_model": "opencode/minimax-m2.5-free",
 
-  "instructions": "Read AGENTS.md first. For Next.js code, prefer App Router conventions, preserve SSR/client boundaries, avoid unnecessary client components, and validate with lint/build before finishing.",
+  "instructions": [
+    "Read AGENTS.md first. For Next.js code, prefer App Router conventions, preserve SSR/client boundaries, avoid unnecessary client components, and validate with lint/build before finishing.",
+  ],
 
   "permission": {
     "bash": {
@@ -49,66 +51,66 @@
   "skills": {
     "autothreads": {
       "description": "AutoThreads - Social media automation for Threads, Facebook, Instagram",
-      "path": ".opencode/skills/autothreads.md"
+      "path": ".opencode/skills/autothreads.md",
     },
     "nextjs-component-pattern": {
       "description": "Next.js component patterns - Server/Client components, props, Tailwind styling",
-      "path": ".opencode/skills/nextjs-component-pattern/SKILL.md"
+      "path": ".opencode/skills/nextjs-component-pattern/SKILL.md",
     },
     "nextjs-route-handler": {
       "description": "Next.js API route handler patterns - GET/POST/PATCH/DELETE methods, security",
-      "path": ".opencode/skills/nextjs-route-handler/SKILL.md"
+      "path": ".opencode/skills/nextjs-route-handler/SKILL.md",
     },
     "nextjs-data-fetching": {
       "description": "Data fetching patterns - Server Components, hooks, API routes, caching",
-      "path": ".opencode/skills/nextjs-data-fetching/SKILL.md"
+      "path": ".opencode/skills/nextjs-data-fetching/SKILL.md",
     },
     "nextjs-bug-triage": {
       "description": "Bug debugging and fixing - common errors, debug commands, quick fixes",
-      "path": ".opencode/skills/nextjs-bug-triage/SKILL.md"
-    }
+      "path": ".opencode/skills/nextjs-bug-triage/SKILL.md",
+    },
   },
 
   "command": {
     "lint": {
       "description": "Run ESLint to check code quality",
       "agent": "build",
-      "template": "Run bun run lint to check for code quality issues. Report any errors found and their locations."
+      "template": "Run bun run lint to check for code quality issues. Report any errors found and their locations.",
     },
     "test": {
       "description": "Run tests",
       "agent": "build",
-      "template": "Run tests for this project. Check if a test framework is configured, and run any available tests."
+      "template": "Run tests for this project. Check if a test framework is configured, and run any available tests.",
     },
     "component": {
       "description": "Create a new React component",
       "agent": "build",
-      "template": "Create a new React component at {{path}}. Follow the component patterns: use \"use client\" only if hooks needed, define props interface, use Tailwind CSS, export as named export. Use .opencode/commands/component.md as reference."
+      "template": "Create a new React component at {{path}}. Follow the component patterns: use \"use client\" only if hooks needed, define props interface, use Tailwind CSS, export as named export. Use .opencode/commands/component.md as reference.",
     },
     "review-page": {
       "description": "Review a Next.js page before changes",
       "agent": "plan",
-      "template": "Analyze the page at {{path}}. Explain: route structure, Server/Client component, data flow, dependencies, styling, and potential issues. Do not edit files. Use .opencode/commands/review-page.md as reference."
+      "template": "Analyze the page at {{path}}. Explain: route structure, Server/Client component, data flow, dependencies, styling, and potential issues. Do not edit files. Use .opencode/commands/review-page.md as reference.",
     },
     "review-route": {
       "description": "Review a Next.js API route before changes",
       "agent": "plan",
-      "template": "Analyze the API route at {{path}}. Explain: supported methods, request/response format, security (CRON_SECRET), dependencies, error handling. Do not edit files. Use .opencode/commands/review-route.md as reference."
+      "template": "Analyze the API route at {{path}}. Explain: supported methods, request/response format, security (CRON_SECRET), dependencies, error handling. Do not edit files. Use .opencode/commands/review-route.md as reference.",
     },
     "review-changes": {
       "description": "Review changes made in current session",
       "agent": "plan",
-      "template": "Summarize all files changed in this session. For each file, explain what was modified and why. Identify any issues, security concerns, or follow-ups needed. Use .opencode/commands/review-changes.md as reference."
+      "template": "Summarize all files changed in this session. For each file, explain what was modified and why. Identify any issues, security concerns, or follow-ups needed. Use .opencode/commands/review-changes.md as reference.",
     },
     "audit-route": {
       "description": "Audit a Next.js route before making changes",
       "agent": "plan",
-      "template": "Inspect the route under {{path}}. Explain: route hierarchy, layouts, server/client boundaries, data flow, env usage, and implementation risks. Do not edit files."
+      "template": "Inspect the route under {{path}}. Explain: route hierarchy, layouts, server/client boundaries, data flow, env usage, and implementation risks. Do not edit files.",
     },
     "add-route-handler": {
       "description": "Add a new API route handler",
       "agent": "build",
-      "template": "Create a new API route at {{path}} with {{method}} method. Follow the patterns in AGENTS.md: use NextRequest/NextResponse, return {success, data} or {success, error}, import singletons from lib/services/. Validate CRON_SECRET if this is a scheduler endpoint."
-    }
-  }
+      "template": "Create a new API route at {{path}} with {{method}} method. Follow the patterns in AGENTS.md: use NextRequest/NextResponse, return {success, data} or {success, error}, import singletons from lib/services/. Validate CRON_SECRET if this is a scheduler endpoint.",
+    },
+  },
 }

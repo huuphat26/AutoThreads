@@ -1,6 +1,65 @@
 {
   "records": [
     {
+      "id": "auto-1773103759664-1xe6u",
+      "slot": "morning",
+      "triggeredAt": "2026-03-10T00:49:19.664Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Sáng",
+      "content": "Sáng nay mình đổi gió chút: Trứng cuộn rau củ kiểu bento.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa sáng ‘chăm’? Comment cho mình biết.\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
+      "threadsContent": "Sáng nay mình đổi gió chút: Trứng cuộn rau củ kiểu bento.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa sáng ‘chăm’? Comment cho mình biết.",
+      "igCaption": "Sáng nay mình đổi gió chút: Trứng cuộn rau củ kiểu bento.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa s\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076565/autothreads/yxgkxewnbdooqwzybylu.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122102470701240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122102470701240014",
+        "postedAt": "2026-03-10T00:49:27.449Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18307696282272329",
+        "postedAt": "2026-03-10T00:54:29.967Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18054650810473231",
+        "permalinkUrl": "https://www.instagram.com/p/DVr0awCkoUZ/",
+        "postedAt": "2026-03-10T00:59:31.880Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
+      "id": "auto-1773049500040-kpi0l",
+      "slot": "evening",
+      "accountId": "env-default",
+      "triggeredAt": "2026-03-09T09:45:00.040Z",
+      "topic": "",
+      "topicLabel": "What I eat in a day — Tối",
+      "content": "Đến giờ chill rồi, tối nay mình ăn Lẩu nấm mini. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "threadsContent": "Đến giờ chill rồi, tối nay mình ăn Lẩu nấm mini. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?",
+      "igCaption": "Đến giờ chill rồi, tối nay mình ăn Lẩu nấm mini. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990501/autothreads/gpxcktwlt1075aztbkjo.png",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122102313159240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122102313159240014",
+        "postedAt": "2026-03-09T10:00:06.197Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18091253278888475",
+        "postedAt": "2026-03-09T10:05:13.374Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "17987974079783238",
+        "permalinkUrl": "https://www.instagram.com/p/DVqRiVtCR5y/",
+        "postedAt": "2026-03-09T10:35:28.909Z"
+      },
+      "overallStatus": "completed"
+    },
+    {
       "id": "auto-1773027900042-fgrzh",
       "slot": "lunch",
       "accountId": "env-default",
@@ -217,9 +276,10 @@
         "errorMessage": "[Retry hết thời gian 3 phút] Request failed with status code 400"
       },
       "instagram": {
-        "status": "pending"
+        "status": "failed",
+        "errorMessage": "Server bị kill trước khi IG đăng"
       },
-      "overallStatus": "running"
+      "overallStatus": "partial"
     },
     {
       "id": "auto-1772707800043-pccfu",
@@ -447,5 +507,5 @@
       "overallStatus": "failed"
     }
   ],
-  "lastUpdated": "2026-03-09T04:10:15.760Z"
+  "lastUpdated": "2026-03-10T00:59:31.924Z"
 }

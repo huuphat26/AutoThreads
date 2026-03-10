@@ -161,14 +161,14 @@ export function InstagramMonitorBlock({
             </div>
           )}
 
-          <InstagramPostsList
+          {/* <InstagramPostsList
             posts={ig.igPosts}
             stats={ig.igStats}
             loading={ig.postsLoading}
             error={ig.postsError}
             onFetch={ig.fetchIGPosts}
             onCancel={ig.handleCancelPost}
-          />
+          /> */}
         </div>
       )}
     </PlatformMonitorShell>

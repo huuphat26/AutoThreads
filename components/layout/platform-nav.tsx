@@ -2,8 +2,8 @@
 
 // ============================================================
 // PlatformNav — Thanh điều hướng sticky với dropdown menu
-// Hiển thị 3 platforms chính + dropdown cho Tools
-// Responsive: Desktop show all, Mobile/Tablet show 3 + dropdown
+// Mobile: 2 platforms + More dropdown (chứa tất cả 5 options)
+// Desktop (lg+): Show all 5 items
 // ============================================================
 
 import { useState, useRef, useEffect } from "react";
@@ -18,7 +18,7 @@ import {
   EllipsisHorizontalIcon,
 } from "@/components/ui/icons";
 
-const SOCIAL_PLATFORMS = [
+const ALL_MENUS = [
   {
     id: "facebook",
     label: "Facebook",
@@ -27,14 +27,7 @@ const SOCIAL_PLATFORMS = [
     activeClass: "bg-[#1877F2] text-white shadow-md shadow-blue-200",
     inactiveClass: "text-slate-500 hover:text-[#1877F2] hover:bg-blue-50",
   },
-  {
-    id: "threads",
-    label: "Threads",
-    href: "/platforms/threads",
-    icon: ThreadsIcon,
-    activeClass: "bg-slate-900 text-white shadow-md shadow-slate-300",
-    inactiveClass: "text-slate-500 hover:text-slate-900 hover:bg-slate-100",
-  },
+
   {
     id: "instagram",
     label: "Instagram",
@@ -44,9 +37,14 @@ const SOCIAL_PLATFORMS = [
       "bg-linear-to-r from-purple-500 via-pink-500 to-orange-400 text-white shadow-md shadow-pink-200",
     inactiveClass: "text-slate-500 hover:text-pink-500 hover:bg-pink-50",
   },
-] as const;
-
-const TOOL_MENUS = [
+  {
+    id: "threads",
+    label: "Threads",
+    href: "/platforms/threads",
+    icon: ThreadsIcon,
+    activeClass: "bg-slate-900 text-white shadow-md shadow-slate-300",
+    inactiveClass: "text-slate-500 hover:text-slate-900 hover:bg-slate-100",
+  },
   {
     id: "content-pool",
     label: "Sheets",
@@ -65,6 +63,9 @@ const TOOL_MENUS = [
   },
 ] as const;
 
+const MOBILE_MAIN_ITEMS = ALL_MENUS.slice(0, 3); // Facebook, Threads
+const DESKTOP_ITEMS = ALL_MENUS;
+
 interface NavItem {
   id: string;
   label: string;
@@ -77,23 +78,26 @@ interface NavItem {
 function NavButton({
   item,
   isActive,
+  compact = false,
 }: {
   item: NavItem;
   isActive: boolean;
+  compact?: boolean;
 }) {
   const Icon = item.icon;
   return (
     <Link
       href={item.href}
       className={`
-        flex-1 flex items-center justify-center gap-2
-        px-5 py-2 rounded-lg text-xs font-bold tracking-wide
+        flex-1 flex items-center justify-center gap-1
+        ${compact ? "px-1.5 py-1.5" : "px-2 py-2"}
+        rounded-lg text-xs font-bold tracking-wide
         transition-all duration-200
         ${isActive ? item.activeClass : item.inactiveClass}
       `}
     >
-      <Icon className="w-5 h-5 shrink-0" />
-      <span className="font-medium text-center">{item.label}</span>
+      <Icon className={compact ? "w-4 h-4" : "w-4 h-4"} />
+      <span className={compact ? "hidden" : ""}>{item.label}</span>
     </Link>
   );
 }
@@ -110,8 +114,8 @@ function DropdownMenu({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
-      {TOOL_MENUS.map((item) => {
+    <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
+      {ALL_MENUS.map((item) => {
         const isActive =
           pathname === item.href || pathname.startsWith(item.href + "/");
         const Icon = item.icon;
@@ -121,7 +125,7 @@ function DropdownMenu({
             href={item.href}
             onClick={onClose}
             className={`
-              flex items-center gap-2 w-full px-3 py-2 text-sm
+              flex items-center gap-3 w-full px-3 py-2.5 text-sm
               transition-colors duration-150
               ${isActive
                 ? "bg-slate-100 text-slate-900 font-medium"
@@ -143,7 +147,6 @@ export function PlatformNav() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -164,47 +167,50 @@ export function PlatformNav() {
   }, [isDropdownOpen]);
 
   return (
-    <nav className="bg-white border-b border-slate-100 sticky top-12 sm:top-14.25 z-10">
-      <div className="max-w-3xl mx-auto px-2 sm:px-5 py-1">
-        <div className="flex gap-0.5 sm:gap-1.5 p-0.5 sm:p-1 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-100">
-          {/* Social Platforms - Always visible */}
-          {SOCIAL_PLATFORMS.map((p) => {
-            const isActive =
-              pathname === p.href || pathname.startsWith(p.href + "/");
-            return <NavButton key={p.id} item={p} isActive={isActive} />;
-          })}
+    <nav className="bg-white border-b border-slate-100 sticky top-12 sm:top-14.25 z-10 items-center justify-between">
+      <div className="max-w-3xl mx-auto px-2 sm:px-4 py-1">
+        <div className="flex items-stretch gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-100">
+          {/* Mobile: Show 2 main items + More dropdown */}
+          <div className="flex-1 flex gap-0.5 lg:hidden">
+            {MOBILE_MAIN_ITEMS.map((p) => {
+              const isActive =
+                pathname === p.href || pathname.startsWith(p.href + "/");
+              return (
+                <NavButton key={p.id} item={p} isActive={isActive} compact />
+              );
+            })}
 
-          {/* Desktop: Show Tools directly (lg and above) */}
-          <div className="hidden lg:flex gap-1.5">
-            {TOOL_MENUS.map((p) => {
+            {/* More dropdown button */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className={`
+                  flex items-center justify-center gap-1
+                  px-2 py-1.5 rounded-lg text-xs font-bold tracking-wide
+                  transition-all duration-200 h-full
+                  ${isDropdownOpen
+                    ? "bg-slate-700 text-white shadow-md"
+                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                  }
+                `}
+              >
+                <EllipsisHorizontalIcon className="w-4 h-4" />
+              </button>
+              <DropdownMenu
+                isOpen={isDropdownOpen}
+                onClose={() => setIsDropdownOpen(false)}
+                pathname={pathname}
+              />
+            </div>
+          </div>
+
+          {/* Desktop (lg+): Show all items */}
+          <div className="hidden lg:flex w-full justify-between gap-1">
+            {DESKTOP_ITEMS.map((p) => {
               const isActive =
                 pathname === p.href || pathname.startsWith(p.href + "/");
               return <NavButton key={p.id} item={p} isActive={isActive} />;
             })}
-          </div>
-
-          {/* Mobile/Tablet: Show dropdown (below lg) */}
-          <div className="flex lg:hidden relative" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`
-                flex items-center justify-center gap-1.5
-                px-3 py-2 rounded-lg text-xs font-bold tracking-wide
-                transition-all duration-200
-                ${isDropdownOpen
-                  ? "bg-slate-700 text-white shadow-md"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                }
-              `}
-            >
-              <EllipsisHorizontalIcon className="w-3.5 h-3.5" />
-              <span>More</span>
-            </button>
-            <DropdownMenu
-              isOpen={isDropdownOpen}
-              onClose={() => setIsDropdownOpen(false)}
-              pathname={pathname}
-            />
           </div>
         </div>
       </div>

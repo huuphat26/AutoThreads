@@ -167,10 +167,12 @@
       "threadsContent": "Đến giờ chill rồi, tối nay mình ăn **Lẩu nấm mini**. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?",
       "igCaption": "Đến giờ chill rồi, tối nay mình ăn **Lẩu nấm mini**. \n\nThành phần:\n- nấm tổng hợp\n- rau\n- đậu hũ\n- nước dùng\n\nMón này ăn tới đâu thấy dịu tới đó.\nHợp cho ngày muốn ăn nhẹ.\n\nBạn muốn tối mai món nóng hay món nguội?\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anToi #lightdinner",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Lẩu nấm mini.\nINGREDIENTS (visible on plate/box): nấm tổng hợp, rau, đậu hũ, nước dùng.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
+      "status": "used",
       "id": "pool_1772854919766_0am87",
       "importedAt": "2026-03-07T03:41:59.766Z",
-      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990501/autothreads/gpxcktwlt1075aztbkjo.png"
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1772990501/autothreads/gpxcktwlt1075aztbkjo.png",
+      "usedAt": "2026-03-09T09:45:00.080Z",
+      "recordId": "auto-1773049500040-kpi0l"
     },
     {
       "date": "2026-03-10",
@@ -180,9 +182,12 @@
       "threadsContent": "Sáng nay mình đổi gió chút: **Trứng cuộn rau củ kiểu bento**.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa sáng ‘chăm’? Comment cho mình biết.",
       "igCaption": "Sáng nay mình đổi gió chút: **Trứng cuộn rau củ kiểu bento**.\n\nThành phần:\n- trứng\n- cà rốt\n- hành lá\n- nấm\n- phô mai ít\n\nMón này hợp với cà phê/ trà nóng cực luôn.\nĐủ đạm – đủ rau – đủ năng lượng để chạy deadline.\n\nBạn thích bữa sáng nhanh hay bữa s\n\n#homnayangi #bento #mealprep #monngonmoingay #healthyfood #anlanhmanh #anSang #breakfast",
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: morning fresh and light.\nDISH: Trứng cuộn rau củ kiểu bento.\nINGREDIENTS (visible on plate/box): trứng, cà rốt, hành lá, nấm, phô mai ít.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
-      "status": "pending",
+      "status": "used",
       "id": "pool_1772854919766_rujs3",
-      "importedAt": "2026-03-07T03:41:59.766Z"
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076565/autothreads/yxgkxewnbdooqwzybylu.png",
+      "usedAt": "2026-03-10T00:49:19.693Z",
+      "recordId": "auto-1773103759664-1xe6u"
     },
     {
       "date": "2026-03-10",
@@ -194,7 +199,8 @@
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: hearty lunch, balanced macros.\nDISH: Cơm + thịt kho trứng (ít mỡ).\nINGREDIENTS (visible on plate/box): thịt nạc, trứng, nước dừa, dưa leo.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
       "id": "pool_1772854919766_6g0rc",
-      "importedAt": "2026-03-07T03:41:59.766Z"
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076584/autothreads/vdszc3hmu9971xxlanaa.png"
     },
     {
       "date": "2026-03-10",
@@ -206,7 +212,8 @@
       "imagePrompt": "SYSTEM: You are a professional food photographer.\nTASK: Generate a high-quality, realistic photo for a Vietnamese-style meal prep bento.\nSTYLE: clean, appetizing, bright soft daylight, minimal props, neutral background, top-down flat lay.\nCOMPOSITION: a glass meal-prep container with 3–4 compartments, food neatly separated, natural textures, no text, no watermark, no hands.\nCAMERA: 35mm, sharp focus, high detail, realistic colors.\nOUTPUT: 1 image, 4:5 aspect ratio.\nMood: light dinner, cozy but clean.\nDISH: Cá hấp gừng + rau luộc.\nINGREDIENTS (visible on plate/box): cá, gừng, hành, rau.\nNOTES: Ensure the dish looks like the named meal, recognizable ingredients, Vietnamese home-cooking vibe, bento arrangement similar to reference meal-prep boxes.",
       "status": "pending",
       "id": "pool_1772854919766_loqb3",
-      "importedAt": "2026-03-07T03:41:59.766Z"
+      "importedAt": "2026-03-07T03:41:59.766Z",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1773076609/autothreads/vetaazoy9nlpf2aykeyl.png"
     },
     {
       "date": "2026-03-11",
@@ -965,5 +972,5 @@
       "importedAt": "2026-03-07T03:41:59.766Z"
     }
   ],
-  "lastUpdated": "2026-03-09T03:45:00.074Z"
+  "lastUpdated": "2026-03-10T00:49:19.693Z"
 }

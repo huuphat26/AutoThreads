@@ -165,14 +165,14 @@ export function FacebookMonitorBlock({
             </div>
           )}
 
-          <FacebookPostsList
+          {/* <FacebookPostsList
             posts={fb.fbPosts}
             stats={fb.fbStats}
             loading={fb.postsLoading}
             error={fb.postsError}
             onFetch={fb.fetchFBPosts}
             onCancel={fb.handleCancelPost}
-          />
+          /> */}
         </div>
       )}
     </PlatformMonitorShell>
