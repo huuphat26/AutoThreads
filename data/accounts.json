@@ -7,8 +7,8 @@
       "color": "#10b981",
       "isDefault": true,
       "isEnvAccount": true,
-      "createdAt": "2026-03-08T16:34:03.316Z",
-      "note": "Đọc credentials từ .env — không thể chỉnh sửa token trên UI",
+      "createdAt": "2026-03-27T06:56:35.711Z",
+      "note": "Đọc credentials từ .env",
       "threads": {
         "accessToken": "__env__",
         "userId": "__env__"
@@ -23,5 +23,5 @@
       }
     }
   ],
-  "lastUpdated": "2026-03-08T16:34:03.316Z"
+  "lastUpdated": "2026-03-27T06:56:35.715Z"
 }

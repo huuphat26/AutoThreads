@@ -81,7 +81,12 @@ else
     FB_EXPIRES=$(echo "$FB_LONG_RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); e=d.get('expires_in',0); print(round(e/86400) if e else 'không giới hạn (Page token)')" 2>/dev/null || echo "?")
 
     update_env "FB_PAGE_ACCESS_TOKEN" "$FB_LONG_TOKEN"
-    [ -n "$FB_UID" ] && update_env "FB_USER_ID" "$FB_UID"
+    # Chỉ cập nhật User ID nếu nó còn trống hoặc nếu ID lấy được KHÔNG trùng với Page ID
+    if [ -n "$FB_UID" ]; then
+      if [ -z "${FB_USER_ID:-}" ] || { [ "$FB_UID" != "${FB_PAGE_ID:-}" ] && [ "$FB_UID" != "${PID:-}" ]; }; then
+        update_env "FB_USER_ID" "$FB_UID"
+      fi
+    fi
     echo "  ✅ Facebook token mới — User: ${FB_NAME} (${FB_UID}) — hết hạn: ${FB_EXPIRES}"
 
     # Lấy Page Access Token dài hạn (nếu chưa có)

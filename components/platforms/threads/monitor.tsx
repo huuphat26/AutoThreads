@@ -96,7 +96,6 @@ export function ThreadsMonitorBlock() {
 
   const profile = data?.profile;
   const token = data?.token;
-  const quota = data?.quota;
 
   return (
     <PlatformMonitorShell
@@ -137,21 +136,13 @@ export function ThreadsMonitorBlock() {
             fallbackBg="bg-slate-100"
           />
 
-          {quota && (
+          {profile && (
             <PlatformStatsGrid
               stats={[
                 {
-                  label: "Đã đăng hôm nay",
-                  value: (
-                    <>
-                      {quota.used}
-                      <span className="text-sm font-normal text-slate-400">
-                        /{quota.total}
-                      </span>
-                    </>
-                  ),
+                  label: "Người theo dõi",
+                  value: (profile.followers_count ?? 0).toLocaleString("vi-VN"),
                 },
-                { label: "Còn lại", value: quota.remaining },
               ]}
             />
           )}

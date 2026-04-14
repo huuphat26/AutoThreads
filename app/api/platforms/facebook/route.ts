@@ -2,6 +2,9 @@
 import { NextResponse } from "next/server";
 import { facebookService } from "@/lib/services/facebook.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const [page, token] = await Promise.allSettled([

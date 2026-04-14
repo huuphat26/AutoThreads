@@ -17,7 +17,7 @@ fi
 
 CLIENT_ID="${THREADS_APP_ID:-}"
 REDIRECT_URI="${1:-${THREADS_REDIRECT_URI:-${NEXT_PUBLIC_APP_URL:-}}}"
-SCOPES="${THREADS_SCOPES:-threads_basic,threads_content_publish}"
+SCOPES="${THREADS_SCOPES:-threads_basic,threads_content_publish,threads_manage_insights}"
 OPEN_BROWSER="false"
 
 if [ "${1:-}" = "--open" ]; then

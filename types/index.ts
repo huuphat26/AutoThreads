@@ -26,6 +26,7 @@ export interface ThreadsUser {
   name: string;
   threads_biography?: string;
   threads_profile_picture_url?: string;
+  followers_count?: number;
 }
 
 export interface ThreadsPostContainer {

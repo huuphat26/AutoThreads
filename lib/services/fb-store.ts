@@ -48,6 +48,10 @@ function ensureFBStore(): FBPostHistory {
 // ─── CRUD ─────────────────────────────────────────────────────────────────────
 
 export function readFBHistory(): FBPostHistory {
+  const fromFile = loadFBFromFile();
+  if (fromFile) {
+    _g.__fbHistory = fromFile;
+  }
   const store = ensureFBStore();
   return { ...store, posts: [...store.posts] };
 }

@@ -1,50 +1,5 @@
 {
   "_comment": "Pool ảnh Instagram auto-post (nguồn ưu tiên: Pinterest → i.pinimg.com). Cách lấy URL Pinterest: mở ảnh trên pinterest.com → click chuột phải → 'Sao chép địa chỉ hình ảnh' → dán vào đây. Định dạng hợp lệ: https://i.pinimg.com/originals/xx/xx/xx/xxxx.jpg hoặc https://i.pinimg.com/1200x/xx/xx/xx/xxxx.jpg. Auto-scheduler chọn round-robin theo lastUsedIndex.",
   "lastUsedIndex": 9,
-  "images": [
-    {
-      "url": "https://i.pinimg.com/736x/83/98/eb/8398eb275e24efbc3b8d8a644d10a9d8.jpg",
-      "label": "Nước cam tươi"
-    },
-    {
-      "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&q=85&fit=crop",
-      "label": "Smoothie xanh"
-    },
-    {
-      "url": "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=1080&q=85&fit=crop",
-      "label": "Nước ép trái cây hỗn hợp"
-    },
-    {
-      "url": "https://i.pinimg.com/1200x/dc/d8/b5/dcd8b5f7d9acc9621e3f89c4630b09be.jpg",
-      "label": "Nước dưa hấu"
-    },
-    {
-      "url": "https://images.unsplash.com/photo-1622597467836-f3e8730b90f9?w=1080&q=85&fit=crop",
-      "label": "Sinh tố bơ"
-    },
-    {
-      "url": "https://i.pinimg.com/736x/b2/7e/f7/b27ef730eb63c3803adc195a7c46a3ff.jpg",
-      "label": "Nước ép táo xanh"
-    },
-    {
-      "url": "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?w=1080&q=85&fit=crop",
-      "label": "Nước ép cà rốt gừng"
-    },
-    {
-      "url": "https://i.pinimg.com/736x/ec/5c/7a/ec5c7afbc5fada23d67dfcde18128d31.jpg",
-      "label": "Bữa ăn lành mạnh"
-    },
-    {
-      "url": "https://i.pinimg.com/736x/77/e3/d7/77e3d7e251e8e91307e5685c0ad3860c.jpg",
-      "label": "Rau củ quả tươi"
-    },
-    {
-      "url": "https://i.pinimg.com/736x/73/ae/b5/73aeb5416a6e39729e2a482ff9ba2b15.jpg",
-      "label": "Nước ép củ dền"
-    },
-    {
-      "url": "https://i.pinimg.com/736x/52/da/fd/52dafd1b276d1d12ee94aa8e4a23bcfe.jpg",
-      "label": "Nước ép"
-    }
-  ]
+  "images": []
 }

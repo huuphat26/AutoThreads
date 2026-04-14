@@ -70,6 +70,7 @@ class FacebookService {
   private http: AxiosInstance;
   /** Scoped page ID resolved from the Page Access Token (not the global FB_PAGE_ID). */
   private _resolvedPageId: string | null = null;
+  private _resolvedPageToken: string | null = null;
   private _overridePageToken?: string;
   private _overridePageId?: string;
 
@@ -95,10 +96,22 @@ class FacebookService {
    *   (dạng số khác) mà API chấp nhận cho tất cả post/insights call.
    */
   private async resolvePageId(): Promise<string> {
-    if (this._resolvedPageId) return this._resolvedPageId;
+    const currentToken = this.pageToken;
+    if (
+      this._resolvedPageId &&
+      this._resolvedPageToken &&
+      this._resolvedPageToken === currentToken
+    ) {
+      return this._resolvedPageId;
+    }
+
+    // Token đã đổi (hoặc chưa cache) -> bỏ scoped ID cũ để tránh dính account trước.
+    this._resolvedPageId = null;
+    this._resolvedPageToken = currentToken;
+
     try {
       const res = await this.http.get("/me", {
-        params: { fields: "id", access_token: this.pageToken },
+        params: { fields: "id", access_token: currentToken },
       });
       this._resolvedPageId = String(res.data.id);
       console.log(
@@ -240,17 +253,17 @@ class FacebookService {
   // ------------------------------------------------------------------
 
   async getPage(pageId?: string): Promise<FBPage> {
-    const id = pageId ?? this.pageId;
+    const configuredId = pageId ?? this.pageId;
     try {
-      const res = await this.http.get(`/${id}`, {
-        params: this.withToken({ fields: "id,name,link,picture" }, true),
+      const res = await this.http.get(`/${configuredId}`, {
+        params: this.withToken({ fields: "id,name,link,picture,fan_count,followers_count" }, true),
       });
       const d = res.data;
       return {
         id: d.id,
         name: d.name,
-        fanCount: 0,
-        followersCount: 0,
+        fanCount: d.fan_count || 0,
+        followersCount: d.followers_count || 0,
         link: d.link ?? null,
         pictureUrl: d.picture?.data?.url ?? null,
         category: null,
@@ -259,9 +272,31 @@ class FacebookService {
       };
     } catch (err) {
       const parsed = parseMetaError(err);
-      // Error 190: token thiếu page permissions nhưng vẫn là User Token hợp lệ.
+      // Error 190/10: token có thể vẫn hợp lệ nhưng không đủ quyền đọc Page metadata.
       // Fallback: lấy profile cá nhân qua /me để dashboard vẫn hiển thị được.
-      if (parsed.code === 190) {
+      if (parsed.code === 190 || parsed.code === 10) {
+        // Nếu page ID cấu hình không khớp token hiện tại, thử scoped page ID trước.
+        try {
+          const resolvedId = await this.resolvePageId();
+          const pageRes = await this.http.get(`/${resolvedId}`, {
+            params: this.withToken({ fields: "id,name,link,picture,fan_count,followers_count" }, true),
+          });
+          const d = pageRes.data;
+          return {
+            id: d.id,
+            name: d.name,
+            fanCount: d.fan_count || 0,
+            followersCount: d.followers_count || 0,
+            link: d.link ?? null,
+            pictureUrl: d.picture?.data?.url ?? null,
+            category: null,
+            about: null,
+            website: null,
+          };
+        } catch {
+          // fallback tiếp theo: /me
+        }
+
         try {
           const meRes = await this.http.get("/me", {
             params: {
@@ -305,7 +340,7 @@ class FacebookService {
     paging: { next?: string; cursors?: { before: string; after: string } };
   }> {
     try {
-      const scopedId = await this.resolvePageId();
+      const pageId = this.pageId;
       const params: Record<string, unknown> = {
         fields:
           "id,message,story,created_time,permalink_url,full_picture,attachments,likes.summary(true),comments.summary(true),shares",
@@ -314,7 +349,7 @@ class FacebookService {
       };
       if (after) params.after = after;
 
-      const res = await this.http.get(`/${scopedId}/posts`, { params });
+      const res = await this.http.get(`/${pageId}/posts`, { params });
       const data: FBPost[] = (res.data.data ?? []).map(
         (item: Record<string, unknown>) => this.mapPost(item),
       );
@@ -327,8 +362,7 @@ class FacebookService {
   /** Lấy chi tiết một bài đăng */
   async getPost(postId: string): Promise<FBPost> {
     try {
-      const scopedId = await this.resolvePageId();
-      const normalized = this.normalizePagePostId(postId, scopedId);
+      const normalized = this.normalizePagePostId(postId, this.pageId);
       const res = await this.http.get(`/${normalized}`, {
         params: this.withToken({
           fields:
@@ -388,14 +422,14 @@ class FacebookService {
    */
   async publishText(message: string): Promise<FBPublishResult> {
     try {
-      const scopedId = await this.resolvePageId();
+      const pageId = this.pageId;
       const res = await this.http.post(
-        `/${scopedId}/feed`,
+        `/${pageId}/feed`,
         new URLSearchParams({ message, access_token: this.pageToken }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
       );
 
-      const postId = this.normalizePagePostId(String(res.data.id), scopedId);
+      const postId = this.normalizePagePostId(String(res.data.id), pageId);
       const detail = await this.safeGetPostForPermalink(postId);
 
       return {
@@ -418,11 +452,11 @@ class FacebookService {
     caption?: string,
   ): Promise<FBPublishResult> {
     try {
-      const scopedId = await this.resolvePageId();
+      const pageId = this.pageId;
 
       // 1) Upload ảnh ở chế độ unpublished → lấy photo object ID
       const up = await this.http.post(
-        `/${scopedId}/photos`,
+        `/${pageId}/photos`,
         new URLSearchParams({
           url: imageUrl,
           published: "false",
@@ -438,11 +472,11 @@ class FacebookService {
       if (caption) body.append("message", caption);
       body.append("attached_media[0]", JSON.stringify({ media_fbid: photoId }));
 
-      const feed = await this.http.post(`/${scopedId}/feed`, body, {
+      const feed = await this.http.post(`/${pageId}/feed`, body, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      const postId = this.normalizePagePostId(String(feed.data.id), scopedId);
+      const postId = this.normalizePagePostId(String(feed.data.id), pageId);
       const detail = await this.safeGetPostForPermalink(postId);
 
       return {
@@ -465,7 +499,7 @@ class FacebookService {
     description?: string,
   ): Promise<FBPublishResult> {
     try {
-      const scopedId = await this.resolvePageId();
+      const pageId = this.pageId;
       const body: Record<string, string> = {
         file_url: videoUrl,
         access_token: this.pageToken,
@@ -473,7 +507,7 @@ class FacebookService {
       if (description) body.description = description;
 
       const res = await this.http.post(
-        `/${scopedId}/videos`,
+        `/${pageId}/videos`,
         new URLSearchParams(body),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
       );
@@ -494,8 +528,7 @@ class FacebookService {
    */
   async deletePost(postId: string): Promise<boolean> {
     try {
-      const scopedId = await this.resolvePageId();
-      const normalized = this.normalizePagePostId(postId, scopedId);
+      const normalized = this.normalizePagePostId(postId, this.pageId);
       const res = await this.http.delete(`/${normalized}`, {
         params: this.withToken(),
       });
@@ -522,8 +555,7 @@ class FacebookService {
 
   async getPostEngagement(postId: string): Promise<FBPostEngagement> {
     try {
-      const scopedId = await this.resolvePageId();
-      const normalized = this.normalizePagePostId(postId, scopedId);
+      const normalized = this.normalizePagePostId(postId, this.pageId);
       const res = await this.http.get(`/${normalized}`, {
         params: {
           fields:
@@ -574,8 +606,7 @@ class FacebookService {
 
   async getPostComments(postId: string, limit = 25): Promise<FBComment[]> {
     try {
-      const scopedId = await this.resolvePageId();
-      const normalized = this.normalizePagePostId(postId, scopedId);
+      const normalized = this.normalizePagePostId(postId, this.pageId);
       const res = await this.http.get(`/${normalized}/comments`, {
         params: {
           fields: "id,message,created_time,from,like_count,can_hide,can_remove",
@@ -655,8 +686,7 @@ class FacebookService {
     ].join(",");
 
     try {
-      const scopedId = await this.resolvePageId();
-      const normalized = this.normalizePagePostId(postId, scopedId);
+      const normalized = this.normalizePagePostId(postId, this.pageId);
       const res = await this.http.get(`/${normalized}/insights`, {
         params: { metric: metricList, access_token: this.pageToken },
       });
@@ -708,8 +738,7 @@ class FacebookService {
     period: "day" | "week" | "month" = "day",
   ): Promise<FBPageInsights> {
     try {
-      const scopedId = await this.resolvePageId();
-      const res = await this.http.get(`/${scopedId}/insights`, {
+      const res = await this.http.get(`/${this.pageId}/insights`, {
         params: {
           metric: metrics.join(","),
           period,
