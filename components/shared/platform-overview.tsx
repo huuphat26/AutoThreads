@@ -184,12 +184,12 @@ export function PlatformOverview() {
         color="text-[#1877F2]"
         status={fb}
       />
-      <PlatCard
+      {/* <PlatCard
         label="Instagram"
         icon={<InstagramIcon />}
         color="text-pink-500"
         status={ig}
-      />
+      /> */}
     </div>
   );
 }
