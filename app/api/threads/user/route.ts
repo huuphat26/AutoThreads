@@ -2,15 +2,27 @@
 // API Route: /api/threads/user - Profile + Token status + Quota
 // ============================================================
 import { NextResponse } from "next/server";
-import { threadsService } from "@/lib/services/threads.service";
+import { getThreadsUser, threadsService } from "@/lib/threads-api";
 
 export async function GET() {
   try {
     const [profile, tokenStatus, quota] = await Promise.allSettled([
-      threadsService.getMyProfile(),
+      getThreadsUser(),
       threadsService.getTokenStatus(),
       threadsService.getRemainingQuota(),
     ]);
+
+    // Lấy lỗi từ getMyProfile nếu thất bại
+    const profileError =
+      profile.status === "rejected"
+        ? String((profile.reason as Error)?.message ?? profile.reason)
+        : null;
+
+    // Phát hiện token hết hạn (OAuthException code 190)
+    const isTokenExpired =
+      profileError?.includes("190") ||
+      profileError?.toLowerCase().includes("session has expired") ||
+      profileError?.toLowerCase().includes("expired");
 
     return NextResponse.json({
       success: true,
@@ -18,6 +30,8 @@ export async function GET() {
         profile: profile.status === "fulfilled" ? profile.value : null,
         token: tokenStatus.status === "fulfilled" ? tokenStatus.value : null,
         quota: quota.status === "fulfilled" ? quota.value : null,
+        profileError,
+        tokenExpired: isTokenExpired,
       },
     });
   } catch (error) {

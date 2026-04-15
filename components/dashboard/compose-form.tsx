@@ -1,29 +1,34 @@
-// ComposeForm — khu vực tạo & đăng bài
 "use client";
 
-import type { PostSlot, ContentTopic } from "@/types";
-import { SLOT_LABELS, TOPIC_LABELS } from "@/lib/constants";
 import {
   SparklesIcon,
   SendIcon,
+  ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
 } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
+import type { ThreadsManualMediaType } from "@/types";
 
 type Props = {
-  slot: PostSlot;
-  topic: ContentTopic;
   content: string;
   keywords: string;
   generating: boolean;
   loading: boolean;
   error: string;
   success: string;
-  onSlotChange: (v: PostSlot) => void;
-  onTopicChange: (v: ContentTopic) => void;
+  mediaType?: ThreadsManualMediaType;
+  imageUrl?: string;
+  topicTag?: string;
+  isScheduled?: boolean;
+  scheduledTime?: string;
   onContentChange: (v: string) => void;
   onKeywordsChange: (v: string) => void;
+  onMediaTypeChange?: (v: ThreadsManualMediaType) => void;
+  onImageUrlChange?: (v: string) => void;
+  onTopicTagChange?: (v: string) => void;
+  onIsScheduledChange?: (v: boolean) => void;
+  onScheduledTimeChange?: (v: string) => void;
   onGenerate: () => void;
   onPost: () => void;
 };
@@ -32,24 +37,25 @@ const inputClass =
   "w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-slate-50 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-transparent";
 
 export function ComposeForm({
-  slot,
-  topic,
   content,
-  keywords,
   generating,
   loading,
   error,
   success,
-  onSlotChange,
-  onTopicChange,
+  mediaType = "TEXT",
+  imageUrl = "",
+  topicTag = "",
+  isScheduled = false,
+  scheduledTime = "",
   onContentChange,
-  onKeywordsChange,
+  onTopicTagChange,
+  onIsScheduledChange,
+  onScheduledTimeChange,
   onGenerate,
   onPost,
 }: Props) {
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Header card */}
       <div className="px-6 pt-5 pb-4 border-b border-slate-50 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-base font-semibold text-slate-800">
@@ -62,73 +68,18 @@ export function ComposeForm({
         <button
           onClick={onGenerate}
           disabled={generating}
-          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap shrink-0"
         >
           {generating ? <Spinner /> : <SparklesIcon />}
           {generating ? "Đang tạo..." : "Tạo bằng AI"}
         </button>
       </div>
 
-      <div className="px-6 py-5 space-y-4">
-        {/* Slot + Topic */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              Khung giờ
-            </label>
-            <select
-              value={slot}
-              onChange={(e) => onSlotChange(e.target.value as PostSlot)}
-              className={inputClass}
-            >
-              {(
-                Object.entries(SLOT_LABELS) as [PostSlot, { label: string }][]
-              ).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              Chủ đề
-            </label>
-            <select
-              value={topic}
-              onChange={(e) => onTopicChange(e.target.value as ContentTopic)}
-              className={inputClass}
-            >
-              {(Object.entries(TOPIC_LABELS) as [ContentTopic, string][]).map(
-                ([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ),
-              )}
-            </select>
-          </div>
-        </div>
-
-        {/* Keywords */}
-        <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-            Từ khóa (cách nhau bằng dấu phẩy)
-          </label>
-          <input
-            type="text"
-            value={keywords}
-            onChange={(e) => onKeywordsChange(e.target.value)}
-            placeholder="vd: nước ép detox, giảm cân, thanh lọc cơ thể"
-            className={inputClass}
-          />
-        </div>
-
-        {/* Content textarea */}
+      <div className="px-6 py-4 space-y-4">
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-medium text-slate-500">
-              Nội dung
+              {mediaType === "IMAGE" ? "Caption (tùy chọn)" : "Nội dung"}
             </label>
             <span className="text-xs text-slate-300">
               {content.length} ký tự
@@ -137,13 +88,96 @@ export function ComposeForm({
           <textarea
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
-            rows={7}
-            placeholder='Nhấn "Tạo bằng AI" để tự động tạo nội dung, hoặc nhập thủ công...'
+            rows={mediaType === "IMAGE" ? 4 : 7}
+            placeholder={
+              mediaType === "IMAGE"
+                ? "Nhập caption cho ảnh (tùy chọn)..."
+                : 'Nhấn "Tạo bằng AI" để tự động tạo nội dung, hoặc nhập thủ công...'
+            }
             className={`${inputClass} resize-none leading-relaxed`}
           />
         </div>
 
-        {/* Error / Success messages */}
+        {/* Topic Tag */}
+        {onTopicTagChange && (
+          <div>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+              Topic
+              <span className="text-slate-300 font-normal ml-1">(tùy chọn)</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium select-none">
+                #
+              </span>
+              <input
+                type="text"
+                value={topicTag.replace(/^#/, "")}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/^#/, "").slice(0, 50);
+                  onTopicTagChange(v);
+                }}
+                placeholder="NuocEpDetox"
+                maxLength={50}
+                className={`${inputClass} pl-6`}
+              />
+            </div>
+            {topicTag && /[.&]/.test(topicTag) && (
+              <p className="text-[11px] text-amber-500 mt-1">
+                ⚠️ Topic không được chứa dấu chấm (.) hoặc &amp;
+              </p>
+            )}
+            {topicTag && !(/[.&]/.test(topicTag)) && (
+              <p className="text-[11px] text-slate-300 mt-1">
+                {topicTag.length}/50
+              </p>
+            )}
+          </div>
+        )}
+
+        {onIsScheduledChange && (
+          <div className="bg-slate-50 rounded-xl p-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ClockIcon className="w-4 h-4 text-slate-400" />
+                <span className="text-sm font-medium text-slate-700">
+                  Hẹn giờ đăng
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onIsScheduledChange?.(!isScheduled)}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+                  isScheduled ? "bg-slate-800" : "bg-slate-300"
+                }`}
+              >
+                <span
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                    isScheduled ? "translate-x-4" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {isScheduled && (
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+                  Thời điểm đăng
+                </label>
+                <input
+                  type="datetime-local"
+                  value={scheduledTime}
+                  onChange={(e) => onScheduledTimeChange?.(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Server sẽ tự động đăng bài vào thời điểm đã chọn (kiểm tra mỗi
+                  phút).
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {error && (
           <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2.5 rounded-xl">
             <XCircleIcon />
@@ -157,14 +191,24 @@ export function ComposeForm({
           </div>
         )}
 
-        {/* Post button */}
         <button
           onClick={onPost}
-          disabled={loading || !content.trim()}
+          disabled={
+            loading ||
+            (mediaType === "IMAGE" ? !imageUrl?.trim() : !content.trim())
+          }
           className="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
         >
-          {loading ? <Spinner /> : <SendIcon />}
-          {loading ? "Đang đăng..." : "Đăng lên Threads"}
+          {loading ? <Spinner /> : isScheduled ? <ClockIcon /> : <SendIcon />}
+          {loading
+            ? isScheduled
+              ? "Đang lưu lịch..."
+              : "Đang đăng..."
+            : isScheduled
+              ? "Hẹn lịch đăng"
+              : mediaType === "IMAGE"
+                ? "Đăng ảnh lên Threads"
+                : "Đăng lên Threads"}
         </button>
       </div>
     </section>

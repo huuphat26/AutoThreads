@@ -1,33 +1,35 @@
 // ============================================
 // API Route: /api/generate/stream - SSE Streaming
+// Topic & slot đều tùy chọn — bỏ trống sẽ random.
 // ============================================
 import { NextRequest } from "next/server";
-import {
-  generateContentStream,
-  getTopicForSlot,
-} from "@/lib/content-generator";
-import type { ContentTopic, PostSlot } from "@/types";
+import { generateContentStream } from "@/lib/content-generator";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Không có quyền truy cập" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
   try {
     const body = await req.json();
-    const slot: PostSlot = body.slot || "morning";
-    const topic: ContentTopic = body.topic || getTopicForSlot(slot);
-    const keywords: string[] = body.keywords || [];
-    const customPrompt: string = body.customPrompt || "";
-
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream({
       async start(controller) {
         try {
           const contentGenerator = generateContentStream({
-            topic,
-            slot,
-            keywords,
-            customPrompt,
+            topic: body.topic, // optional — random nếu không truyền
+            keywords: body.keywords,
+            customPrompt: body.customPrompt,
           });
 
           for await (const chunk of contentGenerator) {

@@ -12,6 +12,10 @@ import type {
   ThreadsTokenInfo,
   ThreadsTokenResult,
   ThreadsPublishFlow,
+  ThreadsMediaInsights,
+  ThreadsPostDetail,
+  CreateImageContainerParams,
+  CreateVideoContainerParams,
 } from "@/types";
 
 // ─── Constants ────────────────────────────────────────────────
@@ -61,9 +65,19 @@ const sleep = (ms: number) =>
 // ─── THREADS SERVICE ──────────────────────────────────────────
 class ThreadsService {
   private http: AxiosInstance;
+  private _overrideToken?: string;
+  private _overrideUserId?: string;
 
   constructor() {
     this.http = axios.create({ baseURL: BASE_URL, timeout: 15_000 });
+  }
+
+  /** Tạo instance mới với credentials override (multi-account) */
+  withCredentials(token: string, userId: string): ThreadsService {
+    const svc = new ThreadsService();
+    svc._overrideToken = token;
+    svc._overrideUserId = userId;
+    return svc;
   }
 
   // ------------------------------------------------------------------
@@ -71,12 +85,14 @@ class ThreadsService {
   // ------------------------------------------------------------------
 
   private get token(): string {
+    if (this._overrideToken) return this._overrideToken;
     const t = process.env.THREADS_ACCESS_TOKEN;
     if (!t) throw new Error("THREADS_ACCESS_TOKEN chưa cấu hình trong .env");
     return t;
   }
 
   private get userId(): string {
+    if (this._overrideUserId) return this._overrideUserId;
     const id = process.env.THREADS_USER_ID;
     if (!id) throw new Error("THREADS_USER_ID chưa cấu hình trong .env");
     return id;
@@ -164,6 +180,7 @@ class ThreadsService {
         {
           params: {
             input_token: this.token,
+            // access_token phải dùng app access token: app_id|app_secret
             access_token: `${this.appId}|${this.appSecret}`,
           },
         },
@@ -199,6 +216,31 @@ class ThreadsService {
         username: "",
       };
     } catch {
+      // debug_token thất bại (thường do Threads Long-Lived Token không
+      // tương thích với endpoint này). Fallback: verify qua /me.
+      try {
+        const me = await this.http.get<{ id: string; username?: string }>(
+          "/me",
+          {
+            params: {
+              fields: "id,username",
+              access_token: this.token,
+            },
+          },
+        );
+        // /me thành công → token hợp lệ, chỉ không đọc được expiry
+        if (me.data?.id) {
+          return {
+            isValid: true,
+            expiresAt: null,
+            daysLeft: -1,
+            scopes: [],
+            username: me.data.username ?? "",
+          };
+        }
+      } catch {
+        // /me cũng thất bại → token thực sự hết hạn
+      }
       return {
         isValid: false,
         expiresAt: null,
@@ -222,10 +264,11 @@ class ThreadsService {
       const res = await this.http.get<ThreadsUser>("/me", {
         params: {
           fields:
-            "id,username,name,biography,followers_count,threads_profile_picture_url",
+            "id,username,name,threads_biography,threads_profile_picture_url",
           access_token: this.token,
         },
       });
+
       return res.data;
     } catch (err) {
       throw parseMetaError(err);
@@ -265,19 +308,74 @@ class ThreadsService {
    * Bước 1: Tạo TEXT media container
    * Trả về container ID để dùng ở bước 3
    */
-  async createTextContainer(text: string): Promise<string> {
+  async createTextContainer(text: string, topicTag?: string): Promise<string> {
     try {
-      const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads`,
-        null,
-        {
-          params: {
-            media_type: "TEXT",
-            text,
-            access_token: this.token,
-          },
-        },
-      );
+      const params: Record<string, string> = {
+        media_type: "TEXT",
+        text,
+        access_token: this.token,
+      };
+      if (topicTag) params.topic_tag = topicTag;
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params,
+      });
+      return res.data.id;
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Bước 1 (IMAGE): Tạo IMAGE media container
+   * image_url phải là URL công khai (HTTPS), hỗ trợ JPEG/PNG/WebP
+   * Meta sẽ tải ảnh về server của họ để xử lý
+   *
+   * @param params.imageUrl - URL ảnh công khai (bắt buộc)
+   * @param params.text - Caption / chú thích (đến 500 ký tự, tùy chọn)
+   */
+  async createImageContainer(
+    params: CreateImageContainerParams,
+  ): Promise<string> {
+    try {
+      const queryParams: Record<string, string> = {
+        media_type: "IMAGE",
+        image_url: params.imageUrl,
+        access_token: this.token,
+      };
+      if (params.text) queryParams.text = params.text;
+      if (params.topicTag) queryParams.topic_tag = params.topicTag;
+
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params: queryParams,
+      });
+      return res.data.id;
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Bước 1 (VIDEO): Tạo VIDEO media container
+   * video_url phải là URL công khai (HTTPS), tối đa 5 phút, MP4
+   *
+   * @param params.videoUrl - URL video công khai (bắt buộc)
+   * @param params.text - Caption / chú thích (đến 500 ký tự, tùy chọn)
+   */
+  async createVideoContainer(
+    params: CreateVideoContainerParams,
+  ): Promise<string> {
+    try {
+      const queryParams: Record<string, string> = {
+        media_type: "VIDEO",
+        video_url: params.videoUrl,
+        access_token: this.token,
+      };
+      if (params.text) queryParams.text = params.text;
+      if (params.topicTag) queryParams.topic_tag = params.topicTag;
+
+      const res = await this.http.post<{ id: string }>(`/me/threads`, null, {
+        params: queryParams,
+      });
       return res.data.id;
     } catch (err) {
       throw parseMetaError(err);
@@ -347,7 +445,7 @@ class ThreadsService {
   async publishContainer(containerId: string): Promise<string> {
     try {
       const res = await this.http.post<{ id: string }>(
-        `/${this.userId}/threads_publish`,
+        `/me/threads_publish`,
         null,
         {
           params: {
@@ -371,7 +469,10 @@ class ThreadsService {
    * @param text - Nội dung đầy đủ (tối đa 500 ký tự)
    * @returns ThreadsPublishFlow với postId và thông tin quota
    */
-  async publishTextPost(text: string): Promise<ThreadsPublishFlow> {
+  async publishTextPost(
+    text: string,
+    topicTag?: string,
+  ): Promise<ThreadsPublishFlow> {
     // [0] Kiểm tra quota trước để tránh lãng phí container
     const limit = await this.getPublishingLimit();
     const remaining = limit.config.quota_total - limit.quota_usage;
@@ -385,7 +486,7 @@ class ThreadsService {
     }
 
     // [1] Tạo container
-    const containerId = await this.createTextContainer(text);
+    const containerId = await this.createTextContainer(text, topicTag);
     console.log(`[ThreadsService] Container tạo: ${containerId}`);
 
     // [2] Đợi container FINISHED
@@ -407,6 +508,113 @@ class ThreadsService {
       quotaUsed: updatedLimit.quota_usage,
       quotaRemaining:
         updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "TEXT",
+    };
+  }
+
+  /**
+   * **Full publish flow cho IMAGE** — đăng bài có hình ảnh lên Threads
+   * Flow: kiểm tra quota → tạo image container → poll status → publish
+   *
+   * @param imageUrl - URL ảnh công khai (HTTPS, JPEG/PNG/WebP)
+   * @param text - Caption (đến 500 ký tự, tùy chọn)
+   */
+  async publishImagePost(
+    imageUrl: string,
+    text?: string,
+    topicTag?: string,
+  ): Promise<ThreadsPublishFlow> {
+    // [0] Kiểm tra quota
+    const limit = await this.getPublishingLimit();
+    const remaining = limit.config.quota_total - limit.quota_usage;
+
+    if (remaining <= 0) {
+      throw new ThreadsApiError(
+        32,
+        0,
+        `Rate limit: đã dùng ${limit.quota_usage}/${limit.config.quota_total} bài trong 24h. Vui lòng thử lại sau.`,
+      );
+    }
+
+    // [1] Tạo image container
+    const containerId = await this.createImageContainer({
+      imageUrl,
+      text,
+      topicTag,
+    });
+    console.log(`[ThreadsService] Image container tạo: ${containerId}`);
+
+    // [2] Đợi container FINISHED (image có thể mất lâu hơn text)
+    await this.waitForContainerReady(containerId);
+    console.log(`[ThreadsService] Image container sẵn sàng: ${containerId}`);
+
+    // [3] Publish
+    const postId = await this.publishContainer(containerId);
+    const postedAt = new Date().toISOString();
+    console.log(`[ThreadsService] ✅ Đăng ảnh thành công! Post ID: ${postId}`);
+
+    // [4] Lấy lại quota
+    const updatedLimit = await this.getPublishingLimit();
+
+    return {
+      containerId,
+      postId,
+      postedAt,
+      quotaUsed: updatedLimit.quota_usage,
+      quotaRemaining:
+        updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "IMAGE",
+    };
+  }
+
+  /**
+   * **Full publish flow cho VIDEO** — đăng bài có video lên Threads
+   *
+   * @param videoUrl - URL video công khai (HTTPS, MP4, tối đa 5 phút)
+   * @param text - Caption (đến 500 ký tự, tùy chọn)
+   */
+  async publishVideoPost(
+    videoUrl: string,
+    text?: string,
+    topicTag?: string,
+  ): Promise<ThreadsPublishFlow> {
+    const limit = await this.getPublishingLimit();
+    const remaining = limit.config.quota_total - limit.quota_usage;
+
+    if (remaining <= 0) {
+      throw new ThreadsApiError(
+        32,
+        0,
+        `Rate limit: đã dùng ${limit.quota_usage}/${limit.config.quota_total} bài trong 24h. Vui lòng thử lại sau.`,
+      );
+    }
+
+    const containerId = await this.createVideoContainer({
+      videoUrl,
+      text,
+      topicTag,
+    });
+    console.log(`[ThreadsService] Video container tạo: ${containerId}`);
+
+    await this.waitForContainerReady(containerId);
+    console.log(`[ThreadsService] Video container sẵn sàng: ${containerId}`);
+
+    const postId = await this.publishContainer(containerId);
+    const postedAt = new Date().toISOString();
+    console.log(
+      `[ThreadsService] ✅ Đăng video thành công! Post ID: ${postId}`,
+    );
+
+    const updatedLimit = await this.getPublishingLimit();
+
+    return {
+      containerId,
+      postId,
+      postedAt,
+      quotaUsed: updatedLimit.quota_usage,
+      quotaRemaining:
+        updatedLimit.config.quota_total - updatedLimit.quota_usage,
+      mediaType: "VIDEO",
     };
   }
 
@@ -422,7 +630,7 @@ class ThreadsService {
       const res = await this.http.get<ThreadsPost>(`/${postId}`, {
         params: {
           fields:
-            "id,text,timestamp,media_type,media_url,permalink,shortcode,thumbnail_url,has_replies,hide_status,reply_audience,is_quote_post",
+            "id,text,timestamp,media_type,media_url,permalink,shortcode,thumbnail_url,has_replies,is_quote_post",
           access_token: this.token,
         },
       });
@@ -442,10 +650,10 @@ class ThreadsService {
     paging?: { cursors: { before: string; after: string }; next?: string };
   }> {
     try {
-      const res = await this.http.get(`/${this.userId}/threads`, {
+      const res = await this.http.get(`/me/threads`, {
         params: {
           fields:
-            "id,text,timestamp,media_type,permalink,shortcode,has_replies,hide_status",
+            "id,text,timestamp,media_type,permalink,shortcode,has_replies",
           limit,
           access_token: this.token,
         },
@@ -454,6 +662,83 @@ class ThreadsService {
     } catch (err) {
       throw parseMetaError(err);
     }
+  }
+
+  /**
+   * Kéo toàn bộ bài đăng của user bằng của phân trang cursor
+   * GET /me/threads?fields=...&limit=50&after=<cursor>
+   *
+   * @param opts.pageSize   - Số bài mỗi trang (mặc định 50, tối đa 100)
+   * @param opts.maxPages   - Số trang tối đa để tránh loop vô hạn (mặc định 20)
+   * @param opts.afterCursor - Bắt đầu từ cursor này (để tiếp tục phân trang)
+   * @returns tất cả bài + cursor cuối cùng (nếu còn trang tiếp)
+   */
+  async getAllMyThreads(
+    opts: {
+      pageSize?: number;
+      maxPages?: number;
+      afterCursor?: string;
+    } = {},
+  ): Promise<{
+    posts: ThreadsPost[];
+    total: number;
+    hasMore: boolean;
+    nextCursor: string | null;
+  }> {
+    const { pageSize = 50, maxPages = 20, afterCursor } = opts;
+    const fields =
+      "id,text,timestamp,media_type,permalink,shortcode,has_replies";
+
+    const allPosts: ThreadsPost[] = [];
+    let cursor: string | undefined = afterCursor;
+    let pagesFetched = 0;
+    let nextCursor: string | null = null;
+
+    while (pagesFetched < maxPages) {
+      try {
+        const res = await this.http.get<{
+          data: ThreadsPost[];
+          paging?: {
+            cursors?: { before: string; after: string };
+            next?: string;
+          };
+        }>(`/me/threads`, {
+          params: {
+            fields,
+            limit: Math.min(pageSize, 100),
+            ...(cursor ? { after: cursor } : {}),
+            access_token: this.token,
+          },
+        });
+
+        const page = res.data;
+        if (!page.data || page.data.length === 0) break;
+
+        allPosts.push(...page.data);
+        pagesFetched++;
+
+        // Kiểm tra có trang tiếp không
+        const afterNext = page.paging?.cursors?.after;
+        const hasNext = !!page.paging?.next && !!afterNext;
+
+        if (hasNext && afterNext) {
+          cursor = afterNext;
+          nextCursor = afterNext;
+        } else {
+          nextCursor = null;
+          break;
+        }
+      } catch (err) {
+        throw parseMetaError(err);
+      }
+    }
+
+    return {
+      posts: allPosts,
+      total: allPosts.length,
+      hasMore: nextCursor !== null,
+      nextCursor,
+    };
   }
 
   /**
@@ -524,6 +809,65 @@ class ThreadsService {
   }
 
   /**
+   * Lấy chi tiết insights đầy đủ của một bài đăng
+   * GET /{media-id}/insights?metric=views,likes,replies,reposts,quotes
+   *
+   * Trả về đầy đủ thông tin: name, period, values, title, description, id
+   * Cần quyền threads_manage_insights
+   */
+  async getMediaInsights(mediaId: string): Promise<ThreadsMediaInsights> {
+    try {
+      const res = await this.http.get<{
+        data: Array<{
+          name: string;
+          period: string;
+          values: Array<{ value: number }>;
+          title: string;
+          description: string;
+          id: string;
+        }>;
+      }>(`/${mediaId}/insights`, {
+        params: {
+          metric: "views,likes,replies,reposts,quotes",
+          access_token: this.token,
+        },
+      });
+
+      const metrics = res.data.data;
+      const get = (name: string) =>
+        metrics.find((m) => m.name === name)?.values?.[0]?.value ?? 0;
+
+      return {
+        views: get("views"),
+        likes: get("likes"),
+        replies: get("replies"),
+        reposts: get("reposts"),
+        quotes: get("quotes"),
+        reach: get("reach"),
+        shares: get("shares"),
+        _raw: metrics,
+      };
+    } catch (err) {
+      throw parseMetaError(err);
+    }
+  }
+
+  /**
+   * Lấy thông tin chi tiết bài đăng: post metadata + insights gộp lại
+   * Gọi song song getPost + getMediaInsights để tối ưu tốc độ
+   *
+   * @param mediaId - Threads media/post ID
+   * @returns { post, insights } — insights = null nếu không có quyền
+   */
+  async getPostDetail(mediaId: string): Promise<ThreadsPostDetail> {
+    const [post, insights] = await Promise.all([
+      this.getPost(mediaId),
+      this.getMediaInsights(mediaId).catch(() => null),
+    ]);
+    return { post, insights };
+  }
+
+  /**
    * Lấy thống kê tổng cho tài khoản (follower, engagement tổng...)
    */
   async getAccountInsights(
@@ -532,7 +876,7 @@ class ThreadsService {
     try {
       const res = await this.http.get<{
         data: Array<{ name: string; values: Array<{ value: number }> }>;
-      }>(`/${this.userId}/threads_insights`, {
+      }>(`/me/threads_insights`, {
         params: {
           metric: "views,likes,replies,reposts,quotes,followers_count",
           period,
@@ -567,7 +911,7 @@ class ThreadsService {
           config: { quota_total: number; quota_duration: number };
           quota_usage: number;
         }>;
-      }>(`/${this.userId}/threads_publishing_limit`, {
+      }>(`/me/threads_publishing_limit`, {
         params: {
           fields: "config,quota_usage",
           access_token: this.token,

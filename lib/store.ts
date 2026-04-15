@@ -1,35 +1,69 @@
 // ============================================
-// AUTO THREADS - Post Store (File-based Storage)
+// AUTO THREADS - Post Store (In-memory Storage)
+// Dùng in-memory store để tương thích với Vercel serverless.
+// Lưu ý: data sẽ reset khi serverless instance khởi động lại.
 // ============================================
-import fs from "fs";
-import path from "path";
 import type { PostHistory, ScheduledPost } from "@/types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const HISTORY_FILE = path.join(DATA_DIR, "post-history.json");
+// ─── In-memory store ──────────────────────────────────────────────────────────
 
-// Đảm bảo thư mục data tồn tại
-function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
+let _history: PostHistory = {
+  posts: [],
+  lastUpdated: new Date().toISOString(),
+};
+
+// ─── Scheduler state (shared trong cùng process/instance) ─────────────────────
+// Lưu ý: biến này reset khi serverless cold start. Đây là giới hạn của in-memory.
+let _schedulerPaused = false;
+
+export function isSchedulerPaused(): boolean {
+  return _schedulerPaused;
 }
 
-// Đọc lịch sử bài đăng từ file
+export function setSchedulerPaused(paused: boolean): void {
+  _schedulerPaused = paused;
+}
+
+// ─── Skipped slots: lưu các slot bị bỏ qua trong ngày ────────────────────────
+// Key format: "YYYY-MM-DD_slotId" (theo timezone TIMEZONE env)
+const _skippedSlots = new Set<string>();
+
+function todayKey(tz: string): string {
+  return new Date().toLocaleDateString("sv", { timeZone: tz });
+}
+
+export function skipSlot(slotId: string, tz = "Asia/Ho_Chi_Minh"): void {
+  // Xoá các entry cũ (ngày khác) để tránh tích tụ
+  const today = todayKey(tz);
+  for (const key of _skippedSlots) {
+    if (!key.startsWith(today)) _skippedSlots.delete(key);
+  }
+  _skippedSlots.add(`${today}_${slotId}`);
+}
+
+export function isSlotSkipped(
+  slotId: string,
+  tz = "Asia/Ho_Chi_Minh",
+): boolean {
+  return _skippedSlots.has(`${todayKey(tz)}_${slotId}`);
+}
+
+/** Danh sách slotId đã bị skip hôm nay */
+export function getSkippedSlotIds(tz = "Asia/Ho_Chi_Minh"): string[] {
+  const prefix = `${todayKey(tz)}_`;
+  return [..._skippedSlots]
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => k.slice(prefix.length));
+}
+
+// Đọc lịch sử bài đăng
 export function readHistory(): PostHistory {
-  ensureDataDir();
-  if (!fs.existsSync(HISTORY_FILE)) {
-    return { posts: [], lastUpdated: new Date().toISOString() };
-  }
-  const raw = fs.readFileSync(HISTORY_FILE, "utf-8");
-  return JSON.parse(raw) as PostHistory;
+  return { ..._history, posts: [..._history.posts] };
 }
 
-// Ghi lịch sử bài đăng vào file
+// Ghi lịch sử bài đăng
 export function writeHistory(history: PostHistory): void {
-  ensureDataDir();
-  history.lastUpdated = new Date().toISOString();
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+  _history = { ...history, lastUpdated: new Date().toISOString() };
 }
 
 // Thêm hoặc cập nhật một bài đăng
@@ -61,6 +95,18 @@ export function getPostsByStatus(
   return readHistory()
     .posts.filter((p) => p.status === status)
     .slice(0, limit);
+}
+
+// Xóa bài theo ID
+export function removePost(id: string): boolean {
+  const history = readHistory();
+  const before = history.posts.length;
+  history.posts = history.posts.filter((p) => p.id !== id);
+  if (history.posts.length < before) {
+    writeHistory(history);
+    return true;
+  }
+  return false;
 }
 
 // Lấy thống kê tổng hợp

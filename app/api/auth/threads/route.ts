@@ -4,17 +4,27 @@
 // Chỉ dùng cá nhân — bảo vệ bằng CRON_SECRET
 // ============================================================
 import { NextRequest, NextResponse } from "next/server";
+import {
+  canUsePrivilegedRoute,
+  hasValidCronSecret,
+} from "@/lib/server/request-auth";
 import { threadsService } from "@/lib/services/threads.service";
 
-function checkSecret(req: NextRequest): boolean {
-  const secret = req.headers.get("x-cron-secret");
-  return secret === process.env.CRON_SECRET;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function maskToken(token: string): string {
+  const t = token.trim();
+  if (t.length <= 12) {
+    return `${t.slice(0, 2)}***${t.slice(-2)}`;
+  }
+  return `${t.slice(0, 6)}...${t.slice(-6)}`;
 }
 
 // ── GET /api/auth/threads ──────────────────────────────────
 // Trả về: trạng thái token + thông tin tài khoản + quota
 export async function GET(req: NextRequest) {
-  if (!checkSecret(req)) {
+  if (!canUsePrivilegedRoute(req)) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 },
@@ -88,15 +98,19 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as {
       action: "refresh" | "exchange" | "verify";
       shortToken?: string;
+      includeToken?: boolean;
     };
 
-    // "verify" không cần secret — để dashboard gọi
-    if (body.action !== "verify" && !checkSecret(req)) {
+    // verify vẫn cho phép từ UI same-origin, các action còn lại yêu cầu route đặc quyền
+    if (!canUsePrivilegedRoute(req)) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 },
       );
     }
+
+    const canShowRawToken =
+      body.includeToken === true && hasValidCronSecret(req);
 
     switch (body.action) {
       case "verify": {
@@ -110,10 +124,13 @@ export async function POST(req: NextRequest) {
           success: true,
           data: {
             message: `Token đã refresh! Hết hạn sau ${Math.round(result.expires_in / 86400)} ngày.`,
-            newToken: result.access_token,
+            ...(canShowRawToken
+              ? { newToken: result.access_token }
+              : { tokenPreview: maskToken(result.access_token) }),
             expiresIn: result.expires_in,
-            instruction:
-              "Cập nhật THREADS_ACCESS_TOKEN trong .env với giá trị newToken ở trên.",
+            instruction: canShowRawToken
+              ? "Cập nhật THREADS_ACCESS_TOKEN trong .env với giá trị newToken ở trên."
+              : "Gọi lại với includeToken=true và x-cron-secret hợp lệ nếu cần nhận token đầy đủ.",
           },
         });
       }
@@ -132,10 +149,13 @@ export async function POST(req: NextRequest) {
           success: true,
           data: {
             message: `Đổi token thành công! Hết hạn sau ${Math.round(result.expires_in / 86400)} ngày.`,
-            longLivedToken: result.access_token,
+            ...(canShowRawToken
+              ? { longLivedToken: result.access_token }
+              : { tokenPreview: maskToken(result.access_token) }),
             expiresIn: result.expires_in,
-            instruction:
-              "Lưu longLivedToken vào THREADS_ACCESS_TOKEN trong .env.",
+            instruction: canShowRawToken
+              ? "Lưu longLivedToken vào THREADS_ACCESS_TOKEN trong .env."
+              : "Gọi lại với includeToken=true và x-cron-secret hợp lệ nếu cần nhận token đầy đủ.",
           },
         });
       }

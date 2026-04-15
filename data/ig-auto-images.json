@@ -1,0 +1,5 @@
+{
+  "_comment": "Pool ảnh Instagram auto-post (nguồn ưu tiên: Pinterest → i.pinimg.com). Cách lấy URL Pinterest: mở ảnh trên pinterest.com → click chuột phải → 'Sao chép địa chỉ hình ảnh' → dán vào đây. Định dạng hợp lệ: https://i.pinimg.com/originals/xx/xx/xx/xxxx.jpg hoặc https://i.pinimg.com/1200x/xx/xx/xx/xxxx.jpg. Auto-scheduler chọn round-robin theo lastUsedIndex.",
+  "lastUsedIndex": 9,
+  "images": []
+}
