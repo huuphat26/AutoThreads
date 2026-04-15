@@ -14,6 +14,7 @@ import {
   postThreadsManualNow,
   scheduleThreadsManualPost,
 } from "@/lib/services/threads-manual-scheduler";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { ThreadsManualMediaType } from "@/types";
 
 // ─── GET — danh sách bài đăng ─────────────────────────────────────────────────
@@ -49,6 +50,13 @@ export async function GET(req: NextRequest) {
 
 // ─── POST — tạo bài mới ────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
 
@@ -150,6 +158,13 @@ export async function POST(req: NextRequest) {
 
 // ─── DELETE — hủy bài hẹn giờ ─────────────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { searchParams } = req.nextUrl;
   const id = searchParams.get("id");
 

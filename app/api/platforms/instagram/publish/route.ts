@@ -2,9 +2,17 @@
 // Full publish flow: quota check → tạo container → poll → publish → trả về media ID + permalink
 import { NextRequest, NextResponse } from "next/server";
 import { instagramService, IGApiError } from "@/lib/services/instagram.service";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { IGPublishParams } from "@/types";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   let body: IGPublishParams;
   try {
     body = await req.json();

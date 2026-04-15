@@ -9,6 +9,7 @@ import {
 } from "@/lib/content-pool";
 import { getAutoRecord, upsertAutoRecord } from "@/lib/auto-post-store";
 import { ContentPoolStatus } from "@/types";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,13 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { id, igImageUrl } = body as { id?: string; igImageUrl?: string };
@@ -76,6 +84,13 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const clearAll = searchParams.get("clearAll");

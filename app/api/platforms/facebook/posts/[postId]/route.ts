@@ -2,6 +2,7 @@
 // DELETE /api/platforms/facebook/posts/[postId]  — Xóa bài đăng
 import { NextRequest, NextResponse } from "next/server";
 import { facebookService } from "@/lib/services/facebook.service";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 type Params = { params: Promise<{ postId: string }> };
 
@@ -33,7 +34,14 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 /** DELETE — Xóa bài đăng */
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { postId } = await params;
 
   try {

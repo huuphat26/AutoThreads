@@ -111,9 +111,7 @@ export function PlatformOverview() {
   });
 
   useEffect(() => {
-    fetch("/api/auth/threads", {
-      headers: { "x-cron-secret": process.env.NEXT_PUBLIC_CRON_SECRET ?? "" },
-    })
+    fetch("/api/auth/threads")
       .then((r) => r.json())
       .then((j) => {
         const d = j.data?.token;

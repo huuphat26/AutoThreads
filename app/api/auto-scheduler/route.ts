@@ -14,7 +14,38 @@ import {
 } from "@/lib/services/auto-scheduler";
 import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getIGImagePool } from "@/lib/ig-image-pool";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { AutoPostSlot } from "@/types";
+
+type AutoSchedulerAction = "retry-slot" | "dismiss-slot";
+type AutoSchedulerPlatform = "facebook" | "threads" | "instagram";
+
+const VALID_SLOTS = new Set<AutoPostSlot>(["morning", "lunch", "evening"]);
+const VALID_PLATFORMS = new Set<AutoSchedulerPlatform>([
+  "facebook",
+  "threads",
+  "instagram",
+]);
+
+function parseSlot(value: unknown): AutoPostSlot | null {
+  if (typeof value !== "string") return null;
+  return VALID_SLOTS.has(value as AutoPostSlot)
+    ? (value as AutoPostSlot)
+    : null;
+}
+
+function parsePlatforms(value: unknown): AutoSchedulerPlatform[] | null {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) return null;
+
+  const parsed: AutoSchedulerPlatform[] = [];
+  for (const item of value) {
+    if (typeof item !== "string") return null;
+    if (!VALID_PLATFORMS.has(item as AutoSchedulerPlatform)) return null;
+    parsed.push(item as AutoSchedulerPlatform);
+  }
+  return parsed;
+}
 
 // ── GET: Trạng thái + lịch sử ───────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -50,18 +81,54 @@ export async function GET(req: NextRequest) {
 
 // ── POST: Trigger thủ công ────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({}));
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
 
-  // ── Retry-slot: gọi từ UI khi slot bị "Bỏ qua" — không cần cron-secret ──
-  if (body.action === "retry-slot") {
-    const slot: AutoPostSlot =
-      body.slot === "morning"
-        ? "morning"
-        : body.slot === "evening"
-          ? "evening"
-          : "lunch";
-    const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
-      Array.isArray(body.platforms) ? body.platforms : undefined;
+  const rawBody: unknown = await req.json().catch(() => null);
+  if (!rawBody || typeof rawBody !== "object") {
+    return NextResponse.json(
+      { success: false, error: "Body JSON không hợp lệ" },
+      { status: 400 },
+    );
+  }
+
+  const body = rawBody as Record<string, unknown>;
+  const action =
+    body.action === "retry-slot" || body.action === "dismiss-slot"
+      ? (body.action as AutoSchedulerAction)
+      : undefined;
+
+  const parsedSlot = parseSlot(body.slot);
+  if (body.slot !== undefined && !parsedSlot) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "slot không hợp lệ (morning | lunch | evening)",
+      },
+      { status: 400 },
+    );
+  }
+
+  const parsedPlatforms = parsePlatforms(body.platforms);
+  if (parsedPlatforms === null) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "platforms phải là mảng gồm facebook | threads | instagram",
+      },
+      { status: 400 },
+    );
+  }
+
+  const slot = parsedSlot ?? "lunch";
+  const platforms = parsedPlatforms.length > 0 ? parsedPlatforms : undefined;
+
+  // ── Retry-slot: gọi từ UI khi slot bị "Bỏ qua" ──
+  if (action === "retry-slot") {
     triggerAutoPost(slot, platforms).catch((err) => {
       console.error("[AutoScheduler API] Retry-slot lỗi:", err);
     });
@@ -72,7 +139,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Dismiss-slot: bỏ qua slot lỗi — đánh dấu "dismissed" ──
-  if (body.action === "dismiss-slot") {
+  if (action === "dismiss-slot") {
     const recordId: string | undefined =
       typeof body.recordId === "string" ? body.recordId : undefined;
     if (recordId) {
@@ -92,25 +159,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json(
-      { success: false, error: "Không có quyền truy cập" },
-      { status: 401 },
-    );
-  }
-
   try {
-    const slot: AutoPostSlot =
-      body.slot === "morning"
-        ? "morning"
-        : body.slot === "evening"
-          ? "evening"
-          : "lunch";
-
-    const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
-      Array.isArray(body.platforms) ? body.platforms : undefined;
-
     const recordId: string | undefined =
       typeof body.recordId === "string" ? body.recordId : undefined;
 
@@ -150,8 +199,7 @@ export async function POST(req: NextRequest) {
 
 // ── PATCH: Điều khiển scheduler ──────────────────────────────
 export async function PATCH(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
+  if (!canUsePrivilegedRoute(req)) {
     return NextResponse.json(
       { success: false, error: "Không có quyền truy cập" },
       { status: 401 },
@@ -224,6 +272,13 @@ export async function PATCH(req: NextRequest) {
 // Nội dung được lưu với status "content_ready".
 // Cron 12:00/18:00 sẽ tự động đăng theo thứ tự FB→Threads→IG.
 export async function PUT(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { recordId, fbContent, threadsContent, igCaption, topicLabel } =

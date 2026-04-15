@@ -18,6 +18,7 @@ import {
   buildSystemPromptIGCaption,
 } from "@/lib/prompts/system";
 import { buildUserPromptPuter, type PromptContext } from "@/lib/prompts/user";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 // Reuse DAY_MAP thay vì re-declare — giữ DRY với content-generator
 const DAY_MAP: Record<number, string> = {
@@ -31,6 +32,13 @@ const DAY_MAP: Record<number, string> = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
 

@@ -3,11 +3,19 @@
 // DELETE /api/platforms/instagram/comments/[commentId] — Delete comment
 import { NextRequest, NextResponse } from "next/server";
 import { instagramService } from "@/lib/services/instagram.service";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 type Ctx = { params: Promise<{ commentId: string }> };
 
 // Reply to a comment
 export async function POST(req: NextRequest, { params }: Ctx) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
   const body = await req.json().catch(() => ({}));
   const message: string = body.message ?? "";
@@ -35,6 +43,13 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 
 // Hide / unhide comment
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
   const body = await req.json().catch(() => ({}));
   const hide: boolean = body.hide ?? true;
@@ -55,6 +70,13 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 
 // Delete a comment
 export async function DELETE(req: NextRequest, { params }: Ctx) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
 
   try {

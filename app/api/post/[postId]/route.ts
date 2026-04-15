@@ -5,10 +5,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { removePost } from "@/lib/store";
 import { deleteThreadsPost } from "@/lib/threads-api";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 type Params = { params: Promise<{ postId: string }> };
 
 export async function DELETE(req: NextRequest, { params }: Params) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const { postId } = await params;
     const threadsId = req.nextUrl.searchParams.get("threadsId");

@@ -2,6 +2,7 @@
 // POST /api/platforms/facebook/posts      — Đăng bài text mới lên page feed
 import { NextRequest, NextResponse } from "next/server";
 import { facebookService } from "@/lib/services/facebook.service";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 /** GET — Lấy danh sách bài đăng */
 export async function GET(req: NextRequest) {
@@ -25,6 +26,13 @@ export async function GET(req: NextRequest) {
 
 /** POST — Đăng bài text lên page */
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { message } = body as { message?: string };

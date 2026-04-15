@@ -9,10 +9,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -68,12 +76,13 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const err = (await res.json()) as { error?: { message?: string } };
-      throw new Error(
-        err.error?.message ?? `Cloudinary lỗi ${res.status}`,
-      );
+      throw new Error(err.error?.message ?? `Cloudinary lỗi ${res.status}`);
     }
 
-    const data = (await res.json()) as { secure_url: string; public_id: string };
+    const data = (await res.json()) as {
+      secure_url: string;
+      public_id: string;
+    };
 
     return NextResponse.json({
       success: true,

@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { postMediaToThreads } from "@/lib/threads-api";
 import { upsertPost, generateId } from "@/lib/store";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { ContentTopic, ThreadsMediaType } from "@/types";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { content, topic, topicLabel, mediaType, imageUrl, videoUrl } =

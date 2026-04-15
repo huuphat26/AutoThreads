@@ -4,10 +4,21 @@
 // ============================================
 import { NextRequest } from "next/server";
 import { generateContentStream } from "@/lib/content-generator";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return new Response(
+      JSON.stringify({ success: false, error: "Không có quyền truy cập" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
   try {
     const body = await req.json();
     const encoder = new TextEncoder();

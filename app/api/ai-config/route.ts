@@ -12,6 +12,7 @@ import {
   getAvailableProviders,
   getCurrentProviderInfo,
 } from "@/lib/ai/config";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export async function GET() {
   const current = getCurrentProviderInfo();
@@ -29,6 +30,13 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
     const { provider, model } = body;

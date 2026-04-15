@@ -3,6 +3,7 @@
 // Tra cứu bài đăng + insights theo post ID
 // ============================================================
 import { NextRequest, NextResponse } from "next/server";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import { threadsService } from "@/lib/services/threads.service";
 
 type Params = { params: Promise<{ postId: string }> };
@@ -56,9 +57,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 
 // DELETE /api/threads/post/:postId — Xóa bài đăng
 export async function DELETE(req: NextRequest, { params }: Params) {
-  // Bảo vệ bằng secret
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
+  if (!canUsePrivilegedRoute(req)) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 },

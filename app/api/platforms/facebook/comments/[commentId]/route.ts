@@ -5,6 +5,7 @@
 // GET /api/platforms/facebook/comments/[commentId]?postId=X — List comments của post
 import { NextRequest, NextResponse } from "next/server";
 import { facebookService } from "@/lib/services/facebook.service";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 type Params = { params: Promise<{ commentId: string }> };
 
@@ -29,6 +30,13 @@ export async function GET(req: NextRequest, { params }: Params) {
 
 /** POST — Reply vào comment */
 export async function POST(req: NextRequest, { params }: Params) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
 
   try {
@@ -60,6 +68,13 @@ export async function POST(req: NextRequest, { params }: Params) {
 
 /** PATCH — Ẩn hoặc hiện comment */
 export async function PATCH(req: NextRequest, { params }: Params) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
 
   try {
@@ -87,7 +102,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 /** DELETE — Xóa comment */
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   const { commentId } = await params;
 
   try {

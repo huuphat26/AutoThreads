@@ -4,8 +4,16 @@
 // ============================================
 import { NextRequest, NextResponse } from "next/server";
 import { generateContent } from "@/lib/content-generator";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 export async function POST(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return NextResponse.json(
+      { success: false, error: "Không có quyền truy cập" },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await req.json();
 

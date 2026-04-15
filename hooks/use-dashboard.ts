@@ -303,10 +303,7 @@ export function useDashboard() {
     try {
       const res = await fetch("/api/scheduler", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-cron-secret": process.env.NEXT_PUBLIC_CRON_SECRET ?? "",
-        },
+        headers: { "Content-Type": "application/json" },
       });
       const json = await res.json();
       if (json.success) {

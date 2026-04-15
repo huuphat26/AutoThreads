@@ -9,6 +9,7 @@ import {
   resumeScheduler,
   skipSchedulerSlot,
 } from "@/lib/scheduler";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 // GET: Lấy trạng thái scheduler
 // Lưu ý: startScheduler() KHÔNG gọi ở đây vì instrumentation.ts đã xử lý.
@@ -21,9 +22,7 @@ export async function GET() {
 // POST: Kích hoạt đăng bài thủ công (để test)
 export async function POST(req: NextRequest) {
   try {
-    // Kiểm tra secret để chỉ chủ nhân mới dùng được
-    const secret = req.headers.get("x-cron-secret");
-    if (secret !== process.env.CRON_SECRET) {
+    if (!canUsePrivilegedRoute(req)) {
       return NextResponse.json(
         { success: false, error: "Không có quyền truy cập" },
         { status: 401 },
@@ -41,6 +40,13 @@ export async function POST(req: NextRequest) {
 // PATCH: Tạm dừng, tiếp tục, hoặc bỏ qua slot
 export async function PATCH(req: NextRequest) {
   try {
+    if (!canUsePrivilegedRoute(req)) {
+      return NextResponse.json(
+        { success: false, error: "Không có quyền truy cập" },
+        { status: 401 },
+      );
+    }
+
     const body = await req.json();
     const action: "pause" | "resume" | "skip" = body.action;
 

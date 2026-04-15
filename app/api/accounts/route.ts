@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllAccountsSafe, updateAccount, toSafe } from "@/lib/account-store";
 import { readPool } from "@/lib/content-pool";
+import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
@@ -32,6 +33,10 @@ export async function GET() {
 
 // ── PATCH — Cập nhật metadata account ─────────────────────────
 export async function PATCH(req: NextRequest) {
+  if (!canUsePrivilegedRoute(req)) {
+    return json({ success: false, error: "Không có quyền truy cập" }, 401);
+  }
+
   try {
     const body = await req.json();
     const { id, ...data } = body;
