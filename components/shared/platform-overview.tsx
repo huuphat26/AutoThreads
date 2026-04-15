@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  ThreadsIcon,
-} from "@/components/ui/icons";
+import { FacebookIcon, ThreadsIcon } from "@/components/ui/icons";
 
 type PlatStatus = {
   connected: boolean;
@@ -103,15 +99,9 @@ export function PlatformOverview() {
     daysLeft: null,
     loading: true,
   });
-  const [ig, setIg] = useState<PlatStatus>({
-    connected: false,
-    label: "Instagram",
-    daysLeft: null,
-    loading: true,
-  });
 
   useEffect(() => {
-    fetch("/api/auth/threads")
+    fetch("/api/auth/threads", { cache: "no-store" })
       .then((r) => r.json())
       .then((j) => {
         const d = j.data?.token;
@@ -131,7 +121,7 @@ export function PlatformOverview() {
         }),
       );
 
-    fetch("/api/platforms/facebook")
+    fetch("/api/platforms/facebook", { cache: "no-store" })
       .then((r) => r.json())
       .then((j) =>
         setFb({
@@ -145,25 +135,6 @@ export function PlatformOverview() {
         setFb({
           connected: false,
           label: "Facebook",
-          daysLeft: null,
-          loading: false,
-        }),
-      );
-
-    fetch("/api/platforms/instagram")
-      .then((r) => r.json())
-      .then((j) =>
-        setIg({
-          connected: j.connected,
-          label: "Instagram",
-          daysLeft: j.token?.daysLeft ?? null,
-          loading: false,
-        }),
-      )
-      .catch(() =>
-        setIg({
-          connected: false,
-          label: "Instagram",
           daysLeft: null,
           loading: false,
         }),

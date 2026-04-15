@@ -10,7 +10,7 @@ export function useAccounts() {
   const fetchAccounts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/accounts");
+      const res = await fetch("/api/accounts", { cache: "no-store" });
       const json = await res.json();
       if (json.success) setAccounts(json.data);
     } finally {

@@ -10,6 +10,9 @@ import {
 } from "@/lib/server/request-auth";
 import { threadsService } from "@/lib/services/threads.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function maskToken(token: string): string {
   const t = token.trim();
   if (t.length <= 12) {

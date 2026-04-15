@@ -3,6 +3,9 @@
 import { NextResponse } from "next/server";
 import { instagramService } from "@/lib/services/instagram.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   if (!process.env.IG_ACCESS_TOKEN?.trim() || !process.env.IG_USER_ID?.trim()) {
     return NextResponse.json({

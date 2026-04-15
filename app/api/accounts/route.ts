@@ -9,6 +9,9 @@ import { getAllAccountsSafe, updateAccount, toSafe } from "@/lib/account-store";
 import { readPool } from "@/lib/content-pool";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
 }
