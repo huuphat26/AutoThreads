@@ -183,7 +183,9 @@ function scanAdditionalEnvAccounts(): PostingAccount[] {
 
 /**
  * Đồng bộ tất cả env accounts vào store.
- * Ghi đè platform flags, giữ lại metadata override từ store (name, niche, color nếu user đã sửa).
+ * Env là source of truth cho env accounts:
+ * - Ghi đè metadata (name, niche, color, note) từ env hiện tại.
+ * - Ghi đè platform flags theo env mới nhất.
  */
 function ensureEnvAccounts(store: AccountStore): AccountStore {
   const allEnv = [buildDefaultEnvAccount(), ...scanAdditionalEnvAccounts()];
@@ -192,12 +194,22 @@ function ensureEnvAccounts(store: AccountStore): AccountStore {
   for (const envAcc of allEnv) {
     const idx = store.accounts.findIndex((a) => a.id === envAcc.id);
     if (idx >= 0) {
-      // Cập nhật platform flags từ env mới nhất
+      // Env account đã có trong store -> đồng bộ toàn bộ từ env.
       const existing = store.accounts[idx];
+      const prev = JSON.stringify(existing);
+
+      existing.name = envAcc.name;
+      existing.niche = envAcc.niche;
+      existing.color = envAcc.color;
+      existing.note = envAcc.note;
       existing.threads = envAcc.threads;
       existing.facebook = envAcc.facebook;
       existing.instagram = envAcc.instagram;
       existing.isEnvAccount = true;
+
+      if (JSON.stringify(existing) !== prev) {
+        changed = true;
+      }
     } else {
       // Account mới từ env → thêm vào store
       store.accounts.push(envAcc);
