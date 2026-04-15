@@ -5,7 +5,6 @@ import {
   deletePoolItem,
   clearPendingItems,
   updatePoolItemImageUrl,
-  getPoolItemByRecordId,
 } from "@/lib/content-pool";
 import { getAutoRecord, upsertAutoRecord } from "@/lib/auto-post-store";
 import { ContentPoolStatus } from "@/types";
@@ -18,17 +17,29 @@ export async function GET(req: NextRequest) {
   const statusFilter = searchParams.get("status") as ContentPoolStatus | null;
   const accountFilter = searchParams.get("accountId");
 
-  const stats = getPoolStats();
-  let items = getAllPoolItems();
+  const globalStats = getPoolStats();
+  const allItems = getAllPoolItems();
+
+  const accountScopedItems = accountFilter
+    ? allItems.filter(
+        (item) => (item.accountId ?? "env-default") === accountFilter,
+      )
+    : allItems;
+
+  const stats = {
+    total: accountScopedItems.length,
+    pending: accountScopedItems.filter((item) => item.status === "pending")
+      .length,
+    used: accountScopedItems.filter((item) => item.status === "used").length,
+    skipped: accountScopedItems.filter((item) => item.status === "skipped")
+      .length,
+    lastUpdated: globalStats.lastUpdated,
+  };
+
+  let items = accountScopedItems;
 
   if (statusFilter) {
     items = items.filter((item) => item.status === statusFilter);
-  }
-
-  if (accountFilter) {
-    items = items.filter(
-      (item) => (item.accountId ?? "env-default") === accountFilter,
-    );
   }
 
   return NextResponse.json({ success: true, data: { stats, items } });

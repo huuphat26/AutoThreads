@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
-import { importPoolItems } from "@/lib/content-pool";
+import { importPoolItems, previewPoolImport } from "@/lib/content-pool";
 import { ContentPoolItem, AutoPostSlot } from "@/types";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 
@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const accountId = (formData.get("accountId") as string | null) || undefined;
+    const dryRun =
+      (formData.get("dryRun") as string | null) === "1" ||
+      (formData.get("dryRun") as string | null) === "true";
 
     if (!file) {
       return NextResponse.json(
@@ -50,11 +53,24 @@ export async function POST(req: NextRequest) {
     // 9=Hashtags | 10=Image_URL | 11=Image_Prompt
 
     const items: Omit<ContentPoolItem, "id" | "importedAt">[] = [];
-    const errors: string[] = [];
+    const rowErrors: Array<{ row: number; message: string }> = [];
+    const previewRows: Array<{
+      row: number;
+      date: string;
+      slot: AutoPostSlot;
+      topicLabel: string;
+      hasImageUrl: boolean;
+      hasImagePrompt: boolean;
+    }> = [];
+
+    const pushRowError = (row: number, message: string) => {
+      rowErrors.push({ row, message });
+    };
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
       if (!row || !row[0]) continue; // skip empty rows
+      const rowNumber = i + 1;
 
       const rawDate = String(row[0] ?? "").trim();
       const rawSlot = String(row[1] ?? "")
@@ -81,7 +97,7 @@ export async function POST(req: NextRequest) {
 
       // Validate date format yyyy-mm-dd
       if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
-        errors.push(`Row ${i + 1}: ngày không hợp lệ "${rawDate}"`);
+        pushRowError(rowNumber, `Ngày không hợp lệ "${rawDate}"`);
         continue;
       }
 
@@ -104,12 +120,12 @@ export async function POST(req: NextRequest) {
               : null!;
 
       if (!slot) {
-        errors.push(`Row ${i + 1}: slot không hợp lệ "${rawSlot}"`);
+        pushRowError(rowNumber, `Slot không hợp lệ "${rawSlot}"`);
         continue;
       }
 
       if (!fbContent && !threadsContent && !igCaption) {
-        errors.push(`Row ${i + 1}: caption trống`);
+        pushRowError(rowNumber, "Caption trống");
         continue;
       }
 
@@ -125,6 +141,33 @@ export async function POST(req: NextRequest) {
         status: "pending",
         accountId,
       });
+
+      previewRows.push({
+        row: rowNumber,
+        date: rawDate,
+        slot,
+        topicLabel: topicLabel || "No Topic",
+        hasImageUrl: Boolean(igImageUrl),
+        hasImagePrompt: Boolean(imagePrompt),
+      });
+    }
+
+    const errors = rowErrors.map((e) => `Row ${e.row}: ${e.message}`);
+
+    if (dryRun) {
+      const impact = previewPoolImport(items);
+      return NextResponse.json({
+        success: true,
+        data: {
+          dryRun: true,
+          totalRows: rows.length - 1,
+          validRows: items.length,
+          ...impact,
+          previewRows: previewRows.slice(0, 20),
+          rowErrors,
+          errors,
+        },
+      });
     }
 
     const result = importPoolItems(items);
@@ -134,6 +177,8 @@ export async function POST(req: NextRequest) {
       data: {
         ...result,
         totalRows: rows.length - 1,
+        validRows: items.length,
+        rowErrors,
         errors,
       },
     });

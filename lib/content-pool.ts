@@ -68,6 +68,60 @@ export function generatePoolId(): string {
   return `pool-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function normalizeAccountId(accountId?: string): string {
+  return accountId ?? "env-default";
+}
+
+/**
+ * Dry-run import impact without mutating store.
+ * Dùng để preview wizard import trên UI.
+ */
+export function previewPoolImport(
+  items: Omit<ContentPoolItem, "id" | "importedAt">[],
+): {
+  added: number;
+  updated: number;
+  skipped: number;
+} {
+  const store = readPool();
+  const simulated = [...store.items];
+  let added = 0;
+  let updated = 0;
+  let skipped = 0;
+
+  for (const item of items) {
+    const itemAccountId = normalizeAccountId(item.accountId);
+    const existingIdx = simulated.findIndex(
+      (i) =>
+        i.date === item.date &&
+        i.slot === item.slot &&
+        normalizeAccountId(i.accountId) === itemAccountId,
+    );
+
+    if (existingIdx >= 0) {
+      if (simulated[existingIdx].status === "pending") {
+        simulated[existingIdx] = {
+          ...simulated[existingIdx],
+          ...item,
+        };
+        updated++;
+      } else {
+        skipped++;
+      }
+      continue;
+    }
+
+    simulated.push({
+      ...item,
+      id: "preview",
+      importedAt: "preview",
+    });
+    added++;
+  }
+
+  return { added, updated, skipped };
+}
+
 // ─── Public API ───────────────────────────────────────────────
 
 /** Lấy item đang pending cho ngày + slot cụ thể.
@@ -151,8 +205,8 @@ export function markPoolItemUsed(id: string, recordId: string): void {
 
 /**
  * Import danh sách item vào pool.
- * Nếu date+slot đã tồn tại và vẫn "pending" → ghi đè.
- * Nếu date+slot đã "used"/"skipped" → bỏ qua.
+ * Nếu date+slot+account đã tồn tại và vẫn "pending" → ghi đè.
+ * Nếu date+slot+account đã "used"/"skipped" → bỏ qua.
  */
 export function importPoolItems(
   items: Omit<ContentPoolItem, "id" | "importedAt">[],
@@ -168,8 +222,12 @@ export function importPoolItems(
   const now = new Date().toISOString();
 
   for (const item of items) {
+    const itemAccountId = normalizeAccountId(item.accountId);
     const existingIdx = store.items.findIndex(
-      (i) => i.date === item.date && i.slot === item.slot,
+      (i) =>
+        i.date === item.date &&
+        i.slot === item.slot &&
+        normalizeAccountId(i.accountId) === itemAccountId,
     );
 
     if (existingIdx >= 0) {
@@ -202,7 +260,11 @@ export function importPoolItems(
   };
   store.items.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
-    return (SLOT_ORDER[a.slot] ?? 1) - (SLOT_ORDER[b.slot] ?? 1);
+    const slotDelta = (SLOT_ORDER[a.slot] ?? 1) - (SLOT_ORDER[b.slot] ?? 1);
+    if (slotDelta !== 0) return slotDelta;
+    return normalizeAccountId(a.accountId).localeCompare(
+      normalizeAccountId(b.accountId),
+    );
   });
 
   writePool(store);

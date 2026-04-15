@@ -74,26 +74,35 @@ export function useContentPool(filterStatus: string, accountId?: string) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const url = `/api/content-pool${filterStatus ? `?status=${filterStatus}` : ""}`;
+      const params = new URLSearchParams();
+      if (filterStatus) params.set("status", filterStatus);
+      if (accountId) params.set("accountId", accountId);
+      const query = params.toString();
+      const url = `/api/content-pool${query ? `?${query}` : ""}`;
       const res = await fetch(url);
       const json = await res.json();
       if (json.success) setData(json.data);
     } finally {
       setLoading(false);
     }
-  }, [filterStatus]);
+  }, [filterStatus, accountId]);
 
   // ── Fetch all pending items (for bulk gen & stats) ───────────
   const fetchAllPending = useCallback(async () => {
-    const res = await fetch("/api/content-pool?status=pending");
+    const params = new URLSearchParams({ status: "pending" });
+    if (accountId) params.set("accountId", accountId);
+    const res = await fetch(`/api/content-pool?${params.toString()}`);
     const json = await res.json();
     if (json.success) setAllPending(json.data.items ?? []);
-  }, []);
+  }, [accountId]);
+
+  const refreshAll = useCallback(async () => {
+    await Promise.all([fetchData(), fetchAllPending()]);
+  }, [fetchData, fetchAllPending]);
 
   useEffect(() => {
-    fetchData();
-    fetchAllPending();
-  }, [fetchData, fetchAllPending]);
+    refreshAll();
+  }, [refreshAll]);
 
   // ── Bulk image generation ────────────────────────────────────
   const todayItemsNeedingImages = allPending.filter(
@@ -223,6 +232,7 @@ export function useContentPool(filterStatus: string, accountId?: string) {
     bulkProgress,
     setBulkProgress,
     fetchData,
+    refreshAll,
     handleUpload,
     handleClearPending,
     handleDelete,

@@ -107,19 +107,19 @@ export function PlatformOverview() {
 
   // console.log("data =>>>>", JSON.stringify(data, null, 4));
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
       <PlatformCard
         platform="facebook"
         data={fb}
         color="hover:border-blue-200"
         href="/platforms/facebook"
       />
-      {/* <PlatformCard
+      <PlatformCard
         platform="instagram"
         data={ig}
         color="hover:border-pink-200"
         href="/platforms/instagram"
-      /> */}
+      />
       <PlatformCard
         platform="threads"
         data={threads}

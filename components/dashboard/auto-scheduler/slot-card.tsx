@@ -14,14 +14,26 @@ import {
 import { Pill } from "./status-badge";
 import { ErrorModal, SuccessModal } from "./post-modals";
 
+function formatShortDuration(ms: number): string {
+  const totalMin = Math.max(1, Math.ceil(ms / 60_000));
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
 type PlatformResult = AutoPostRecord["facebook"];
+type PlatformKey = "facebook" | "threads" | "instagram";
 
 function PlatformScheduleRow({
+  platformKey,
   platformLabel,
   scheduledTime,
   result,
   isPast,
 }: {
+  platformKey: PlatformKey;
   platformLabel: string;
   scheduledTime: string;
   result: PlatformResult | null;
@@ -29,6 +41,12 @@ function PlatformScheduleRow({
 }) {
   const [modal, setModal] = useState<"error" | "success" | null>(null);
   const status = result ? result.status : isPast ? "skipped" : "scheduled";
+  const platformDotClass =
+    platformKey === "facebook"
+      ? "bg-blue-500"
+      : platformKey === "threads"
+        ? "bg-slate-600"
+        : "bg-pink-500";
 
   return (
     <>
@@ -46,8 +64,9 @@ function PlatformScheduleRow({
           onClose={() => setModal(null)}
         />
       )}
-      <div className="flex items-center gap-2 px-2 sm:px-4 py-2 border-b border-slate-50 last:border-0">
-        <span className="text-xs text-slate-500 w-14 sm:w-20 shrink-0">
+      <div className="flex items-center gap-2 px-2.5 sm:px-4 py-2.5 border-b border-slate-50 last:border-0">
+        <span className="text-xs text-slate-500 w-16 sm:w-20 shrink-0 flex items-center gap-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full ${platformDotClass}`} />
           {platformLabel}
         </span>
         <span className="text-xs font-mono font-semibold text-slate-600 shrink-0">
@@ -89,12 +108,17 @@ export function TodaySlotCard({
   onRetry,
   onDismiss,
   dismissed,
+  platformFilter = "all",
 }: {
-  slotId: string;
+  slotId: "morning" | "lunch" | "evening";
   record: AutoPostRecord | null;
-  onRetry?: (slotId: string) => void;
-  onDismiss?: (slotId: string, recordId?: string) => void;
+  onRetry?: (slotId: "morning" | "lunch" | "evening") => void;
+  onDismiss?: (
+    slotId: "morning" | "lunch" | "evening",
+    recordId?: string,
+  ) => void;
   dismissed?: boolean;
+  platformFilter?: "all" | PlatformKey;
 }) {
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
   const slotName =
@@ -112,6 +136,7 @@ export function TodaySlotCard({
   const now = new Date();
   const isRunning = record?.overallStatus === "running";
   const isContentReady = record?.overallStatus === "content_ready";
+  const isWaitingAI = record?.overallStatus === "waiting_for_ai";
   const overallStatus =
     record?.overallStatus ??
     (now > slotDateToday(slotId, 4) ? "skipped" : "scheduled");
@@ -121,8 +146,45 @@ export function TodaySlotCard({
       ? "content_ready"
       : overallStatus;
 
+  const visiblePlatforms =
+    platformFilter === "all"
+      ? PLATFORMS
+      : PLATFORMS.filter((p) => p.key === platformFilter);
+
+  const slotStart = slotDateToday(slotId, 0);
+  const diffMs = slotStart.getTime() - now.getTime();
+  const lateNoRecord = !record && diffMs < 0;
+
+  const timingHint = isRunning
+    ? "Đang đăng tuần tự FB → Threads → IG"
+    : isContentReady
+      ? "Nội dung đã sẵn sàng, chờ đến giờ đăng"
+      : isWaitingAI
+        ? "Đang chờ AI soạn nội dung"
+        : diffMs > 0
+          ? `Bắt đầu sau ${formatShortDuration(diffMs)}`
+          : lateNoRecord
+            ? `Đã trễ ${formatShortDuration(Math.abs(diffMs))}`
+            : "Khung giờ đã qua";
+
+  const cardAccent =
+    record?.overallStatus === "failed"
+      ? "border-rose-200 bg-rose-50/40"
+      : record?.overallStatus === "partial"
+        ? "border-amber-200 bg-amber-50/40"
+        : record?.overallStatus === "running"
+          ? "border-blue-200 shadow-md shadow-blue-100/70"
+          : record?.overallStatus === "content_ready" ||
+              record?.overallStatus === "waiting_for_ai"
+            ? "border-violet-200 bg-violet-50/40"
+            : record?.overallStatus === "completed"
+              ? "border-emerald-200 bg-emerald-50/40"
+              : "border-slate-200 bg-white";
+
   return (
-    <div className="rounded-xl border border-slate-200 overflow-hidden bg-white hover:border-slate-300 hover:shadow-md transition-all duration-200">
+    <div
+      className={`rounded-xl border overflow-hidden hover:border-slate-300 hover:shadow-md transition-all duration-200 ${cardAccent}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
         <div className="flex items-center gap-2">
@@ -183,9 +245,10 @@ export function TodaySlotCard({
             <span className="text-xs font-semibold text-slate-700">
               {slotName}
             </span>
-            <span className="text-xs font-mono text-slate-400 ml-2">
+            <span className="text-sm font-mono font-bold text-slate-600 ml-2">
               {baseTime}
             </span>
+            <p className="text-[10px] text-slate-500 mt-0.5">{timingHint}</p>
           </div>
         </div>
         <Pill status={overallPill} />
@@ -216,7 +279,7 @@ export function TodaySlotCard({
               ✓ Sẵn sàng
             </span>
           )}
-          {record?.overallStatus === "waiting_for_ai" && (
+          {isWaitingAI && (
             <span className="ml-auto text-violet-500 font-semibold animate-pulse whitespace-nowrap">
               ⚡ AI…
             </span>
@@ -306,9 +369,10 @@ export function TodaySlotCard({
 
       {/* Platform rows */}
       <div>
-        {PLATFORMS.map((p) => (
+        {visiblePlatforms.map((p) => (
           <PlatformScheduleRow
             key={p.key}
+            platformKey={p.key}
             platformLabel={p.label}
             scheduledTime={slotTimeLabel(slotId, p.delayMin)}
             result={

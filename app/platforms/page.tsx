@@ -11,12 +11,15 @@ export const metadata = {
 export default function SocialMediaPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <h1 className="text-lg font-bold text-slate-800">Mạng xã hội</h1>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-bold text-slate-800">Mạng xã hội</h1>
+        <p className="text-sm text-slate-500">
+          Theo dõi nhanh tài khoản và trạng thái đăng tự động trong ngày.
+        </p>
       </div>
-      
+
       <PlatformOverview />
-      
+
       <AutoSchedulerMonitor />
     </div>
   );

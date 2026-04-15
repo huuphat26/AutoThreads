@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ContentPoolPage() {
   return (
-    <main className="max-w-2xl mx-auto px-3 sm:px-5 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
+    <main className="max-w-6xl mx-auto px-3 sm:px-5 lg:px-6 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
           <PoolIcon className="w-5 h-5 text-slate-600" />
