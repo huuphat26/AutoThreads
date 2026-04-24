@@ -6,12 +6,14 @@
 // GET ?all=true&pageSize=50&maxPages=10
 // ============================================================
 import { NextRequest, NextResponse } from "next/server";
-import { threadsService } from "@/lib/services/threads.service";
+import { getThreadsService } from "@/lib/services/service-resolver";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl;
     const fetchAll = searchParams.get("all") === "true";
+    const accountId = searchParams.get("accountId") ?? undefined;
+    const threadsService = getThreadsService(accountId);
 
     if (fetchAll) {
       const pageSize = Math.min(

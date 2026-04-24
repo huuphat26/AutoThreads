@@ -9,7 +9,7 @@
 // ============================================================
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { FBScheduledPost, FBMediaType } from "@/types";
 import { usePuterGenerate } from "@/hooks/use-puter-generate";
 
@@ -76,7 +76,11 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
     setPostsLoading(true);
     setPostsError("");
     try {
-      const res = await fetch("/api/platforms/facebook/schedule?limit=50");
+      const params = new URLSearchParams({ limit: "50" });
+      if (accountId) params.set("accountId", accountId);
+      const res = await fetch(
+        `/api/platforms/facebook/schedule?${params.toString()}`,
+      );
       const json = await res.json();
       if (json.success) {
         setFbPosts(json.data.posts as FBScheduledPost[]);
@@ -89,7 +93,7 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
     } finally {
       setPostsLoading(false);
     }
-  }, []);
+  }, [accountId]);
 
   /** Tự fetch một lần khi đầu tiên được gọi */
   const ensureFetched = useCallback(() => {
@@ -98,6 +102,12 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
       fetchFBPosts();
     }
   }, [fetchFBPosts]);
+
+  useEffect(() => {
+    if (fetchedOnce.current) {
+      fetchFBPosts();
+    }
+  }, [accountId, fetchFBPosts]);
 
   // ── Tạo nội dung bằng AI ────────────────────────────────────────────────────
   const handleGenerate = useCallback(
@@ -222,7 +232,15 @@ export function useFacebookDashboard(aiProviderId: string, aiModel: string) {
     } finally {
       setLoading(false);
     }
-  }, [content, mediaType, imageUrl, isScheduled, scheduledTime, fetchFBPosts]);
+  }, [
+    content,
+    mediaType,
+    imageUrl,
+    isScheduled,
+    scheduledTime,
+    fetchFBPosts,
+    accountId,
+  ]);
 
   // ── Hủy bài hẹn giờ ────────────────────────────────────────────────────────
   const handleCancelPost = useCallback(

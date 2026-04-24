@@ -66,7 +66,10 @@ export async function publishIGPost(
     `[IG Scheduler] 🚀 Đăng bài IG ${post.id} (${post.mediaType})...`,
   );
 
-  const igSvc = accountId ? getInstagramService(accountId) : instagramService;
+  const effectiveAccountId = accountId ?? post.accountId;
+  const igSvc = effectiveAccountId
+    ? getInstagramService(effectiveAccountId)
+    : instagramService;
 
   try {
     const result = await igSvc.publish({
@@ -120,6 +123,7 @@ export async function postIGNow(params: {
 }): Promise<IGScheduledPost> {
   const post: IGScheduledPost = {
     id: generateIGId(),
+    accountId: params.accountId,
     caption: params.caption,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,
@@ -154,9 +158,11 @@ export function scheduleIGPost(params: {
   scheduledAt: string;
   topic?: string;
   topicLabel?: string;
+  accountId?: string;
 }): IGScheduledPost {
   const post: IGScheduledPost = {
     id: generateIGId(),
+    accountId: params.accountId,
     caption: params.caption,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,

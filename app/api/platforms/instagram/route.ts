@@ -1,19 +1,38 @@
 // GET /api/platforms/instagram
 // Trả về profile + token status của Instagram Business Account
-import { NextResponse } from "next/server";
-import { instagramService } from "@/lib/services/instagram.service";
+import { NextRequest, NextResponse } from "next/server";
+import { getInstagramService } from "@/lib/services/service-resolver";
+import { getAccount } from "@/lib/account-store";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
-  if (!process.env.IG_ACCESS_TOKEN?.trim() || !process.env.IG_USER_ID?.trim()) {
-    return NextResponse.json({
-      success: false,
-      connected: false,
-      error: "Chưa cấu hình IG_ACCESS_TOKEN hoặc IG_USER_ID trong .env",
-    });
+export async function GET(req: NextRequest) {
+  const accountId = req.nextUrl.searchParams.get("accountId") ?? undefined;
+  if (accountId) {
+    const account = getAccount(accountId);
+    if (!account) {
+      return NextResponse.json(
+        {
+          success: false,
+          connected: false,
+          error: "Tài khoản không tồn tại",
+        },
+        { status: 404 },
+      );
+    }
+    if (!account.instagram) {
+      return NextResponse.json({
+        success: true,
+        connected: false,
+        account: null,
+        token: null,
+        error: "Tài khoản chưa cấu hình Instagram credentials",
+      });
+    }
   }
+
+  const instagramService = getInstagramService(accountId);
 
   const [credResult, tokenResult] = await Promise.allSettled([
     instagramService.getProfile(),

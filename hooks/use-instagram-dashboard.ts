@@ -13,7 +13,7 @@
 // ============================================================
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { IGScheduledPost, IGScheduleMediaType } from "@/types";
 import { usePuterGenerate } from "@/hooks/use-puter-generate";
 
@@ -78,7 +78,11 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
     setPostsLoading(true);
     setPostsError("");
     try {
-      const res = await fetch("/api/platforms/instagram/schedule?limit=50");
+      const params = new URLSearchParams({ limit: "50" });
+      if (accountId) params.set("accountId", accountId);
+      const res = await fetch(
+        `/api/platforms/instagram/schedule?${params.toString()}`,
+      );
       const json = await res.json();
       if (json.success) {
         setIgPosts(json.data.posts as IGScheduledPost[]);
@@ -91,7 +95,7 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
     } finally {
       setPostsLoading(false);
     }
-  }, []);
+  }, [accountId]);
 
   const ensureFetched = useCallback(() => {
     if (!fetchedOnce.current) {
@@ -99,6 +103,12 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
       fetchIGPosts();
     }
   }, [fetchIGPosts]);
+
+  useEffect(() => {
+    if (fetchedOnce.current) {
+      fetchIGPosts();
+    }
+  }, [accountId, fetchIGPosts]);
 
   // ── Tạo caption bằng AI ─────────────────────────────────────────────────────
   const handleGenerate = useCallback(async () => {
@@ -228,6 +238,7 @@ export function useInstagramDashboard(aiProviderId: string, aiModel: string) {
     isScheduled,
     scheduledTime,
     fetchIGPosts,
+    accountId,
   ]);
 
   // ── Hủy bài hẹn giờ ────────────────────────────────────────────────────────

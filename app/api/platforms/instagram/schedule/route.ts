@@ -7,11 +7,7 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  readIGHistory,
-  getIGStats,
-  upsertIGPost,
-} from "@/lib/services/ig-store";
+import { readIGHistory, upsertIGPost } from "@/lib/services/ig-store";
 import { postIGNow, scheduleIGPost } from "@/lib/services/ig-scheduler";
 import { generateContent } from "@/lib/content-generator";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
@@ -21,17 +17,31 @@ import type { IGScheduleMediaType } from "@/types";
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const status = searchParams.get("status");
+  const accountId = searchParams.get("accountId") ?? undefined;
   const limit = Math.min(Number(searchParams.get("limit") ?? "50"), 200);
 
   try {
     const history = readIGHistory();
+    const accountPosts = accountId
+      ? history.posts.filter(
+          (p) => (p.accountId ?? "env-default") === accountId,
+        )
+      : history.posts;
     const posts = status
-      ? history.posts.filter((p) => p.status === status).slice(0, limit)
-      : history.posts.slice(0, limit);
+      ? accountPosts.filter((p) => p.status === status).slice(0, limit)
+      : accountPosts.slice(0, limit);
+    const stats = {
+      total: accountPosts.length,
+      scheduled: accountPosts.filter((p) => p.status === "scheduled").length,
+      posted: accountPosts.filter((p) => p.status === "posted").length,
+      failed: accountPosts.filter((p) => p.status === "failed").length,
+      pending: accountPosts.filter((p) => p.status === "pending").length,
+      cancelled: accountPosts.filter((p) => p.status === "cancelled").length,
+    };
 
     return NextResponse.json({
       success: true,
-      data: { posts, stats: getIGStats(), lastUpdated: history.lastUpdated },
+      data: { posts, stats, lastUpdated: history.lastUpdated },
     });
   } catch (err) {
     return NextResponse.json(
@@ -127,6 +137,7 @@ export async function POST(req: NextRequest) {
         scheduledAt,
         topic,
         topicLabel,
+        accountId,
       });
       return NextResponse.json({ success: true, data: post });
     } else {

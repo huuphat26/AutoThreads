@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   readThreadsManualHistory,
-  getThreadsManualStats,
   upsertThreadsManualPost,
 } from "@/lib/services/threads-manual-store";
 import {
@@ -21,19 +20,33 @@ import type { ThreadsManualMediaType } from "@/types";
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const status = searchParams.get("status"); // optional filter
+  const accountId = searchParams.get("accountId") ?? undefined;
   const limit = Math.min(Number(searchParams.get("limit") ?? "50"), 200);
 
   try {
     const history = readThreadsManualHistory();
+    const accountPosts = accountId
+      ? history.posts.filter(
+          (p) => (p.accountId ?? "env-default") === accountId,
+        )
+      : history.posts;
     const posts = status
-      ? history.posts.filter((p) => p.status === status).slice(0, limit)
-      : history.posts.slice(0, limit);
+      ? accountPosts.filter((p) => p.status === status).slice(0, limit)
+      : accountPosts.slice(0, limit);
+    const stats = {
+      total: accountPosts.length,
+      scheduled: accountPosts.filter((p) => p.status === "scheduled").length,
+      posted: accountPosts.filter((p) => p.status === "posted").length,
+      failed: accountPosts.filter((p) => p.status === "failed").length,
+      pending: accountPosts.filter((p) => p.status === "pending").length,
+      cancelled: accountPosts.filter((p) => p.status === "cancelled").length,
+    };
 
     return NextResponse.json({
       success: true,
       data: {
         posts,
-        stats: getThreadsManualStats(),
+        stats,
         lastUpdated: history.lastUpdated,
       },
     });
@@ -128,6 +141,7 @@ export async function POST(req: NextRequest) {
         imageUrl: imageUrl?.trim(),
         topicTag: cleanTopicTag,
         scheduledAt,
+        accountId,
       });
       return NextResponse.json({ success: true, data: post });
     } else {

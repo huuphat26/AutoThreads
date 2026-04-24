@@ -65,7 +65,10 @@ export async function publishThreadsManualPost(
     `[Threads Manual Scheduler] 🚀 Đăng bài ${post.id} (${post.mediaType})...`,
   );
 
-  const thSvc = accountId ? getThreadsService(accountId) : threadsService;
+  const effectiveAccountId = accountId ?? post.accountId;
+  const thSvc = effectiveAccountId
+    ? getThreadsService(effectiveAccountId)
+    : threadsService;
 
   try {
     let result: { postId: string; postedAt: string };
@@ -112,6 +115,7 @@ export async function postThreadsManualNow(params: {
 }): Promise<ThreadsManualPost> {
   const post: ThreadsManualPost = {
     id: generateThreadsManualId(),
+    accountId: params.accountId,
     content: params.content,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,
@@ -141,9 +145,11 @@ export function scheduleThreadsManualPost(params: {
   imageUrl?: string;
   topicTag?: string;
   scheduledAt: string; // ISO string
+  accountId?: string;
 }): ThreadsManualPost {
   const post: ThreadsManualPost = {
     id: generateThreadsManualId(),
+    accountId: params.accountId,
     content: params.content,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,

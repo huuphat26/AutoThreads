@@ -14,8 +14,6 @@ import { instagramService } from "@/lib/services/instagram.service";
  * Nếu env-default hoặc không có → trả về singleton.
  */
 export function getThreadsService(accountId?: string) {
-  if (!accountId || accountId === "env-default") return threadsService;
-
   const creds = getCredentials(accountId, "threads");
   if (!creds) return threadsService;
 
@@ -26,8 +24,6 @@ export function getThreadsService(accountId?: string) {
  * Lấy FacebookService instance cho accountId.
  */
 export function getFacebookService(accountId?: string) {
-  if (!accountId || accountId === "env-default") return facebookService;
-
   const creds = getCredentials(accountId, "facebook");
   if (!creds) return facebookService;
 
@@ -38,8 +34,6 @@ export function getFacebookService(accountId?: string) {
  * Lấy InstagramService instance cho accountId.
  */
 export function getInstagramService(accountId?: string) {
-  if (!accountId || accountId === "env-default") return instagramService;
-
   const creds = getCredentials(accountId, "instagram");
   if (!creds) return instagramService;
 

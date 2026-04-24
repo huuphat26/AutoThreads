@@ -30,6 +30,8 @@ const COLOR_PRESETS = [
   "#84cc16",
 ];
 
+const ENV_TAG_ACCOUNT_PREFIX = "env-tag-";
+
 const isVercel = process.env.VERCEL === "1";
 
 async function syncToKV(store: AccountStore): Promise<void> {
@@ -48,6 +50,27 @@ function kvSyncFireAndForget(store: AccountStore): void {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
+
+function readEnvFirst(...keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = process.env[key]?.trim();
+    if (value) return value;
+  }
+  return undefined;
+}
+
+function hasAnyPlatformCredentials(account: PostingAccount): boolean {
+  return Boolean(account.threads || account.facebook || account.instagram);
+}
+
+function humanizeTag(tag: string): string {
+  return tag
+    .toLowerCase()
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 
 function readStore(): AccountStore {
   try {
@@ -105,13 +128,20 @@ function buildDefaultEnvAccount(): PostingAccount {
     note: "Đọc credentials từ .env",
   };
 
-  if (process.env.THREADS_ACCESS_TOKEN && process.env.THREADS_USER_ID) {
+  const thToken = readEnvFirst("THREADS_ACCESS_TOKEN");
+  const thUserId = readEnvFirst("THREADS_USER_ID");
+  const fbToken = readEnvFirst("FB_PAGE_ACCESS_TOKEN", "FB_ACCESS_TOKEN");
+  const fbPageId = readEnvFirst("FB_PAGE_ID", "FB_USER_ID");
+  const igToken = readEnvFirst("IG_ACCESS_TOKEN");
+  const igUserId = readEnvFirst("IG_USER_ID", "IG_PAGE_ID");
+
+  if (thToken && thUserId) {
     acc.threads = { accessToken: "__env__", userId: "__env__" };
   }
-  if (process.env.FB_PAGE_ACCESS_TOKEN && process.env.FB_PAGE_ID) {
+  if (fbToken && fbPageId) {
     acc.facebook = { accessToken: "__env__", userId: "__env__" };
   }
-  if (process.env.IG_ACCESS_TOKEN && process.env.IG_USER_ID) {
+  if (igToken && igUserId) {
     acc.instagram = { accessToken: "__env__", userId: "__env__" };
   }
 
@@ -129,6 +159,9 @@ function buildDefaultEnvAccount(): PostingAccount {
  *   ACC{N}_IG_ACCESS_TOKEN / ACC{N}_IG_USER_ID
  */
 function scanAdditionalEnvAccounts(): PostingAccount[] {
+  const byId = new Map<string, PostingAccount>();
+
+  // Legacy format: ACC{N}_NAME + ACC{N}_<PLATFORM_KEY>
   const results: PostingAccount[] = [];
   const seen = new Set<string>();
 
@@ -156,29 +189,98 @@ function scanAdditionalEnvAccounts(): PostingAccount[] {
       note: `Credentials từ .env (prefix ACC${n}_)`,
     };
 
-    if (
-      process.env[`${prefix}THREADS_ACCESS_TOKEN`] &&
-      process.env[`${prefix}THREADS_USER_ID`]
-    ) {
+    const thToken = readEnvFirst(`${prefix}THREADS_ACCESS_TOKEN`);
+    const thUserId = readEnvFirst(`${prefix}THREADS_USER_ID`);
+    const fbToken = readEnvFirst(
+      `${prefix}FB_PAGE_ACCESS_TOKEN`,
+      `${prefix}FB_ACCESS_TOKEN`,
+    );
+    const fbPageId = readEnvFirst(`${prefix}FB_PAGE_ID`, `${prefix}FB_USER_ID`);
+    const igToken = readEnvFirst(`${prefix}IG_ACCESS_TOKEN`);
+    const igUserId = readEnvFirst(`${prefix}IG_USER_ID`, `${prefix}IG_PAGE_ID`);
+
+    if (thToken && thUserId) {
       acc.threads = { accessToken: "__env__", userId: "__env__" };
     }
-    if (
-      process.env[`${prefix}FB_PAGE_ACCESS_TOKEN`] &&
-      process.env[`${prefix}FB_PAGE_ID`]
-    ) {
+    if (fbToken && fbPageId) {
       acc.facebook = { accessToken: "__env__", userId: "__env__" };
     }
-    if (
-      process.env[`${prefix}IG_ACCESS_TOKEN`] &&
-      process.env[`${prefix}IG_USER_ID`]
-    ) {
+    if (igToken && igUserId) {
       acc.instagram = { accessToken: "__env__", userId: "__env__" };
     }
 
-    results.push(acc);
+    if (hasAnyPlatformCredentials(acc)) {
+      results.push(acc);
+      byId.set(acc.id, acc);
+    }
   }
 
-  return results.sort((a, b) => a.id.localeCompare(b.id));
+  // New format: <BASE_KEY>_<TAG> (vd: THREADS_ACCESS_TOKEN_EPXANH)
+  const suffixes = new Set<string>();
+  for (const key of Object.keys(process.env)) {
+    const m = key.match(
+      /^(THREADS_ACCESS_TOKEN|THREADS_USER_ID|FB_PAGE_ACCESS_TOKEN|FB_ACCESS_TOKEN|FB_PAGE_ID|FB_USER_ID|IG_ACCESS_TOKEN|IG_USER_ID|IG_PAGE_ID)_(.+)$/,
+    );
+    if (!m) continue;
+    const tag = m[2]?.trim();
+    if (tag) suffixes.add(tag.toUpperCase());
+  }
+
+  const sortedTags = Array.from(suffixes).sort((a, b) => a.localeCompare(b));
+  for (let idx = 0; idx < sortedTags.length; idx++) {
+    const tag = sortedTags[idx];
+    const id = `${ENV_TAG_ACCOUNT_PREFIX}${tag.toLowerCase()}`;
+    if (byId.has(id)) continue;
+
+    const thToken = readEnvFirst(`THREADS_ACCESS_TOKEN_${tag}`);
+    const thUserId = readEnvFirst(`THREADS_USER_ID_${tag}`);
+    const fbToken = readEnvFirst(
+      `FB_PAGE_ACCESS_TOKEN_${tag}`,
+      `FB_ACCESS_TOKEN_${tag}`,
+    );
+    const fbPageId = readEnvFirst(`FB_PAGE_ID_${tag}`, `FB_USER_ID_${tag}`);
+    const igToken = readEnvFirst(`IG_ACCESS_TOKEN_${tag}`);
+    const igUserId = readEnvFirst(`IG_USER_ID_${tag}`, `IG_PAGE_ID_${tag}`);
+
+    const acc: PostingAccount = {
+      id,
+      name:
+        readEnvFirst(`ACCOUNT_${tag}_NAME`, `ACC_${tag}_NAME`, `${tag}_NAME`) ||
+        humanizeTag(tag),
+      niche:
+        readEnvFirst(
+          `ACCOUNT_${tag}_NICHE`,
+          `ACC_${tag}_NICHE`,
+          `${tag}_NICHE`,
+        ) || "",
+      color:
+        readEnvFirst(
+          `ACCOUNT_${tag}_COLOR`,
+          `ACC_${tag}_COLOR`,
+          `${tag}_COLOR`,
+        ) || COLOR_PRESETS[idx % COLOR_PRESETS.length],
+      isDefault: false,
+      isEnvAccount: true,
+      createdAt: new Date().toISOString(),
+      note: `Credentials từ .env (suffix _${tag})`,
+    };
+
+    if (thToken && thUserId) {
+      acc.threads = { accessToken: "__env__", userId: "__env__" };
+    }
+    if (fbToken && fbPageId) {
+      acc.facebook = { accessToken: "__env__", userId: "__env__" };
+    }
+    if (igToken && igUserId) {
+      acc.instagram = { accessToken: "__env__", userId: "__env__" };
+    }
+
+    if (hasAnyPlatformCredentials(acc)) {
+      byId.set(id, acc);
+    }
+  }
+
+  return Array.from(byId.values()).sort((a, b) => a.id.localeCompare(b.id));
 }
 
 /**
@@ -224,6 +326,21 @@ function ensureEnvAccounts(store: AccountStore): AccountStore {
     (a) => !a.isEnvAccount || envIds.has(a.id),
   );
   if (store.accounts.length !== before) changed = true;
+
+  // Đảm bảo luôn có default hợp lệ. Nếu default hiện tại không còn credentials,
+  // tự chuyển sang account env đầu tiên còn dùng được.
+  const currentDefault = store.accounts.find((a) => a.isDefault);
+  if (currentDefault && !hasAnyPlatformCredentials(currentDefault)) {
+    currentDefault.isDefault = false;
+    changed = true;
+  }
+  if (!store.accounts.some((a) => a.isDefault)) {
+    const fallback = store.accounts.find(hasAnyPlatformCredentials);
+    if (fallback) {
+      fallback.isDefault = true;
+      changed = true;
+    }
+  }
 
   if (changed) writeStore(store);
   return store;
@@ -297,52 +414,59 @@ function getEnvCredentials(
   accountId: string,
   platform: "threads" | "facebook" | "instagram",
 ): PlatformCredentials | null {
-  // env-default → "", env-acc2 → "ACC2_", env-acc10 → "ACC10_"
-  const prefix =
-    accountId === ENV_ACCOUNT_ID
-      ? ""
-      : `ACC${accountId.replace("env-acc", "")}_`;
+  const suffixTag = accountId.startsWith(ENV_TAG_ACCOUNT_PREFIX)
+    ? accountId.slice(ENV_TAG_ACCOUNT_PREFIX.length).toUpperCase()
+    : undefined;
+
+  const legacyPrefix = accountId.match(/^env-acc(\d+)$/)?.[1];
+
+  const withScope = (base: string): string[] => {
+    if (accountId === ENV_ACCOUNT_ID) return [base];
+    if (legacyPrefix) return [`ACC${legacyPrefix}_${base}`];
+    if (suffixTag) return [`${base}_${suffixTag}`];
+    return [base];
+  };
+
+  const readScoped = (...bases: string[]): string | undefined =>
+    readEnvFirst(...bases.flatMap(withScope));
 
   switch (platform) {
     case "threads": {
-      const token = process.env[`${prefix}THREADS_ACCESS_TOKEN`];
-      const userId = process.env[`${prefix}THREADS_USER_ID`];
+      const token = readScoped("THREADS_ACCESS_TOKEN");
+      const userId = readScoped("THREADS_USER_ID");
       if (!token || !userId) return null;
       return {
         accessToken: token,
         userId,
-        appId:
-          process.env[`${prefix}THREADS_APP_ID`] || process.env.THREADS_APP_ID,
+        appId: readScoped("THREADS_APP_ID") || process.env.THREADS_APP_ID,
         appSecret:
-          process.env[`${prefix}THREADS_APP_SECRET`] ||
-          process.env.THREADS_APP_SECRET,
+          readScoped("THREADS_APP_SECRET") || process.env.THREADS_APP_SECRET,
       };
     }
     case "facebook": {
-      const token = process.env[`${prefix}FB_PAGE_ACCESS_TOKEN`];
-      const pageId = process.env[`${prefix}FB_PAGE_ID`];
+      const token = readScoped("FB_PAGE_ACCESS_TOKEN", "FB_ACCESS_TOKEN");
+      const pageId = readScoped("FB_PAGE_ID", "FB_USER_ID");
       if (!token || !pageId) return null;
       return {
         accessToken: token,
         userId: pageId,
-        appId: process.env[`${prefix}FB_APP_ID`] || process.env.FB_APP_ID,
-        appSecret:
-          process.env[`${prefix}FB_APP_SECRET`] || process.env.FB_APP_SECRET,
+        appId: readScoped("FB_APP_ID") || process.env.FB_APP_ID,
+        appSecret: readScoped("FB_APP_SECRET") || process.env.FB_APP_SECRET,
       };
     }
     case "instagram": {
-      const token = process.env[`${prefix}IG_ACCESS_TOKEN`];
-      const userId = process.env[`${prefix}IG_USER_ID`];
+      const token = readScoped("IG_ACCESS_TOKEN");
+      const userId = readScoped("IG_USER_ID", "IG_PAGE_ID");
       if (!token || !userId) return null;
       return {
         accessToken: token,
         userId,
         appId:
-          process.env[`${prefix}IG_APP_ID`] ||
+          readScoped("IG_APP_ID") ||
           process.env.IG_APP_ID ||
           process.env.FB_APP_ID,
         appSecret:
-          process.env[`${prefix}IG_APP_SECRET`] ||
+          readScoped("IG_APP_SECRET") ||
           process.env.IG_APP_SECRET ||
           process.env.FB_APP_SECRET,
       };

@@ -203,7 +203,11 @@ export function useDashboard() {
     setManualPostsLoading(true);
     setManualPostsError("");
     try {
-      const res = await fetch("/api/platforms/threads/schedule?limit=50");
+      const params = new URLSearchParams({ limit: "50" });
+      if (accountId) params.set("accountId", accountId);
+      const res = await fetch(
+        `/api/platforms/threads/schedule?${params.toString()}`,
+      );
       const json = await res.json();
       if (json.success) {
         setManualPosts(json.data.posts as ThreadsManualPost[]);
@@ -218,7 +222,7 @@ export function useDashboard() {
     } finally {
       setManualPostsLoading(false);
     }
-  }, []);
+  }, [accountId]);
 
   /** Tự fetch manual posts một lần khi component mount */
   const ensureManualFetched = useCallback(() => {
@@ -254,9 +258,13 @@ export function useDashboard() {
     setThreadsLoading(true);
     setThreadsError("");
     try {
-      const res = await fetch(
-        "/api/threads/recent?all=true&pageSize=50&maxPages=20",
-      );
+      const params = new URLSearchParams({
+        all: "true",
+        pageSize: "50",
+        maxPages: "20",
+      });
+      if (accountId) params.set("accountId", accountId);
+      const res = await fetch(`/api/threads/recent?${params.toString()}`);
       const json = await res.json();
       if (json.success) {
         setThreadsPosts(json.data.posts as ThreadsPost[]);
@@ -269,7 +277,13 @@ export function useDashboard() {
     } finally {
       setThreadsLoading(false);
     }
-  }, []);
+  }, [accountId]);
+
+  useEffect(() => {
+    if (manualFetchedOnce.current) {
+      fetchManualPosts();
+    }
+  }, [accountId, fetchManualPosts]);
 
   useEffect(() => {
     const doRefresh = async () => {

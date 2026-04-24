@@ -61,7 +61,10 @@ export async function publishFBPost(
 
   try {
     let result: FBPublishResult;
-    const fbSvc = accountId ? getFacebookService(accountId) : facebookService;
+    const effectiveAccountId = accountId ?? post.accountId;
+    const fbSvc = effectiveAccountId
+      ? getFacebookService(effectiveAccountId)
+      : facebookService;
 
     if (post.mediaType === "IMAGE" && post.imageUrl) {
       result = await fbSvc.publishPhoto(post.imageUrl, post.message);
@@ -104,6 +107,7 @@ export async function postFBNow(params: {
 }): Promise<FBScheduledPost> {
   const post: FBScheduledPost = {
     id: generateFBId(),
+    accountId: params.accountId,
     message: params.message,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,
@@ -135,9 +139,11 @@ export function scheduleFBPost(params: {
   scheduledAt: string; // ISO string
   topic?: string;
   topicLabel?: string;
+  accountId?: string;
 }): FBScheduledPost {
   const post: FBScheduledPost = {
     id: generateFBId(),
+    accountId: params.accountId,
     message: params.message,
     mediaType: params.mediaType,
     imageUrl: params.imageUrl,

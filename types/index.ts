@@ -460,6 +460,8 @@ export type FBMediaType = "TEXT" | "IMAGE" | "VIDEO";
 /** Bài đăng Facebook được lên lịch hoặc đã đăng */
 export interface FBScheduledPost {
   id: string;
+  /** ID tài khoản đăng bài — nếu không có thì dùng account mặc định */
+  accountId?: string;
   message: string;
   mediaType: FBMediaType;
   imageUrl?: string;
@@ -505,6 +507,8 @@ export type IGScheduleMediaType = "IMAGE" | "REELS";
 /** Bài đăng Instagram được lên lịch hoặc đã đăng */
 export interface IGScheduledPost {
   id: string;
+  /** ID tài khoản đăng bài — nếu không có thì dùng account mặc định */
+  accountId?: string;
   /** Caption / mô tả bài đăng (AI hoặc thủ công) */
   caption: string;
   mediaType: IGScheduleMediaType;
@@ -563,6 +567,8 @@ export type ThreadsManualMediaType = "TEXT" | "IMAGE";
 /** Bài đăng Threads được hẹn giờ hoặc đăng ngay (manual) */
 export interface ThreadsManualPost {
   id: string;
+  /** ID tài khoản đăng bài — nếu không có thì dùng account mặc định */
+  accountId?: string;
   /** Nội dung văn bản / caption */
   content: string;
   mediaType: ThreadsManualMediaType;
