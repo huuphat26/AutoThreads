@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
-import type { AutoPostRecord } from "@/types";
+import type { AutoPostRecord, ContentPoolItem } from "@/types";
 import {
   SLOT_HOURS,
   DELAY_MINUTES,
@@ -13,6 +14,7 @@ import {
 } from "./constants";
 import { Pill } from "./status-badge";
 import { ErrorModal, SuccessModal } from "./post-modals";
+import { Spinner } from "@/components/ui/icons";
 
 function formatShortDuration(ms: number): string {
   const totalMin = Math.max(1, Math.ceil(ms / 60_000));
@@ -100,8 +102,6 @@ function PlatformScheduleRow({
   );
 }
 
-// ─── Slot card ────────────────────────────────────────────────
-
 export function TodaySlotCard({
   slotId,
   record,
@@ -109,24 +109,20 @@ export function TodaySlotCard({
   onDismiss,
   dismissed,
   platformFilter = "all",
+  previewItem,
+  onPostNow,
 }: {
-  slotId: "morning" | "lunch" | "evening";
+  slotId: "evening";
   record: AutoPostRecord | null;
-  onRetry?: (slotId: "morning" | "lunch" | "evening") => void;
-  onDismiss?: (
-    slotId: "morning" | "lunch" | "evening",
-    recordId?: string,
-  ) => void;
+  onRetry?: (slotId: "evening") => void;
+  onDismiss?: (slotId: "evening", recordId?: string) => void;
   dismissed?: boolean;
   platformFilter?: "all" | PlatformKey;
+  previewItem?: ContentPoolItem | null;
+  onPostNow?: (slotId: "evening") => void;
 }) {
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
-  const slotName =
-    slotId === "morning"
-      ? "Buổi sáng"
-      : slotId === "lunch"
-        ? "Buổi trưa"
-        : "Buổi tối";
+  const slotName = "Buổi tối";
 
   const baseTime = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   const prepH = m - PREP_BEFORE_POST_MIN >= 0 ? h : h - 1;
@@ -160,7 +156,7 @@ export function TodaySlotCard({
     : isContentReady
       ? "Nội dung đã sẵn sàng, chờ đến giờ đăng"
       : isWaitingAI
-        ? "Đang chờ AI soạn nội dung"
+        ? "Đang chuẩn bị nội dung"
         : diffMs > 0
           ? `Bắt đầu sau ${formatShortDuration(diffMs)}`
           : lateNoRecord
@@ -188,58 +184,20 @@ export function TodaySlotCard({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
         <div className="flex items-center gap-2">
-          <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              slotId === "morning"
-                ? "bg-amber-100 text-amber-600"
-                : slotId === "lunch"
-                  ? "bg-orange-100 text-orange-600"
-                  : "bg-indigo-100 text-indigo-600"
-            }`}
-          >
-            {slotId === "morning" ? (
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            ) : slotId === "lunch" ? (
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            )}
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 text-indigo-600">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
           </div>
           <div>
             <span className="text-xs font-semibold text-slate-700">
@@ -251,7 +209,17 @@ export function TodaySlotCard({
             <p className="text-[10px] text-slate-500 mt-0.5">{timingHint}</p>
           </div>
         </div>
-        <Pill status={overallPill} />
+        <div className="flex items-center gap-3">
+          {!record && onPostNow && (
+            <button
+              onClick={() => onPostNow(slotId)}
+              className="text-[10px] font-bold text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all active:scale-95"
+            >
+              Chuẩn bị & đăng ngay
+            </button>
+          )}
+          <Pill status={overallPill} />
+        </div>
       </div>
 
       {/* Timeline bar */}
@@ -281,7 +249,7 @@ export function TodaySlotCard({
           )}
           {isWaitingAI && (
             <span className="ml-auto text-violet-500 font-semibold animate-pulse whitespace-nowrap">
-              ⚡ AI…
+              ⚡ Đang xử lý…
             </span>
           )}
           {record?.overallStatus === "no_image" && (
@@ -292,34 +260,139 @@ export function TodaySlotCard({
         </div>
       </div>
 
-      {/* Retry banner khi slot bị bỏ qua (không có record) */}
-      {/* {overallStatus === "skipped" && !record && !dismissed && (
-        <div className="flex items-center justify-between px-4 py-2.5 bg-amber-50 border-b border-amber-100">
-          <span className="text-xs text-amber-700">
-            Slot này đã bị bỏ qua — không có nội dung trong Content Pool lúc chuẩn bị.
-          </span>
-          <div className="flex items-center gap-2 shrink-0 ml-3">
-            {onRetry && (
-              <button
-                onClick={() => onRetry(slotId)}
-                className="text-xs font-semibold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                Đăng lại
-              </button>
+      {/* Image Preview & Content Actions */}
+      {(record || previewItem) && (
+        <div className="px-6 py-5 border-b border-slate-100 bg-white">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Image Preview */}
+            {record?.igImageUrl || previewItem?.igImageUrl ? (
+              <div className="relative group w-full md:w-48 h-48 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shrink-0 shadow-sm">
+                <img
+                  src={record?.igImageUrl || previewItem?.igImageUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <a
+                    href={record?.igImageUrl || previewItem?.igImageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-white text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/30"
+                  >
+                    Mở ảnh lớn
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full md:w-48 h-48 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2 shrink-0">
+                <svg
+                  className="w-8 h-8 text-slate-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span className="text-xs text-slate-400 font-medium">
+                  Chưa có ảnh
+                </span>
+              </div>
             )}
-            {onDismiss && (
-              <button
-                onClick={() => onDismiss(slotId)}
-                className="text-xs font-medium text-slate-400 hover:text-slate-600 px-2 py-1.5 rounded-lg transition-colors"
-              >
-                Bỏ qua
-              </button>
-            )}
+
+            {/* Content Summary & Actions */}
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-4 h-px bg-slate-200" />
+                    {record ? "Chủ đề: " : "Dự kiến từ Sheet: "}
+                    <span className="text-slate-800">
+                      {record
+                        ? record.topicLabel || record.topic
+                        : previewItem?.topicLabel}
+                    </span>
+                  </p>
+                </div>
+                <div className="relative p-4 rounded-xl bg-slate-50 border border-slate-100 group">
+                  <svg
+                    className="absolute -top-2 -left-2 w-6 h-6 text-slate-200"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017V14H17.017C15.9124 14 15.017 13.1046 15.017 12V9C15.017 7.89543 15.9124 7 17.017 7H20.017V10H18.017V12H21.017V21H14.017ZM3.017 21L3.017 18C3.017 16.8954 3.91243 16 5.017 16H8.017V14H6.017C4.91243 14 4.017 13.1046 4.017 12V9C4.017 7.89543 4.91243 7 6.017 7H9.017V10H7.017V12H10.017V21H3.017Z" />
+                  </svg>
+                  <p className="text-sm text-slate-600 line-clamp-4 leading-relaxed font-medium">
+                    {record ? record.content : previewItem?.fbContent}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center gap-3">
+                {(isWaitingAI || isRunning) && record ? (
+                  <div className="flex items-center gap-2.5 text-sm text-violet-600 font-bold animate-pulse">
+                    <Spinner className="w-4 h-4 text-violet-500" />
+                    {record.statusMessage || "Hệ thống đang xử lý..."}
+                  </div>
+                ) : isContentReady && record ? (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Đã sẵn sàng
+                    </span>
+                  </div>
+                ) : !record && previewItem ? (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Sẽ chuẩn bị lúc {prepTime}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
-      )} */}
+      )}
 
-      {/* Retry banner khi slot bị lỗi (failed/partial) */}
+      {!record && overallStatus === "scheduled" && !previewItem && (
+        <div className="px-4 py-3 border-b border-slate-100 bg-white/50">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs text-slate-500">
+              Không tìm thấy nội dung cho khung giờ này trong Content Pool.
+            </p>
+          </div>
+        </div>
+      )}
+
       {record &&
         !dismissed &&
         (record.overallStatus === "failed" ||

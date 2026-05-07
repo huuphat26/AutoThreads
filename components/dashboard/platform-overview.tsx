@@ -157,19 +157,25 @@ function PlatformCard({
   );
 }
 
+// Cache toàn cục để tránh re-fetch khi chuyển tab
+let CACHED_OVERVIEW_DATA: OverviewData | null = null;
+
 export function PlatformOverview() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<OverviewData>({
-    facebook: [],
-    instagram: [],
-    threads: [],
-  });
+  const [loading, setLoading] = useState(!CACHED_OVERVIEW_DATA);
+  const [data, setData] = useState<OverviewData>(
+    CACHED_OVERVIEW_DATA ?? {
+      facebook: [],
+      instagram: [],
+      threads: [],
+    },
+  );
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
-      setLoading(true);
+      // Nếu đã có cache, load ngầm không hiện loading spinner
+      if (!CACHED_OVERVIEW_DATA) setLoading(true);
       try {
         const accRes = await fetch("/api/accounts", { cache: "no-store" });
         const accJson = (await accRes.json()) as {
@@ -347,7 +353,9 @@ export function PlatformOverview() {
         ]);
 
         if (!cancelled) {
-          setData({ facebook, instagram, threads });
+          const newData = { facebook, instagram, threads };
+          setData(newData);
+          CACHED_OVERVIEW_DATA = newData;
         }
       } finally {
         if (!cancelled) setLoading(false);

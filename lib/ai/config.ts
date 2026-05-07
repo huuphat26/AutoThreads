@@ -1,9 +1,3 @@
-// ============================================
-// AUTO THREADS — Runtime AI Config
-// Lưu lựa chọn provider/model trong bộ nhớ (in-memory).
-// Giá trị mặc định lấy từ environment variables.
-// ============================================
-
 import type { ProviderInfo } from "@/types";
 import {
   PUTER_PROVIDER_ID,
@@ -15,7 +9,7 @@ import {
 // ─── Model Catalog ────────────────────────────────────────────────────────────
 
 export const MODEL_CATALOG: Record<string, string[]> = {
-  gemini: ["gemini-3-flash-preview", "gemini-2.5-flash-lite"],
+  gemini: ["gemini-1.5-flash", "gemini-1.5-pro"],
   openai: ["gpt-4o-mini", "gpt-4-turbo"],
   [PUTER_PROVIDER_ID]: PUTER_MODELS,
 };

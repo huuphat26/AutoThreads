@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { InstagramIcon } from "@/components/ui/icons";
 import { InstagramComposeForm } from "./compose-form";
-import { InstagramPostsList } from "./posts-list";
 import { useInstagramDashboard } from "@/hooks/use-instagram-dashboard";
 import type { AccountSafe } from "@/types";
 import {
@@ -12,8 +12,6 @@ import {
   PlatformTokenBadge,
   PlatformLoadingState,
   PlatformErrorState,
-  PlatformProfileRow,
-  PlatformStatsGrid,
   PlatformComposeButton,
 } from "@/components/shared/platform-monitor";
 import { AccountStrip } from "@/components/dashboard/account-strip";
@@ -300,39 +298,10 @@ export function InstagramMonitorBlock({
 
       {!loading && data?.connected && data.account && (
         <div className="space-y-4">
-          <PlatformProfileRow
-            pictureUrl={data.account.profilePicture}
-            name={
-              data.account.name ?? data.account.username ?? "Instagram Account"
-            }
-            username={data.account.username}
-            bio={data.account.biography}
-            link={
-              data.account.username
-                ? `https://www.instagram.com/${data.account.username}/`
-                : null
-            }
-            fallbackIcon={<InstagramIcon className="w-5 h-5" />}
-            fallbackBg="bg-linear-to-br from-purple-100 to-pink-100 text-pink-500"
-          />
-
-          <PlatformStatsGrid
-            stats={[
-              {
-                label: "Người theo dõi",
-                value: data.account.followersCount.toLocaleString("vi-VN"),
-              },
-              {
-                label: "Bài đăng",
-                value: data.account.mediaCount.toLocaleString("vi-VN"),
-              },
-            ]}
-          />
-
           <PlatformComposeButton
             open={composeOpen}
             onToggle={() => setComposeOpen((o) => !o)}
-            className="bg-linear-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-90 transition-opacity text-white"
+            className="bg-linear-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-90 transition-opacity text-white mt-4"
           />
 
           {composeOpen && (
@@ -363,15 +332,6 @@ export function InstagramMonitorBlock({
               />
             </div>
           )}
-
-          {/* <InstagramPostsList
-            posts={ig.igPosts}
-            stats={ig.igStats}
-            loading={ig.postsLoading}
-            error={ig.postsError}
-            onFetch={ig.fetchIGPosts}
-            onCancel={ig.handleCancelPost}
-          /> */}
         </div>
       )}
     </PlatformMonitorShell>

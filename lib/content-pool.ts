@@ -133,6 +133,7 @@ export function getPoolItemForSlot(
   slot: AutoPostSlot,
   accountId?: string,
   contentSources?: string[],
+  strictDate = false,
 ): ContentPoolItem | null {
   const store = readPool();
 
@@ -167,6 +168,9 @@ export function getPoolItemForSlot(
       matchAccount(item),
   );
   if (exact) return exact;
+
+  // Nếu yêu cầu strictDate (dùng trong catch-up) → không fallback sang ngày khác
+  if (strictDate) return null;
 
   // Ưu tiên 3: item riêng của account (any date, same slot)
   if (accountId) {
@@ -254,9 +258,7 @@ export function importPoolItems(
 
   // Sắp xếp theo ngày → slot (morning → lunch → evening)
   const SLOT_ORDER: Record<string, number> = {
-    morning: 0,
-    lunch: 1,
-    evening: 2,
+    evening: 0,
   };
   store.items.sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);

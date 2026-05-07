@@ -10,7 +10,6 @@
 "use client";
 
 import {
-  SparklesIcon,
   SendIcon,
   ClockIcon,
   CheckCircleIcon,
@@ -51,7 +50,6 @@ const inputClass =
 const igGradient = "from-purple-600 via-pink-500 to-orange-400";
 
 export function InstagramComposeForm({
-  keywords,
   caption,
   mediaType,
   imageUrl,
@@ -59,11 +57,9 @@ export function InstagramComposeForm({
   shareToFeed,
   isScheduled,
   scheduledTime,
-  generating,
   loading,
   error,
   success,
-  onKeywordsChange,
   onCaptionChange,
   onMediaTypeChange,
   onImageUrlChange,
@@ -71,7 +67,6 @@ export function InstagramComposeForm({
   onShareToFeedChange,
   onIsScheduledChange,
   onScheduledTimeChange,
-  onGenerate,
   onPost,
 }: Props) {
   const mediaReady =
@@ -87,17 +82,9 @@ export function InstagramComposeForm({
             Tạo & Đăng bài Instagram
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            AI soạn caption — đăng ngay hoặc hẹn giờ
+            Soạn caption và đăng ngay
           </p>
         </div>
-        <button
-          onClick={onGenerate}
-          disabled={generating}
-          className={`flex items-center gap-1.5 bg-linear-to-r ${igGradient} text-white text-sm font-medium px-4 py-2 rounded-xl transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap shrink-0`}
-        >
-          {generating ? <Spinner /> : <SparklesIcon />}
-          {generating ? "Đang tạo..." : "Tạo caption AI"}
-        </button>
       </div>
 
       <div className="px-6 py-5 space-y-2">
@@ -216,7 +203,7 @@ export function InstagramComposeForm({
             onChange={(e) => onCaptionChange(e.target.value)}
             rows={6}
             maxLength={2200}
-            placeholder='Nhấn "Tạo caption AI" hoặc nhập thủ công (tối đa 2200 ký tự)...'
+            placeholder="Nhập caption cho bài đăng (tối đa 2200 ký tự)..."
             className={`${inputClass} resize-none leading-relaxed`}
           />
         </div>

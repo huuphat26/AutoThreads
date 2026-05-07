@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  SparklesIcon,
   SendIcon,
   ClockIcon,
   CheckCircleIcon,
@@ -41,7 +40,6 @@ export function FacebookComposeForm({
   imageUrl,
   isScheduled,
   scheduledTime,
-  generating,
   loading,
   error,
   success,
@@ -62,17 +60,9 @@ export function FacebookComposeForm({
             Tạo & Đăng bài Facebook
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            AI soạn nội dung — đăng ngay hoặc hẹn giờ
+            Soạn nội dung và đăng ngay
           </p>
         </div>
-        <button
-          onClick={onGenerate}
-          disabled={generating}
-          className="flex items-center gap-1.5 bg-[#1877F2] hover:bg-[#166FE5] active:bg-[#1259C3] text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap shrink-0"
-        >
-          {generating ? <Spinner /> : <SparklesIcon />}
-          {generating ? "Đang tạo..." : "Tạo bằng AI"}
-        </button>
       </div>
 
       <div className="px-6 py-2 space-y-2">
@@ -92,7 +82,7 @@ export function FacebookComposeForm({
             placeholder={
               mediaType === "IMAGE"
                 ? "Nhập caption cho ảnh (tùy chọn)..."
-                : 'Nhấn "Tạo bằng AI" hoặc nhập nội dung thủ công...'
+                : "Nhập nội dung bài đăng..."
             }
             className={`${inputClass} resize-none leading-relaxed`}
           />

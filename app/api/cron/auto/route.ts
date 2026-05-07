@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     await initStores();
 
     const searchParams = request.nextUrl.searchParams;
-    const slot = searchParams.get("slot") as "lunch" | "evening" | null;
+    const slot = searchParams.get("slot") as "evening" | null;
     const platformsParam = searchParams.get("platforms");
     const platforms = platformsParam
       ? (platformsParam.split(",") as Array<"facebook" | "threads" | "instagram">)
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     }
 
     const results: Array<{ slot: string; record: unknown }> = [];
-    const slots: Array<"lunch" | "evening"> = ["lunch", "evening"];
+    const slots: Array<"evening"> = ["evening"];
 
     for (const s of slots) {
       try {

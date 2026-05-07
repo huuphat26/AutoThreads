@@ -129,12 +129,19 @@ IG_CSEC="${IG_APP_SECRET:-${FB_APP_SECRET:-}}"
 if [ -z "$IG_TOKEN_INPUT" ] || [ -z "$IG_CID" ] || [ -z "$IG_CSEC" ]; then
   echo "  ⚠️  Bỏ qua: thiếu IG_ACCESS_TOKEN, IG_APP_ID hoặc IG_APP_SECRET"
 else
-  # Thử với IG_APP trước, nếu lỗi fallback sang FB_APP (token có thể thuộc FB app)
-  IG_LONG_RESP=$(curl -s "${FB_API}/oauth/access_token?grant_type=fb_exchange_token&client_id=${IG_CID}&client_secret=${IG_CSEC}&fb_exchange_token=${IG_TOKEN_INPUT}")
-  _IG_CHECK=$(echo "$IG_LONG_RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token',''))" 2>/dev/null || true)
-  if [ -z "$_IG_CHECK" ] && [ "${IG_CID}" != "${FB_APP_ID:-}" ]; then
-    IG_LONG_RESP=$(curl -s "${FB_API}/oauth/access_token?grant_type=fb_exchange_token&client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&fb_exchange_token=${IG_TOKEN_INPUT}")
+  # PHÂN LOẠI TOKEN: IGAA... là Instagram Login (graph.instagram.com), EA... là Facebook Login (graph.facebook.com)
+  if [[ "$IG_TOKEN_INPUT" == IGAA* ]]; then
+    echo "  ℹ️  Phát hiện Instagram Login token (IGAA...), đang gia hạn qua graph.instagram.com..."
+    IG_LONG_RESP=$(curl -s "https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${IG_CSEC}&access_token=${IG_TOKEN_INPUT}")
+  else
+    # Thử với IG_APP trước, nếu lỗi fallback sang FB_APP (token có thể thuộc FB app)
+    IG_LONG_RESP=$(curl -s "${FB_API}/oauth/access_token?grant_type=fb_exchange_token&client_id=${IG_CID}&client_secret=${IG_CSEC}&fb_exchange_token=${IG_TOKEN_INPUT}")
+    _IG_CHECK=$(echo "$IG_LONG_RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token',''))" 2>/dev/null || true)
+    if [ -z "$_IG_CHECK" ] && [ "${IG_CID}" != "${FB_APP_ID:-}" ]; then
+      IG_LONG_RESP=$(curl -s "${FB_API}/oauth/access_token?grant_type=fb_exchange_token&client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&fb_exchange_token=${IG_TOKEN_INPUT}")
+    fi
   fi
+
   IG_LONG_TOKEN=$(echo "$IG_LONG_RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token',''))" 2>/dev/null || true)
   IG_ERR=$(echo "$IG_LONG_RESP"       | python3 -c "import sys,json; d=json.load(sys.stdin); e=d.get('error',{}); print(e.get('message',''))" 2>/dev/null || true)
 

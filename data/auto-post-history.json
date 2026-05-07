@@ -1,4 +1,35 @@
 {
-  "records": [],
-  "lastUpdated": "2026-03-18T07:39:33.284Z"
+  "records": [
+    {
+      "id": "auto-1778145622879-jaxqm",
+      "slot": "evening",
+      "accountId": "env-default",
+      "triggeredAt": "2026-05-07T09:20:22.879Z",
+      "topic": "",
+      "topicLabel": "Từ vựng hay dùng sai",
+      "content": "Từ vựng hay dùng sai\n\nĐi uống cà phê mà nói 'Give me a water' là sai lầm phổ biến.\n\nWater là nước nói chung, không đếm được nên không dùng 'a'. Nếu muốn lịch sự và chuyên nghiệp hơn, hãy dùng: 'Can I have a bottle of water?' hoặc đơn giản là 'Water, please!'.\n\nLưu lại để lần tới đi cafe không còn bối rối nhé.\n\n#englishfix, #tienganhgiaotiep, #dailyenglish",
+      "threadsContent": "Từ vựng hay dùng sai\n\nĐi uống cà phê mà nói 'Give me a water' là sai lầm phổ biến.\n\nWater là nước nói chung, không đếm được nên không dùng 'a'. Nếu muốn lịch sự và chuyên nghiệp hơn, hãy dùng: 'Can I have a bottle of water?' hoặc đơn giản là 'Water, please!'.\n\nLưu lại để lần tới đi cafe không còn bối rối nhé.\n\n#englishfix, #tienganhgiaotiep, #dailyenglish",
+      "igCaption": "Từ vựng hay dùng sai\n\nĐi uống cà phê mà nói 'Give me a water' là sai lầm phổ biến.\n\nWater là nước nói chung, không đếm được nên không dùng 'a'. Nếu muốn lịch sự và chuyên nghiệp hơn, hãy dùng: 'Can I have a bottle of water?' hoặc đơn giản là 'Water, please!'.\n\nLưu lại để lần tới đi cafe không còn bối rối nhé.\n\n#englishfix, #tienganhgiaotiep, #dailyenglish",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122111205981240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122111205981240014",
+        "postedAt": "2026-05-07T09:20:29.791Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "18337886746219238",
+        "postedAt": "2026-05-07T09:23:45.127Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18080800259143370",
+        "permalinkUrl": "https://www.instagram.com/p/DYCEmlgEmUA/",
+        "postedAt": "2026-05-07T09:26:54.909Z"
+      },
+      "overallStatus": "completed",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1778141720/Gemini_Generated_Image_v50xtgv50xtgv50x_stycei.png"
+    }
+  ],
+  "lastUpdated": "2026-05-07T09:26:54.927Z"
 }

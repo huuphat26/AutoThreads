@@ -47,7 +47,6 @@ interface ImportDryRunData {
 }
 
 const SLOT_LABEL: Record<string, string> = {
-  morning: "Sáng",
   lunch: "Trưa",
   evening: "Tối",
 };
@@ -232,23 +231,26 @@ export function ContentPoolPanel() {
       />
 
       <div className="flex items-center gap-2">
-        <div className="flex gap-1 bg-slate-50 border border-slate-100 rounded-lg p-1 text-xs">
-          {(["pending", "used", "skipped", ""] as const).map((s) => (
-            <button
-              key={s || "all"}
-              onClick={() => {
-                setFilterStatus(s);
-                setVisibleCount(PAGE_SIZE);
-              }}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                filterStatus === s
-                  ? "bg-white text-slate-800 shadow-xs border border-slate-200"
-                  : "text-slate-400 hover:text-slate-600"
-              }`}
-            >
-              {s === "" ? "Tất cả" : STATUS_LABEL[s]}
-            </button>
-          ))}
+        <div className="flex gap-1 bg-slate-100 border border-slate-200 rounded-xl p-1 text-xs">
+          {(["pending", "used", "skipped", ""] as const).map((s) => {
+            const active = filterStatus === s;
+            return (
+              <button
+                key={s || "all"}
+                onClick={() => {
+                  setFilterStatus(s);
+                  setVisibleCount(PAGE_SIZE);
+                }}
+                className={`px-4 py-1.5 rounded-lg font-bold transition-all duration-200 ${
+                  active
+                    ? "bg-slate-800 text-white shadow-md shadow-slate-200 scale-105"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
+                }`}
+              >
+                {s === "" ? "Tất cả" : STATUS_LABEL[s]}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex-1" />

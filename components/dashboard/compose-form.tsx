@@ -62,17 +62,9 @@ export function ComposeForm({
             Tạo & Đăng bài
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            AI soạn sẵn — chỉnh sửa rồi đăng
+            Soạn nội dung và đăng ngay
           </p>
         </div>
-        <button
-          onClick={onGenerate}
-          disabled={generating}
-          className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap shrink-0"
-        >
-          {generating ? <Spinner /> : <SparklesIcon />}
-          {generating ? "Đang tạo..." : "Tạo bằng AI"}
-        </button>
       </div>
 
       <div className="px-6 py-4 space-y-4">
@@ -92,7 +84,7 @@ export function ComposeForm({
             placeholder={
               mediaType === "IMAGE"
                 ? "Nhập caption cho ảnh (tùy chọn)..."
-                : 'Nhấn "Tạo bằng AI" để tự động tạo nội dung, hoặc nhập thủ công...'
+                : "Nhập nội dung bài đăng..."
             }
             className={`${inputClass} resize-none leading-relaxed`}
           />

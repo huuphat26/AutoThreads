@@ -5,20 +5,10 @@
       "name": "Tài khoản mặc định",
       "niche": "Eat Clean / Healthy Food",
       "color": "#10b981",
-      "isDefault": false,
-      "isEnvAccount": true,
-      "createdAt": "2026-03-27T06:56:35.711Z",
-      "note": "Đọc credentials từ .env"
-    },
-    {
-      "id": "env-tag-epxanh",
-      "name": "Epxanh",
-      "niche": "",
-      "color": "#10b981",
       "isDefault": true,
       "isEnvAccount": true,
-      "createdAt": "2026-04-22T09:07:33.070Z",
-      "note": "Credentials từ .env (suffix _EPXANH)",
+      "createdAt": "2026-03-27T06:56:35.711Z",
+      "note": "Đọc credentials từ .env",
       "threads": {
         "accessToken": "__env__",
         "userId": "__env__"
@@ -26,26 +16,12 @@
       "facebook": {
         "accessToken": "__env__",
         "userId": "__env__"
-      }
-    },
-    {
-      "id": "env-tag-oreatiny",
-      "name": "Oreatiny",
-      "niche": "",
-      "color": "#6366f1",
-      "isDefault": false,
-      "isEnvAccount": true,
-      "createdAt": "2026-04-22T09:07:33.070Z",
-      "note": "Credentials từ .env (suffix _OREATINY)",
-      "threads": {
-        "accessToken": "__env__",
-        "userId": "__env__"
       },
-      "facebook": {
+      "instagram": {
         "accessToken": "__env__",
         "userId": "__env__"
       }
     }
   ],
-  "lastUpdated": "2026-04-22T09:07:33.070Z"
+  "lastUpdated": "2026-05-06T08:17:42.609Z"
 }

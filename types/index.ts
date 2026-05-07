@@ -598,7 +598,7 @@ export interface ThreadsManualPostHistory {
 //   FB → 3 phút → Threads → 3 phút → IG
 // ============================================
 
-export type AutoPostSlot = "morning" | "lunch" | "evening";
+export type AutoPostSlot = "evening";
 
 export type AutoPostPlatformStatus =
   | "pending"
@@ -634,6 +634,8 @@ export interface AutoPostRecord {
   igCaption: string;
   /** URL ảnh dùng cho tất cả nền tảng (FB, Threads, IG) — tạo qua Puter.js */
   igImageUrl?: string;
+  /** Tin nhắn trạng thái chi tiết (VD: "Đang đăng Facebook...") */
+  statusMessage?: string;
   /** Kết quả từng nền tảng */
   facebook: AutoPostPlatformResult;
   threads: AutoPostPlatformResult;

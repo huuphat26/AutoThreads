@@ -20,7 +20,7 @@ import type { AutoPostSlot } from "@/types";
 type AutoSchedulerAction = "retry-slot" | "dismiss-slot";
 type AutoSchedulerPlatform = "facebook" | "threads" | "instagram";
 
-const VALID_SLOTS = new Set<AutoPostSlot>(["morning", "lunch", "evening"]);
+const VALID_SLOTS = new Set<AutoPostSlot>(["evening"]);
 const VALID_PLATFORMS = new Set<AutoSchedulerPlatform>([
   "facebook",
   "threads",
@@ -75,6 +75,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, data: pool });
   }
 
+  if (view === "preview-pool") {
+    const { getPoolItemForSlot } = await import("@/lib/content-pool");
+    const { getTodayVNDate } = await import("@/lib/services/auto-scheduler");
+    const today = getTodayVNDate();
+    const item = getPoolItemForSlot(today, "evening", undefined, undefined, false);
+    return NextResponse.json({ success: true, data: item });
+  }
+
   const status = getAutoSchedulerStatus();
   return NextResponse.json({ success: true, data: status });
 }
@@ -107,7 +115,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "slot không hợp lệ (morning | lunch | evening)",
+        error: "slot không hợp lệ (evening)",
       },
       { status: 400 },
     );
@@ -124,7 +132,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const slot = parsedSlot ?? "lunch";
+  const slot = parsedSlot ?? "evening";
   const platforms = parsedPlatforms.length > 0 ? parsedPlatforms : undefined;
 
   // ── Retry-slot: gọi từ UI khi slot bị "Bỏ qua" ──
@@ -212,11 +220,9 @@ export async function PATCH(req: NextRequest) {
 
     if (action === "schedule-once") {
       const slot: AutoPostSlot =
-        body.slot === "morning"
-          ? "morning"
-          : body.slot === "evening"
-            ? "evening"
-            : "lunch";
+        body.slot === "evening"
+          ? "evening"
+          : "evening";
       const prepTime: string = body.prepTime;
       const postTime: string = body.postTime;
       const platforms: Array<"facebook" | "threads" | "instagram"> | undefined =
@@ -281,14 +287,21 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { recordId, fbContent, threadsContent, igCaption, topicLabel } =
-      body as {
-        recordId: string;
-        fbContent: string;
-        threadsContent: string;
-        igCaption: string;
-        topicLabel?: string;
-      };
+    const {
+      recordId,
+      fbContent,
+      threadsContent,
+      igCaption,
+      topicLabel,
+      igImageUrl,
+    } = body as {
+      recordId: string;
+      fbContent: string;
+      threadsContent: string;
+      igCaption: string;
+      topicLabel?: string;
+      igImageUrl?: string;
+    };
 
     if (!recordId || !fbContent?.trim()) {
       return NextResponse.json(
@@ -306,6 +319,7 @@ export async function PUT(req: NextRequest) {
         (threadsContent ?? fbContent).trim().slice(0, 480),
         (igCaption ?? fbContent).trim().slice(0, 300),
         topicLabel ?? "",
+        igImageUrl,
       );
     } catch (err) {
       console.error("[AutoScheduler API] storeContentForRecord lỗi:", err);
@@ -317,7 +331,7 @@ export async function PUT(req: NextRequest) {
       success: true,
       data: {
         message:
-          "Đã lưu nội dung (content_ready). Sẽ đăng FB 12:00 → Threads 12:03 → IG 12:06",
+          "Đã lưu nội dung (content_ready). Sẽ đăng FB 20:00 → Threads +5phút → IG +10phút",
       },
     });
   } catch (error) {

@@ -24,7 +24,7 @@ const MENUS = [
     label: "Sheets",
     href: "/platforms/content-pool",
     icon: PoolIcon,
-    activeClass: "bg-slate-600 text-white shadow-md shadow-slate-300",
+    activeClass: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-100",
     inactiveClass: "text-slate-500 hover:text-slate-600 hover:bg-slate-100",
   },
   // {
@@ -70,7 +70,11 @@ export function PlatformNav() {
         <div className="flex items-stretch gap-1 p-1 bg-slate-50 rounded-xl border border-slate-100">
           {MENUS.map((item) => {
             const isActive =
-              pathname === item.href || pathname.startsWith(item.href + "/");
+              item.id === "content-pool"
+                ? pathname.startsWith(item.href)
+                : pathname === item.href ||
+                  (pathname.startsWith(item.href + "/") &&
+                    !pathname.startsWith("/platforms/content-pool"));
             return <NavButton key={item.id} item={item} isActive={isActive} />;
           })}
         </div>

@@ -32,72 +32,8 @@ const DAY_MAP: Record<number, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  if (!canUsePrivilegedRoute(req)) {
-    return NextResponse.json(
-      { success: false, error: "Không có quyền truy cập" },
-      { status: 401 },
-    );
-  }
-
-  try {
-    const body = await req.json();
-
-    // Resolve topic (random nếu không truyền — giữ nhất quán với /api/generate)
-    const topic = resolveTopicOrRandom(body.topic);
-
-    // Build time context
-    const now = new Date();
-    const currentTime = now.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const dayOfWeek = DAY_MAP[now.getDay()];
-
-    const ctx: PromptContext = {
-      topic,
-      currentTime,
-      dayOfWeek,
-      lastTopic: body.lastTopic,
-      ctaStyle: body.ctaStyle,
-      keywords: body.keywords,
-      customPrompt: body.customPrompt,
-    };
-
-    // Dùng prompt phù hợp với từng platform
-    const platform = (body.platform ?? "facebook") as
-      | "facebook"
-      | "threads"
-      | "instagram";
-
-    let systemPrompt: string;
-    let userPrompt: string;
-
-    if (platform === "instagram") {
-      // IG: nhận bài FB đã soạn, viết lại thành caption ngắn
-      systemPrompt = buildSystemPromptIGCaption();
-      const fbContent = (body.fbContent as string) ?? "";
-      userPrompt = `Bài Facebook:\n${fbContent}\n\nViết caption Instagram theo yêu cầu.`;
-    } else if (platform === "threads") {
-      // Threads: cùng chủ đề nhưng tối đa 480 ký tự
-      systemPrompt = buildSystemPromptThreads();
-      userPrompt = buildUserPromptPuter(ctx);
-    } else {
-      // Facebook (default)
-      systemPrompt = buildSystemPromptPuter();
-      userPrompt = buildUserPromptPuter(ctx);
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        systemPrompt,
-        userPrompt,
-        topicLabel: topic.label,
-        topicId: topic.id,
-      },
-    });
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : "Lỗi không xác định";
-    return NextResponse.json({ success: false, error: msg }, { status: 500 });
-  }
+  return NextResponse.json(
+    { success: false, error: "Puter prompts are disabled." },
+    { status: 403 },
+  );
 }

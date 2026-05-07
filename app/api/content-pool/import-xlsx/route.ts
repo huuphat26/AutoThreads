@@ -45,12 +45,10 @@ export async function POST(req: NextRequest) {
       dateNF: "yyyy-mm-dd",
     }) as unknown[][];
 
-    // ── Map rows → ContentPoolItem (skip header row) ————————————————
-    // Column order (new format):
-    // 0=Date | 1=Slot (morning/lunch/evening) | 2=FB Post Time
-    // 3=Threads Post Time | 4=IG Post Time | 5=Title (topicLabel)
-    // 6=Dish Name (skip) | 7=Ingredients (skip) | 8=Caption_Formatted
-    // 9=Hashtags | 10=Image_URL | 11=Image_Prompt
+    const headerRow = (rows[0] || []) as string[];
+    const isDayBased =
+      headerRow[0]?.toLowerCase() === "day" ||
+      headerRow[0]?.toLowerCase() === "ngày";
 
     const items: Omit<ContentPoolItem, "id" | "importedAt">[] = [];
     const rowErrors: Array<{ row: number; message: string }> = [];
@@ -67,33 +65,84 @@ export async function POST(req: NextRequest) {
       rowErrors.push({ row, message });
     };
 
+    // Calculate start date for Day-based format (today)
+    const today = new Date();
+
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      if (!row || !row[0]) continue; // skip empty rows
+      if (!row || (!row[0] && !row[1])) continue; // skip empty rows
       const rowNumber = i + 1;
 
-      const rawDate = String(row[0] ?? "").trim();
-      const rawSlot = String(row[1] ?? "")
-        .trim()
-        .toLowerCase();
-      const topicLabel = String(row[5] ?? "").trim();
-      const caption = String(row[8] ?? "").trim();
-      const hashtags = String(row[9] ?? "").trim();
-      const rawImageUrl = String(row[10] ?? "").trim();
-      const imagePrompt = String(row[11] ?? "").trim() || undefined;
+      let rawDate = "";
+      let slot: AutoPostSlot = "evening";
+      let topicLabel = "";
+      let caption = "";
+      let hashtags = "";
+      let rawImageUrl = "";
+      let imagePrompt: string | undefined = undefined;
+
+      if (isDayBased) {
+        // --- NEW FORMAT (Day-based) ---
+        // 0=Day (Date or Num) | 1=Topic | 2=Hook | 3=Content | 4=CTA | 5=Hashtags | 6=Url Image
+        const rawDay = String(row[0] ?? "").trim();
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDay)) {
+          // Parse DD/MM/YYYY
+          const [d, m, y] = rawDay.split("/").map(Number);
+          rawDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        } else if (/^\d{4}-\d{2}-\d{2}/.test(rawDay)) {
+          rawDate = rawDay.split(" ")[0];
+        } else {
+          // Offset based
+          const dayNum = parseInt(rawDay || "1");
+          const d = new Date(today);
+          d.setDate(d.getDate() + (dayNum - 1));
+          rawDate = d.toISOString().split("T")[0];
+        }
+
+        slot = "evening"; // Forced evening as requested
+        topicLabel = String(row[1] ?? "").trim();
+        const hook = String(row[2] ?? "").trim();
+        const body = String(row[3] ?? "").trim();
+        const cta = String(row[4] ?? "").trim();
+
+        // Ghép nội dung theo thứ tự: Topic -> Hook -> Content -> CTA
+        caption = [topicLabel, hook, body, cta].filter(Boolean).join("\n\n");
+        hashtags = String(row[5] ?? "").trim();
+        rawImageUrl = String(row[6] ?? "").trim();
+        imagePrompt = undefined; // Column G is Url Image, no prompt in this format
+      } else {
+        // --- STANDARD FORMAT ---
+        // 0=Date | 1=Slot | 5=Title | 8=Caption | 9=Hashtags | 10=Image_URL | 11=Image_Prompt
+        rawDate = String(row[0] ?? "").trim();
+
+        slot = "evening";
+
+        topicLabel = String(row[5] ?? "").trim();
+        caption = String(row[8] ?? "").trim();
+        hashtags = String(row[9] ?? "").trim();
+        rawImageUrl = String(row[10] ?? "").trim();
+        imagePrompt = String(row[11] ?? "").trim() || undefined;
+      }
+
       const igImageUrl: string | undefined =
         rawImageUrl && rawImageUrl !== "None" && rawImageUrl.startsWith("http")
           ? rawImageUrl
           : undefined;
 
-      // Assemble platform content from caption + hashtags
+      // Assemble platform content
       const fbContent = hashtags ? `${caption}\n\n${hashtags}` : caption;
-      const threadsContent =
-        caption.length > 480 ? caption.slice(0, 477) + "..." : caption;
-      const igCaption = hashtags
-        ? `${caption.slice(0, 250)}\n\n${hashtags}`
-        : caption.slice(0, 250);
-      // igImageUrl already set above from Image_URL column
+
+      // Threads: Giới hạn ~500 ký tự (API)
+      let threadsContent = hashtags ? `${caption}\n\n${hashtags}` : caption;
+      if (threadsContent.length > 490) {
+        threadsContent =
+          caption.length > 490 ? caption.slice(0, 487) + "..." : caption;
+      }
+
+      // Instagram: Tối đa 2200 ký tự
+      const igCaption = hashtags ? `${caption}\n\n${hashtags}` : caption;
+      const finalIgCaption =
+        igCaption.length > 2100 ? igCaption.slice(0, 2097) + "..." : igCaption;
 
       // Validate date format yyyy-mm-dd
       if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
@@ -101,26 +150,8 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Normalize slot: Excel dùng "morning"/"lunch"/"evening"
-      const slot: AutoPostSlot =
-        rawSlot === "morning" ||
-        rawSlot === "sang" ||
-        rawSlot.includes("morning")
-          ? "morning"
-          : rawSlot === "lunch" ||
-              rawSlot === "noon" ||
-              rawSlot === "trua" ||
-              rawSlot.includes("noon") ||
-              rawSlot.includes("lunch")
-            ? "lunch"
-            : rawSlot === "evening" ||
-                rawSlot === "toi" ||
-                rawSlot.includes("evening")
-              ? "evening"
-              : null!;
-
       if (!slot) {
-        pushRowError(rowNumber, `Slot không hợp lệ "${rawSlot}"`);
+        pushRowError(rowNumber, `Slot không hợp lệ "${row[1]}"`);
         continue;
       }
 
@@ -135,7 +166,7 @@ export async function POST(req: NextRequest) {
         topicLabel: topicLabel || "No Topic",
         fbContent,
         threadsContent,
-        igCaption,
+        igCaption: finalIgCaption,
         igImageUrl,
         imagePrompt,
         status: "pending",

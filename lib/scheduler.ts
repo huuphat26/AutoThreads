@@ -14,12 +14,10 @@ import {
 import type { ScheduledPost } from "@/types";
 
 const DEFAULT_SCHEDULES: Array<{ id: string; label: string; cron: string }> = [
-  { id: "morning", label: "Buổi sáng (06:30)", cron: "30 6 * * *" },
-  { id: "lunch", label: "Buổi trưa (11:00)", cron: "0 11 * * *" },
-  { id: "evening", label: "Buổi tối  (17:00)", cron: "0 17 * * *" },
+  { id: "evening", label: "Buổi tối  (20:00)", cron: "0 20 * * *" },
 ];
 
-const DAILY_POST_LIMIT = 3;
+const DAILY_POST_LIMIT = 2;
 
 function parseProductionSchedules(): Array<{
   id: string;

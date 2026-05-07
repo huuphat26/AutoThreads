@@ -26,8 +26,6 @@ export function PoolStatsBar({ stats, allPending, todayVN, loading }: Props) {
   if (!stats) return null;
 
   const todayItems = allPending.filter((i) => i.date === todayVN);
-  const morningCount = todayItems.filter((i) => i.slot === "morning").length;
-  const lunchCount = todayItems.filter((i) => i.slot === "lunch").length;
   const eveningCount = todayItems.filter((i) => i.slot === "evening").length;
 
   const cards = [
@@ -43,7 +41,7 @@ export function PoolStatsBar({ stats, allPending, todayVN, loading }: Props) {
       label: "Hôm nay",
       sub:
         todayItems.length > 0
-          ? `${morningCount} sáng · ${lunchCount} trưa · ${eveningCount} tối`
+          ? `Slot buổi tối: ${eveningCount} bài`
           : "Không có bài hôm nay",
       valueClass: todayItems.length > 0 ? "text-blue-600" : "text-slate-400",
       subClass: "text-slate-400",

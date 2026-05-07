@@ -9,18 +9,13 @@ import {
   useState,
 } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import type { AutoPostRecord } from "@/types";
+import type { AutoPostRecord, ContentPoolItem } from "@/types";
 import type { SchedulerStatus } from "./auto-scheduler/types";
-import {
-  isTodayVN,
-  todayLabel,
-  slotDateToday,
-  fmtTime,
-} from "./auto-scheduler/constants";
+import { isTodayVN, slotDateToday, fmtTime } from "./auto-scheduler/constants";
 import { TodaySlotCard } from "./auto-scheduler/slot-card";
-import { Dot, Pill } from "./auto-scheduler/status-badge";
+import { Pill } from "./auto-scheduler/status-badge";
 
-const SLOT_ORDER = ["morning", "lunch", "evening"] as const;
+const SLOT_ORDER = ["evening"] as const;
 type SlotId = (typeof SLOT_ORDER)[number];
 type PlatformFilter = "all" | "facebook" | "threads" | "instagram";
 type StatusFilter = "all" | "attention" | "active" | "done";
@@ -46,8 +41,6 @@ const ATTENTION_SORT_OPTIONS: Array<{ key: AttentionSort; label: string }> = [
 ];
 
 const SLOT_LABEL: Record<(typeof SLOT_ORDER)[number], string> = {
-  morning: "Buổi sáng",
-  lunch: "Buổi trưa",
   evening: "Buổi tối",
 };
 
@@ -109,33 +102,21 @@ function formatDuration(ms: number): string {
   return `${h} giờ ${m} phút`;
 }
 
-type PuterWindow = Window & {
-  puter?: {
-    ai: {
-      chat: (...args: unknown[]) => Promise<AsyncIterable<{ text: string }>>;
-    };
-    auth?: {
-      getUser?: () => Promise<{ username?: string }>;
-      signOut?: () => Promise<void>;
-    };
-  };
-};
-
 type State = {
   status: SchedulerStatus | null;
   records: AutoPostRecord[];
   loading: boolean;
   error: string;
-  aiGeneratingId: string | null;
   dismissedSlots: Set<string>;
+  previewItem: ContentPoolItem | null;
 };
 
 type Action =
   | { type: "SET_DATA"; status: SchedulerStatus; records: AutoPostRecord[] }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "SET_ERROR"; error: string }
-  | { type: "SET_AI_GENERATING"; id: string | null }
-  | { type: "DISMISS_SLOT"; slotId: string };
+  | { type: "DISMISS_SLOT"; slotId: string }
+  | { type: "SET_PREVIEW"; item: ContentPoolItem | null };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -145,17 +126,21 @@ function reducer(state: State, action: Action): State {
       return { ...state, loading: action.loading };
     case "SET_ERROR":
       return { ...state, error: action.error };
-    case "SET_AI_GENERATING":
-      return { ...state, aiGeneratingId: action.id };
     case "DISMISS_SLOT": {
       const next = new Set(state.dismissedSlots);
       next.add(action.slotId);
       return { ...state, dismissedSlots: next };
     }
+    case "SET_PREVIEW":
+      return { ...state, previewItem: action.item };
     default:
       return state;
   }
 }
+
+// Cache toàn cục
+let CACHED_SCHEDULER_STATUS: SchedulerStatus | null = null;
+let CACHED_SCHEDULER_RECORDS: AutoPostRecord[] = [];
 
 export function AutoSchedulerMonitor() {
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -168,15 +153,15 @@ export function AutoSchedulerMonitor() {
   const [retryingAll, setRetryingAll] = useState(false);
 
   const [state, dispatch] = useReducer(reducer, {
-    status: null,
-    records: [],
-    loading: true,
+    status: CACHED_SCHEDULER_STATUS,
+    records: CACHED_SCHEDULER_RECORDS,
+    loading: !CACHED_SCHEDULER_STATUS,
     error: "",
-    aiGeneratingId: null,
     dismissedSlots: new Set<string>(),
+    previewItem: null,
   });
 
-  const { status, records, loading, error, aiGeneratingId, dismissedSlots } =
+  const { status, records, loading, error, dismissedSlots, previewItem } =
     state;
 
   const processingRef = useRef<Set<string>>(new Set());
@@ -185,14 +170,16 @@ export function AutoSchedulerMonitor() {
   const attentionPanelRef = useRef<HTMLElement | null>(null);
 
   const fetchData = useCallback(async (showLoading = false) => {
-    if (showLoading) dispatch({ type: "SET_LOADING", loading: true });
+    const shouldShowLoading = showLoading && !CACHED_SCHEDULER_STATUS;
+    if (shouldShowLoading) dispatch({ type: "SET_LOADING", loading: true });
     dispatch({ type: "SET_ERROR", error: "" });
     try {
-      const [s, h] = await Promise.all([
+      const [s, h, p] = await Promise.all([
         fetch("/api/auto-scheduler").then((r) => r.json()),
         fetch("/api/auto-scheduler?view=history&today=true").then((r) =>
           r.json(),
         ),
+        fetch("/api/auto-scheduler?view=preview-pool").then((r) => r.json()),
       ]);
       if (s.success && h.success) {
         dispatch({
@@ -200,129 +187,19 @@ export function AutoSchedulerMonitor() {
           status: s.data,
           records: h.data as AutoPostRecord[],
         });
+        if (p.success) {
+          dispatch({ type: "SET_PREVIEW", item: p.data });
+        }
+        CACHED_SCHEDULER_STATUS = s.data;
+        CACHED_SCHEDULER_RECORDS = h.data as AutoPostRecord[];
         setLastFetchedAt(Date.now());
       }
     } catch {
       dispatch({ type: "SET_ERROR", error: "Không thể tải dữ liệu" });
     } finally {
-      if (showLoading) dispatch({ type: "SET_LOADING", loading: false });
+      if (shouldShowLoading) dispatch({ type: "SET_LOADING", loading: false });
     }
   }, []);
-
-  const generateAndSubmit = useCallback(
-    async (record: AutoPostRecord) => {
-      if (processingRef.current.has(record.id)) return;
-      processingRef.current.add(record.id);
-      dispatch({ type: "SET_AI_GENERATING", id: record.id });
-
-      try {
-        const cfgRes = await fetch("/api/ai-config").then((r) => r.json());
-        const model: string =
-          cfgRes.data?.currentProvider?.model ?? "gpt-4o-mini";
-
-        const puterRef = (window as PuterWindow).puter;
-        if (!puterRef)
-          throw new Error("Puter.js chưa tải. Vui lòng tải lại trang.");
-
-        const generateContent = async (
-          systemPrompt: string,
-          userPrompt: string,
-        ): Promise<string> => {
-          const stream = (await puterRef.ai.chat(
-            [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
-            { model, stream: true },
-          )) as AsyncIterable<{ text: string }>;
-          let accumulated = "";
-          for await (const chunk of stream) {
-            if (chunk.text) accumulated += chunk.text;
-          }
-          try {
-            const parsed = JSON.parse(accumulated);
-            return (parsed.content ?? parsed.fullPost ?? accumulated).trim();
-          } catch {
-            return accumulated.trim();
-          }
-        };
-
-        // Step 1: Facebook
-        const fbPromptJson = await fetch("/api/puter-prompt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ platform: "facebook" }),
-        }).then((r) => r.json());
-        if (!fbPromptJson.success)
-          throw new Error(fbPromptJson.error ?? "Không thể build FB prompt");
-        const {
-          systemPrompt: fbSys,
-          userPrompt: fbUser,
-          topicLabel,
-          topicId,
-        } = fbPromptJson.data as {
-          systemPrompt: string;
-          userPrompt: string;
-          topicLabel: string;
-          topicId: string;
-        };
-        const fbContent = await generateContent(fbSys, fbUser);
-        if (!fbContent) throw new Error("AI không trả về nội dung Facebook");
-
-        // Step 2: Threads
-        const thPromptJson = await fetch("/api/puter-prompt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ platform: "threads", topic: topicId }),
-        }).then((r) => r.json());
-        if (!thPromptJson.success)
-          throw new Error(
-            thPromptJson.error ?? "Không thể build Threads prompt",
-          );
-        const { systemPrompt: thSys, userPrompt: thUser } =
-          thPromptJson.data as { systemPrompt: string; userPrompt: string };
-        let threadsContent = await generateContent(thSys, thUser);
-        if (!threadsContent) threadsContent = fbContent;
-        threadsContent = threadsContent.slice(0, 480);
-
-        // Step 3: Instagram
-        const igPromptJson = await fetch("/api/puter-prompt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ platform: "instagram", fbContent }),
-        }).then((r) => r.json());
-        if (!igPromptJson.success)
-          throw new Error(igPromptJson.error ?? "Không thể build IG prompt");
-        const { systemPrompt: igSys, userPrompt: igUser } =
-          igPromptJson.data as { systemPrompt: string; userPrompt: string };
-        let igCaption = await generateContent(igSys, igUser);
-        if (!igCaption) igCaption = fbContent.slice(0, 250);
-
-        // Submit
-        const submitJson = await fetch("/api/auto-scheduler", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            recordId: record.id,
-            fbContent,
-            threadsContent,
-            igCaption,
-            topicLabel,
-          }),
-        }).then((r) => r.json());
-        if (!submitJson.success)
-          throw new Error(submitJson.error ?? "Submit thất bại");
-
-        await fetchData();
-      } catch (err) {
-        console.error("[AutoSchedulerMonitor] AI generate lỗi:", err);
-        processingRef.current.delete(record.id);
-      } finally {
-        dispatch({ type: "SET_AI_GENERATING", id: null });
-      }
-    },
-    [fetchData],
-  );
 
   useEffect(() => {
     if (initialFetched.current) return;
@@ -417,8 +294,8 @@ export function AutoSchedulerMonitor() {
         ? Math.round((postedPlatforms / plannedPlatforms) * 100)
         : 0;
 
-    let nextSlotId: (typeof SLOT_ORDER)[number] = "morning";
-    let nextSlotAt: Date = slotDateToday("morning");
+    let nextSlotId: (typeof SLOT_ORDER)[number] = "evening";
+    let nextSlotAt: Date = slotDateToday("evening");
     let foundUpcoming = false;
 
     for (const slotId of SLOT_ORDER) {
@@ -432,9 +309,9 @@ export function AutoSchedulerMonitor() {
     }
 
     if (!foundUpcoming) {
-      nextSlotAt = slotDateToday("morning");
+      nextSlotAt = slotDateToday("evening");
       nextSlotAt.setDate(nextSlotAt.getDate() + 1);
-      nextSlotId = "morning";
+      nextSlotId = "evening";
     }
 
     const nextIn = formatDuration(nextSlotAt.getTime() - nowMs);
@@ -473,8 +350,6 @@ export function AutoSchedulerMonitor() {
 
   const slotRecords = useMemo(() => {
     const bySlot: Record<SlotId, AutoPostRecord | null> = {
-      morning: null,
-      lunch: null,
       evening: null,
     };
 
@@ -559,6 +434,8 @@ export function AutoSchedulerMonitor() {
     });
   }, [focusAttention]);
 
+  // REMOVED: Auto-trigger AI generation (User request: Monitor only, no UI action)
+  /*
   useEffect(() => {
     const waiting = todayRecords.find(
       (r) =>
@@ -567,6 +444,7 @@ export function AutoSchedulerMonitor() {
     );
     if (waiting) generateAndSubmit(waiting);
   }, [todayRecords, generateAndSubmit]);
+  */
 
   const triggerRetrySlot = useCallback(async (slotId: SlotId) => {
     await fetch("/api/auto-scheduler", {
@@ -631,7 +509,7 @@ export function AutoSchedulerMonitor() {
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-linear-to-r from-violet-50 via-purple-50 to-fuchsia-50">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-200">
               <svg
@@ -653,7 +531,7 @@ export function AutoSchedulerMonitor() {
                 Đăng tự động 3 nền tảng
               </h2>
               <p className="text-xs text-slate-500">
-                Tự động tạo & đăng bài mỗi ngày
+                Tự động tạo & đăng bài lúc 20:00
               </p>
             </div>
           </div>
@@ -662,17 +540,14 @@ export function AutoSchedulerMonitor() {
               {
                 label: "Facebook",
                 color: "bg-blue-500",
-                textColor: "text-blue-600",
               },
               {
                 label: "Threads",
                 color: "bg-slate-800",
-                textColor: "text-slate-700",
               },
               {
                 label: "Instagram",
                 color: "bg-gradient-to-r from-purple-500 to-pink-500",
-                textColor: "text-pink-600",
               },
             ].map((p) => (
               <span
@@ -745,29 +620,12 @@ export function AutoSchedulerMonitor() {
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-4">
           <div className="space-y-3">
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Lịch hôm nay — {todayLabel()}
+            <div className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+                  Trạng thái
                 </p>
-                <div className="flex items-center gap-2">
-                  {status?.slots && (
-                    <span className="text-[10px] text-slate-400">
-                      {status.slots.length} khung giờ
-                    </span>
-                  )}
-                  <span className="text-[10px] text-slate-400">•</span>
-                  <span className="text-[10px] text-slate-500 font-medium">
-                    Auto refresh 30s
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Lọc trạng thái
-                </p>
-                <div className="flex items-center gap-1 overflow-x-auto pb-1">
+                <div className="flex items-center gap-1">
                   {STATUS_FILTERS.map((item) => {
                     const active = statusFilter === item.key;
                     return (
@@ -776,7 +634,7 @@ export function AutoSchedulerMonitor() {
                         onClick={() => setStatusFilter(item.key)}
                         className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors ${
                           active
-                            ? "bg-slate-800 text-white"
+                            ? "bg-slate-800 text-white shadow-sm"
                             : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
                         }`}
                       >
@@ -787,11 +645,13 @@ export function AutoSchedulerMonitor() {
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Lọc nền tảng
+              <div className="hidden sm:block w-px h-8 bg-slate-200 mx-2" />
+
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+                  Nền tảng
                 </p>
-                <div className="flex items-center gap-1 overflow-x-auto pb-1">
+                <div className="flex items-center gap-1">
                   {PLATFORM_FILTERS.map((item) => {
                     const active = platformFilter === item.key;
                     return (
@@ -800,7 +660,7 @@ export function AutoSchedulerMonitor() {
                         onClick={() => setPlatformFilter(item.key)}
                         className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors ${
                           active
-                            ? "bg-violet-600 text-white"
+                            ? "bg-violet-600 text-white shadow-sm"
                             : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
                         }`}
                       >
@@ -810,16 +670,22 @@ export function AutoSchedulerMonitor() {
                   })}
                 </div>
               </div>
-            </div>
 
-            {aiGeneratingId && (
-              <div className="flex items-center gap-2 px-4 py-3 bg-violet-50 border border-violet-100 rounded-xl">
-                <Spinner className="w-4 h-4 text-violet-500" />
-                <span className="text-xs text-violet-600 font-medium">
-                  Đang soạn nội dung bằng AI...
-                </span>
+              <div className="ml-auto hidden md:flex items-center gap-3 text-[10px] text-slate-400">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Đã xong
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  Đang chạy
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  Đang chờ
+                </div>
               </div>
-            )}
+            </div>
 
             {loading && records.length === 0 ? (
               <div className="flex justify-center py-8">
@@ -830,157 +696,133 @@ export function AutoSchedulerMonitor() {
                 <p className="text-sm font-semibold text-slate-600">
                   Không có khung giờ phù hợp bộ lọc hiện tại.
                 </p>
-                <p className="text-xs text-slate-400 mt-1">
-                  Thử chuyển sang bộ lọc Tất cả hoặc bỏ lọc nền tảng.
-                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-4">
                 {visibleSlots.map((slotId) => (
                   <TodaySlotCard
                     key={slotId}
                     slotId={slotId}
                     record={slotRecords[slotId]}
+                    previewItem={previewItem}
                     onRetry={handleRetrySlot}
                     onDismiss={handleDismissSlot}
                     dismissed={dismissedSlots.has(slotId)}
                     platformFilter={platformFilter}
+                    onPostNow={handleRetrySlot}
                   />
                 ))}
               </div>
             )}
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 border-t border-slate-50 text-[10px] text-slate-400">
-              {[
-                { color: "bg-emerald-500", label: "Đã đăng" },
-                { color: "bg-rose-500", label: "Thất bại" },
-                { color: "bg-amber-400", label: "Đang xử lý" },
-                { color: "bg-slate-300", label: "Đã lên lịch" },
-              ].map(({ color, label }) => (
-                <span key={label} className="flex items-center gap-1">
-                  <span
-                    className={`w-2 h-2 rounded-full inline-block ${color}`}
-                  />
-                  {label}
-                </span>
-              ))}
-            </div>
           </div>
 
           <aside
             ref={attentionPanelRef}
-            className="xl:sticky xl:top-24 h-fit rounded-xl border border-slate-200 bg-white p-3 space-y-3"
+            className="xl:sticky xl:top-24 h-fit rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs"
           >
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">
-                  Ưu tiên xử lý
-                </h3>
-                <p className="text-[11px] text-slate-500">
-                  {attentionRecords.length} slot cần theo dõi
-                </p>
-              </div>
-              <button
-                onClick={() => fetchData(false)}
-                className="text-[11px] font-medium text-slate-500 hover:text-slate-700"
-              >
-                Làm mới
-              </button>
+            <div className="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                Cần xử lý
+              </h3>
+              <span className="px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-600 text-[10px] font-bold">
+                {attentionRecords.length}
+              </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              {ATTENTION_SORT_OPTIONS.map((option) => {
-                const active = attentionSort === option.key;
-                return (
+            <div className="p-3 space-y-3">
+              {attentionRecords.length > 0 && (
+                <div className="flex items-center gap-2">
                   <button
-                    key={option.key}
-                    onClick={() => setAttentionSort(option.key)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
-                      active
-                        ? "bg-slate-800 text-white"
-                        : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
+                    onClick={handleRetryAllAttention}
+                    disabled={retryingAll || retryableSlots.length === 0}
+                    className={`flex-1 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors ${
+                      retryingAll || retryableSlots.length === 0
+                        ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                        : "bg-rose-500 text-white hover:bg-rose-600"
                     }`}
                   >
-                    {option.label}
+                    {retryingAll
+                      ? "..."
+                      : `Retry hết (${retryableSlots.length})`}
                   </button>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={() => setFocusAttention((prev) => !prev)}
-              className={`w-full text-xs font-semibold px-3 py-2 rounded-lg border transition-colors ${
-                focusAttention
-                  ? "border-amber-300 bg-amber-50 text-amber-700"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-              }`}
-            >
-              {focusAttention ? "Đang Focus lỗi" : "Focus lỗi quan trọng"}
-            </button>
-
-            <button
-              onClick={handleRetryAllAttention}
-              disabled={retryingAll || retryableSlots.length === 0}
-              className={`w-full text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${
-                retryingAll || retryableSlots.length === 0
-                  ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                  : "bg-rose-500 text-white hover:bg-rose-600"
-              }`}
-            >
-              {retryingAll
-                ? "Đang retry..."
-                : `Retry tất cả lỗi (${retryableSlots.length})`}
-            </button>
-
-            <div className="space-y-2 max-h-90 overflow-y-auto pr-1">
-              {attentionRecords.length === 0 ? (
-                <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-center">
-                  <p className="text-xs text-slate-500">
-                    Không có lỗi cần xử lý ngay.
-                  </p>
-                </div>
-              ) : (
-                sortedAttentionRecords.map((record) => (
-                  <div
-                    key={record.id}
-                    className="rounded-lg border border-slate-200 bg-slate-50/80 p-2.5 space-y-2"
+                  <button
+                    onClick={() => setFocusAttention((prev) => !prev)}
+                    className={`flex-1 text-[11px] font-bold px-3 py-1.5 rounded-lg border transition-colors ${
+                      focusAttention
+                        ? "border-amber-300 bg-amber-50 text-amber-700"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                    }`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-xs font-semibold text-slate-700">
-                          {SLOT_LABEL[record.slot as SlotId]} ·{" "}
-                          {fmtTime(record.triggeredAt)}
-                        </p>
-                        <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-500">
-                          <Dot status={record.overallStatus} />
-                          {record.topicLabel || "Chưa có chủ đề"}
-                        </div>
-                      </div>
-                      <Pill status={record.overallStatus} />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {(record.overallStatus === "failed" ||
-                        record.overallStatus === "partial") && (
-                        <button
-                          onClick={() => handleRetrySlot(record.slot as SlotId)}
-                          className="text-[11px] font-semibold text-white bg-rose-500 hover:bg-rose-600 px-2.5 py-1 rounded-md"
-                        >
-                          Retry slot
-                        </button>
-                      )}
-                      <button
-                        onClick={() =>
-                          handleDismissSlot(record.slot as SlotId, record.id)
-                        }
-                        className="text-[11px] font-medium text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md border border-slate-200 bg-white"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                ))
+                    {focusAttention ? "Bỏ Focus" : "Focus lỗi"}
+                  </button>
+                </div>
               )}
+
+              <div className="space-y-2 max-h-90 overflow-y-auto pr-1">
+                {attentionRecords.length === 0 ? (
+                  <div className="py-4 text-center">
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 mb-2">
+                      <svg
+                        className="w-4 h-4 text-emerald-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-medium">
+                      Hệ thống ổn định
+                    </p>
+                  </div>
+                ) : (
+                  sortedAttentionRecords.map((record) => (
+                    <div
+                      key={record.id}
+                      className="rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[11px] font-bold text-slate-700">
+                            {fmtTime(record.triggeredAt)}
+                          </p>
+                          <p className="text-[10px] text-slate-500 line-clamp-1">
+                            {record.topicLabel || "Chưa có chủ đề"}
+                          </p>
+                        </div>
+                        <Pill status={record.overallStatus} />
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {(record.overallStatus === "failed" ||
+                          record.overallStatus === "partial") && (
+                          <button
+                            onClick={() =>
+                              handleRetrySlot(record.slot as SlotId)
+                            }
+                            className="flex-1 text-[10px] font-bold text-white bg-rose-500 hover:bg-rose-600 px-2 py-1 rounded-md"
+                          >
+                            Retry
+                          </button>
+                        )}
+                        <button
+                          onClick={() =>
+                            handleDismissSlot(record.slot as SlotId, record.id)
+                          }
+                          className="flex-1 text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md border border-slate-200 bg-white shadow-sm"
+                        >
+                          Bỏ qua
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </aside>
         </div>
