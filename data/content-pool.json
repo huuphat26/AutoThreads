@@ -23,10 +23,12 @@
       "threadsContent": "Tips học tiếng Anh\n\nNgừng học 100 từ vựng mỗi ngày nếu bạn không muốn quên sạch sau 24h.\n\nSự thật là não mình chỉ nạp tốt nhất 5-10 từ nếu có ngữ cảnh. Thay vì học danh sách từ rời rạc, hãy học theo cụm. Ví dụ thay vì học 'Decision', hãy học 'Make a decision'. Nhớ lâu hơn gấp 10 lần.\n\nHôm nay bạn đã học được cụm từ nào chưa?\n\n#learningtips, #hocnanh, #englishskills",
       "igCaption": "Tips học tiếng Anh\n\nNgừng học 100 từ vựng mỗi ngày nếu bạn không muốn quên sạch sau 24h.\n\nSự thật là não mình chỉ nạp tốt nhất 5-10 từ nếu có ngữ cảnh. Thay vì học danh sách từ rời rạc, hãy học theo cụm. Ví dụ thay vì học 'Decision', hãy học 'Make a decision'. Nhớ lâu hơn gấp 10 lần.\n\nHôm nay bạn đã học được cụm từ nào chưa?\n\n#learningtips, #hocnanh, #englishskills",
       "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1778141713/Gemini_Generated_Image_14cawm14cawm14ca_ejcdyq.png",
-      "status": "pending",
+      "status": "used",
       "accountId": "env-default",
       "id": "pool_1778144742582_6gyh8",
-      "importedAt": "2026-05-07T09:05:42.582Z"
+      "importedAt": "2026-05-07T09:05:42.582Z",
+      "usedAt": "2026-05-07T09:45:00.111Z",
+      "recordId": "auto-1778147100095-elyh0"
     },
     {
       "date": "2026-04-09",
@@ -380,5 +382,5 @@
       "importedAt": "2026-05-07T09:05:42.582Z"
     }
   ],
-  "lastUpdated": "2026-05-07T09:20:22.885Z"
+  "lastUpdated": "2026-05-07T09:45:00.111Z"
 }
