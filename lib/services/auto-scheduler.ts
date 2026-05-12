@@ -16,6 +16,7 @@ import {
   getPoolItemForSlot,
   markPoolItemUsed,
   updatePoolItemImageUrl,
+  getPoolItemByRecordId,
 } from "@/lib/content-pool";
 import { telegramService } from "./telegram.service";
 import {
@@ -33,7 +34,7 @@ import type { AutoPostRecord, AutoPostSlot } from "@/types";
 
 // ─── Constants ────────────────────────────────────────────────
 const TIMEZONE = process.env.TIMEZONE || "Asia/Ho_Chi_Minh";
-const PLATFORM_DELAY_MS = 3 * 60 * 1000; // 3 phút theo yêu cầu tối ưu
+const PLATFORM_DELAY_MS = 2 * 60 * 1000; // 2 phút theo yêu cầu tối ưu
 const RETRY_WINDOW_MS = 5 * 60 * 1000;
 const RETRY_INTERVAL_MS = 30 * 1000;
 
@@ -197,6 +198,12 @@ export async function startContentPrep(
       statusMessage: "Lỗi: Không có ảnh (Bắt buộc cho cả 3 nền tảng)",
     };
     upsertAutoRecord(failedRecord);
+    
+    // Thông báo lỗi ngay lập tức qua Telegram
+    telegramService.sendPreview({
+      text: `🚨 <b>[ALERT] CHUẨN BỊ THẤT BẠI [${slot}]</b>\n<b>Chủ đề:</b> ${initialRecord.topicLabel}\n<b>Lỗi:</b> ❌ Không có hình ảnh hợp lệ.\n\n<i>Hệ thống không thể tự lấy ảnh. Bạn hãy vào Dashboard để <b>Hotfix</b> ngay trước 20:00!</i>`
+    }).catch(e => console.error("Telegram alert error:", e));
+
     return failedRecord;
   }
 
@@ -215,12 +222,36 @@ export async function startContentPrep(
   markPoolItemUsed(poolItem.id, recordId);
 
   // 3. Gửi Telegram Bot để thông báo & xem trước
-  telegramService
-    .sendPreview({
-      text: `📦 <b>Bản tin chuẩn bị [${slot}]</b>\n\n<b>Chủ đề:</b> ${finalRecord.topicLabel}\n\n${finalRecord.content.slice(0, 300)}...\n\n⏰ <i>Dự kiến đăng lúc 20:00</i>`,
-      photoUrl: resolvedImageUrl,
-    })
-    .catch((e) => console.error("Telegram error:", e));
+  const detailedText = `📦 <b>[PREP] Chuẩn bị bài [${slot}]</b>
+<b>Chủ đề:</b> ${finalRecord.topicLabel}
+<b>Account:</b> <code>${finalRecord.accountId}</code>
+
+<b>FB Content:</b>
+${finalRecord.content}
+
+<b>Threads Content:</b>
+${finalRecord.threadsContent}
+
+<b>IG Caption:</b>
+${finalRecord.igCaption}
+
+⏰ <i>Đăng lúc 20:00. Hãy kiểm tra & Hotfix nếu cần!</i>`;
+
+  // Gửi ảnh kèm thông báo (Telegram caption giới hạn 1024, nếu dài quá sẽ gửi text riêng)
+  if (detailedText.length < 1000) {
+    telegramService
+      .sendPreview({ text: detailedText, photoUrl: resolvedImageUrl })
+      .catch((e) => console.error("Telegram error:", e));
+  } else {
+    // Gửi ảnh trước, nội dung sau để tránh bị cắt hoặc lỗi 400
+    telegramService
+      .sendPreview({
+        text: `🖼 <b>Ảnh cho bài [${slot}]</b>\nChủ đề: ${finalRecord.topicLabel}`,
+        photoUrl: resolvedImageUrl,
+      })
+      .then(() => telegramService.sendPreview({ text: detailedText }))
+      .catch((e) => console.error("Telegram error:", e));
+  }
 
   return finalRecord;
 }
@@ -396,7 +427,7 @@ export function startAutoScheduler(): void {
   }
 
   console.log(
-    `[AutoScheduler] 🟢 Khởi động thành công (Prep: 19:30, Post: 20:00, Delay: 3m)`,
+    `[AutoScheduler] 🟢 Khởi động thành công (Prep: 19:30, Post: 20:00, Delay: 2m)`,
   );
   catchUpMissedSlots().catch((e) => console.error("[Catch-up Error]:", e));
 }
@@ -543,4 +574,66 @@ export function scheduleOnceForToday(
     Math.max(0, postAt.getTime() - Date.now()),
   );
   return { prepAt, postAt };
+}
+
+export async function hotfixRecordImage(
+  recordId: string,
+  newImageUrl: string,
+): Promise<{ cloudinaryUrl: string }> {
+  const record = getAutoRecord(recordId);
+  if (!record) throw new Error("Không tìm thấy record.");
+
+  // Chỉ cho phép hotfix khi chưa đăng xong hoặc bị lỗi
+  const allowHotfix = ["content_ready", "failed", "partial"].includes(
+    record.overallStatus,
+  );
+  if (!allowHotfix) {
+    throw new Error(`Không thể thay đổi ảnh khi trạng thái là ${record.overallStatus}`);
+  }
+
+  console.log(`[AutoScheduler] 🛠 Hotfixing image for record ${recordId}...`);
+
+  // 1. Validate URL mới
+  const isValid = await validateImageUrl(newImageUrl);
+  if (!isValid) {
+    throw new Error("URL hình ảnh không hợp lệ hoặc không thể truy cập.");
+  }
+
+  // 2. Upload Cloudinary
+  let finalUrl = newImageUrl;
+  if (!isCloudinaryUrl(newImageUrl)) {
+    try {
+      finalUrl = await uploadImageUrlToCloudinary(newImageUrl);
+      console.log(`[AutoScheduler] ☁️ Hotfix upload thành công: ${finalUrl}`);
+    } catch (err) {
+      console.error("[AutoScheduler] Hotfix Cloudinary error:", err);
+      throw new Error("Lỗi khi upload ảnh lên Cloudinary.");
+    }
+  }
+
+  // 3. Cập nhật record
+  record.igImageUrl = finalUrl;
+  // Nếu đang failed/partial vì thiếu ảnh, có thể chuyển về content_ready
+  if (record.overallStatus === "failed" || record.overallStatus === "partial") {
+    // Nếu là failed do "Không có ảnh", chuyển về content_ready để cron có thể chạy lại
+    // hoặc người dùng nhấn Đăng lại
+    record.statusMessage = "Đã cập nhật ảnh hotfix. Sẵn sàng đăng lại.";
+  }
+  upsertAutoRecord(record);
+
+  // 4. Cập nhật Content Pool (nếu có link)
+  const poolItem = getPoolItemByRecordId(recordId);
+  if (poolItem) {
+    updatePoolItemImageUrl(poolItem.id, finalUrl);
+  }
+
+  // 5. Thông báo Telegram
+  telegramService
+    .sendPreview({
+      text: `🛠 <b>Hotfix Ảnh [${record.slot}]</b>\n\n<b>Record:</b> <code>${recordId}</code>\n<b>Chủ đề:</b> ${record.topicLabel}\n\n<i>Ảnh đã được thay đổi thủ công.</i>`,
+      photoUrl: finalUrl,
+    })
+    .catch((e) => console.error("Telegram error:", e));
+
+  return { cloudinaryUrl: finalUrl };
 }

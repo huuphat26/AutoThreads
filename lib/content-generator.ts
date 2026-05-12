@@ -100,9 +100,7 @@ QUY TẮC:
 
   const userPrompt = `Rút gọn bài đăng sau thành IG caption (≤280 ký tự) + 6 hashtag:
 
-${fullPost}
-
-${topicLabel ? `Chủ đề: ${topicLabel}` : ""}`;
+${fullPost}`;
 
   const raw = await provider.complete(userPrompt, systemPrompt);
   // Trả về text thô (không parse JSON vì đây là plain text)

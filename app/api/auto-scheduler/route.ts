@@ -11,13 +11,14 @@ import {
   startAutoScheduler,
   stopAutoScheduler,
   storeContentForRecord,
+  hotfixRecordImage,
 } from "@/lib/services/auto-scheduler";
 import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getIGImagePool } from "@/lib/ig-image-pool";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { AutoPostSlot } from "@/types";
 
-type AutoSchedulerAction = "retry-slot" | "dismiss-slot";
+type AutoSchedulerAction = "retry-slot" | "dismiss-slot" | "hotfix-image";
 type AutoSchedulerPlatform = "facebook" | "threads" | "instagram";
 
 const VALID_SLOTS = new Set<AutoPostSlot>(["evening"]);
@@ -106,7 +107,9 @@ export async function POST(req: NextRequest) {
 
   const body = rawBody as Record<string, unknown>;
   const action =
-    body.action === "retry-slot" || body.action === "dismiss-slot"
+    body.action === "retry-slot" ||
+    body.action === "dismiss-slot" ||
+    body.action === "hotfix-image"
       ? (body.action as AutoSchedulerAction)
       : undefined;
 
@@ -165,6 +168,65 @@ export async function POST(req: NextRequest) {
       success: true,
       data: { message: "Đã bỏ qua slot này." },
     });
+  }
+
+  // ── Hotfix-image: thay đổi ảnh cho record hoặc pool item ──
+  if (action === "hotfix-image") {
+    const recordId = typeof body.recordId === "string" ? body.recordId : undefined;
+    const poolId = typeof body.poolId === "string" ? body.poolId : undefined;
+    const newImageUrl =
+      typeof body.newImageUrl === "string" ? body.newImageUrl : undefined;
+
+    if (!newImageUrl) {
+      return NextResponse.json(
+        { success: false, error: "Thiếu newImageUrl" },
+        { status: 400 },
+      );
+    }
+
+    if (!recordId && !poolId) {
+      return NextResponse.json(
+        { success: false, error: "Thiếu recordId hoặc poolId" },
+        { status: 400 },
+      );
+    }
+
+    try {
+      let finalUrl = newImageUrl;
+      const {
+        validateImageUrl,
+        isCloudinaryUrl,
+        uploadImageUrlToCloudinary,
+      } = await import("@/lib/services/cloudinary-server");
+
+      // 1. Validate & Upload
+      const isValid = await validateImageUrl(newImageUrl);
+      if (!isValid) throw new Error("URL ảnh không hợp lệ.");
+
+      if (!isCloudinaryUrl(newImageUrl)) {
+        finalUrl = await uploadImageUrlToCloudinary(newImageUrl);
+      }
+
+      // 2. Update Data
+      if (recordId) {
+        await hotfixRecordImage(recordId, finalUrl);
+      } else if (poolId) {
+        const { updatePoolItemImageUrl } = await import("@/lib/content-pool");
+        const success = updatePoolItemImageUrl(poolId, finalUrl);
+        if (!success) throw new Error("Không tìm thấy item trong pool.");
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          message: "Đã cập nhật ảnh thành công.",
+          cloudinaryUrl: finalUrl,
+        },
+      });
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      return NextResponse.json({ success: false, error: msg }, { status: 400 });
+    }
   }
 
   try {

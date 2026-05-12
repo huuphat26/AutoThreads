@@ -144,6 +144,7 @@ let CACHED_SCHEDULER_RECORDS: AutoPostRecord[] = [];
 
 export function AutoSchedulerMonitor() {
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [mounted, setMounted] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
   const [queryReady, setQueryReady] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -202,6 +203,7 @@ export function AutoSchedulerMonitor() {
   }, []);
 
   useEffect(() => {
+    setMounted(true);
     if (initialFetched.current) return;
     initialFetched.current = true;
     fetchData(true);
@@ -598,10 +600,10 @@ export function AutoSchedulerMonitor() {
             </p>
             <p className="mt-1 text-sm font-bold text-blue-700">
               {SLOT_LABEL[dashboardMetrics.nextSlotId]} ·{" "}
-              {dashboardMetrics.nextSlotAtLabel}
+              {mounted ? dashboardMetrics.nextSlotAtLabel : "--:--"}
             </p>
             <p className="text-[10px] text-blue-600">
-              Còn {dashboardMetrics.nextIn}
+              {mounted ? `Còn ${dashboardMetrics.nextIn}` : "Đang tính..."}
             </p>
           </div>
 
@@ -613,7 +615,7 @@ export function AutoSchedulerMonitor() {
               {dashboardMetrics.activeSlots} slot đang chạy/chờ
             </p>
             <p className="text-[10px] text-slate-500">
-              Làm mới sau {dashboardMetrics.refreshInSec}s
+              Làm mới sau {mounted ? dashboardMetrics.refreshInSec : "--"}s
             </p>
           </div>
         </div>
@@ -710,6 +712,7 @@ export function AutoSchedulerMonitor() {
                     dismissed={dismissedSlots.has(slotId)}
                     platformFilter={platformFilter}
                     onPostNow={handleRetrySlot}
+                    onRefresh={() => fetchData(false)}
                   />
                 ))}
               </div>

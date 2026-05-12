@@ -66,7 +66,6 @@ export function useDashboard() {
   const [customPrompt, setCustomPrompt] = useState("");
   const [mediaType, setMediaType] = useState<ThreadsManualMediaType>("TEXT");
   const [imageUrl, setImageUrl] = useState("");
-  const [topicTag, setTopicTag] = useState("");
 
   // Account state (multi-account)
   const [accountId, setAccountId] = useState<string | undefined>(undefined);
@@ -474,7 +473,6 @@ export function useDashboard() {
         content: content.trim() || undefined,
         mediaType,
         imageUrl: mediaType === "IMAGE" ? imageUrl.trim() : undefined,
-        topicTag: topicTag.trim().replace(/^#/, "") || undefined,
         scheduledAt: isScheduled
           ? new Date(scheduledTime).toISOString()
           : undefined,
@@ -499,7 +497,6 @@ export function useDashboard() {
         }
         setContent("");
         setImageUrl("");
-        setTopicTag("");
         setIsScheduled(false);
         setScheduledTime(defaultScheduledTime());
         fetchHistory();
@@ -559,8 +556,6 @@ export function useDashboard() {
     setMediaType,
     imageUrl,
     setImageUrl,
-    topicTag,
-    setTopicTag,
     isScheduled,
     setIsScheduled,
     scheduledTime,

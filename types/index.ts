@@ -133,14 +133,12 @@ export interface ThreadsTokenResult {
 export interface CreateImageContainerParams {
   imageUrl: string;
   text?: string; // caption (tùy chọn, tối đa 500 ký tự)
-  topicTag?: string; // topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &)
 }
 
 /** Params để tạo video container */
 export interface CreateVideoContainerParams {
   videoUrl: string;
   text?: string;
-  topicTag?: string;
 }
 
 /** Kết quả full publish flow (internal) */
@@ -574,8 +572,6 @@ export interface ThreadsManualPost {
   mediaType: ThreadsManualMediaType;
   /** URL ảnh công khai HTTPS — bắt buộc khi mediaType === "IMAGE" */
   imageUrl?: string;
-  /** Topic tag (tùy chọn, 1-50 ký tự, không có dấu . và &) */
-  topicTag?: string;
   /** ISO string — thời điểm hẹn đăng */
   scheduledAt: string;
   /** ISO string — thời điểm đăng thực tế */

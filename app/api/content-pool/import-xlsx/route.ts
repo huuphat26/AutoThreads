@@ -105,8 +105,8 @@ export async function POST(req: NextRequest) {
         const body = String(row[3] ?? "").trim();
         const cta = String(row[4] ?? "").trim();
 
-        // Ghép nội dung theo thứ tự: Topic -> Hook -> Content -> CTA
-        caption = [topicLabel, hook, body, cta].filter(Boolean).join("\n\n");
+        // Ghép nội dung theo thứ tự: Hook -> Content -> CTA
+        caption = [hook, body, cta].filter(Boolean).join("\n\n");
         hashtags = String(row[5] ?? "").trim();
         rawImageUrl = String(row[6] ?? "").trim();
         imagePrompt = undefined; // Column G is Url Image, no prompt in this format

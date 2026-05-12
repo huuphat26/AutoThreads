@@ -111,6 +111,7 @@ export function TodaySlotCard({
   platformFilter = "all",
   previewItem,
   onPostNow,
+  onRefresh,
 }: {
   slotId: "evening";
   record: AutoPostRecord | null;
@@ -120,7 +121,54 @@ export function TodaySlotCard({
   platformFilter?: "all" | PlatformKey;
   previewItem?: ContentPoolItem | null;
   onPostNow?: (slotId: "evening") => void;
+  onRefresh?: () => void;
 }) {
+  const [isHotfixing, setIsHotfixing] = useState(false);
+  const [newUrl, setNewUrl] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [hotfixStatus, setHotfixStatus] = useState<{
+    type: "success" | "error";
+    msg: string;
+  } | null>(null);
+
+  const handleHotfix = async () => {
+    if ((!record && !previewItem) || !newUrl.trim()) return;
+    setIsUpdating(true);
+    setHotfixStatus(null);
+    try {
+      const res = await fetch("/api/auto-scheduler", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "hotfix-image",
+          recordId: record?.id,
+          poolId: previewItem?.id,
+          newImageUrl: newUrl.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setHotfixStatus({
+          type: "success",
+          msg: "Đã cập nhật ảnh thành công!",
+        });
+        setIsHotfixing(false);
+        setNewUrl("");
+        setImageError(false);
+        if (onRefresh) onRefresh();
+      } else {
+        setHotfixStatus({
+          type: "error",
+          msg: data.error || "Lỗi cập nhật ảnh",
+        });
+      }
+    } catch (err) {
+      setHotfixStatus({ type: "error", msg: "Lỗi kết nối server" });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const { h, m } = SLOT_HOURS[slotId] ?? { h: 13, m: 15 };
   const slotName = "Buổi tối";
 
@@ -266,21 +314,62 @@ export function TodaySlotCard({
           <div className="flex flex-col md:flex-row gap-6">
             {/* Image Preview */}
             {record?.igImageUrl || previewItem?.igImageUrl ? (
-              <div className="relative group w-full md:w-48 h-48 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shrink-0 shadow-sm">
+              <div className="relative group w-full md:w-48 h-48 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shrink-0 shadow-sm flex flex-col">
                 <img
                   src={record?.igImageUrl || previewItem?.igImageUrl}
                   alt="Preview"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={() => setImageError(true)}
+                  className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${imageError ? "opacity-30 grayscale" : ""}`}
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+
+                {imageError && (
+                  <div
+                    onClick={() => {
+                      setIsHotfixing(true);
+                      setImageError(false);
+                    }}
+                    className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-rose-50/60 backdrop-blur-[2px] cursor-pointer hover:bg-rose-100/70 transition-colors z-10"
+                  >
+                    <svg
+                      className="w-10 h-10 text-rose-500 mb-2 drop-shadow-sm"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    <p className="text-xs font-bold text-rose-600 uppercase tracking-wider">
+                      Ảnh bị lỗi!
+                    </p>
+                    <p className="text-[10px] text-rose-500 mt-1 font-medium bg-white/80 px-2 py-1 rounded-full shadow-sm">
+                      Nhấn để thay ảnh mới
+                    </p>
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-20">
                   <a
                     href={record?.igImageUrl || previewItem?.igImageUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-white text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/30"
+                    className="text-white text-[10px] font-bold bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/30 hover:bg-white/40 transition-colors"
                   >
                     Mở ảnh lớn
                   </a>
+                  <button
+                    onClick={() => {
+                      setIsHotfixing(true);
+                      setImageError(false);
+                    }}
+                    className="text-white text-[10px] font-bold bg-indigo-500/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-indigo-400/30 hover:bg-indigo-600 transition-colors"
+                  >
+                    🔄 Thay ảnh (Hotfix)
+                  </button>
                 </div>
               </div>
             ) : (
@@ -330,6 +419,61 @@ export function TodaySlotCard({
                     {record ? record.content : previewItem?.fbContent}
                   </p>
                 </div>
+
+                {isHotfixing && (
+                  <div className="mt-4 p-4 rounded-xl bg-indigo-50 border border-indigo-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="block text-[10px] font-bold text-indigo-600 uppercase mb-2 tracking-wider">
+                      Nhập URL ảnh mới (Hotfix {record ? "Record" : "Preview"})
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newUrl}
+                        onChange={(e) => setNewUrl(e.target.value)}
+                        placeholder="https://..."
+                        className="flex-1 px-3 py-2 text-sm bg-white border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                        disabled={isUpdating}
+                      />
+                      <button
+                        onClick={handleHotfix}
+                        disabled={isUpdating || !newUrl.trim()}
+                        className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center gap-2"
+                      >
+                        {isUpdating ? (
+                          <>
+                            <Spinner className="w-3 h-3" />
+                            Đang xử lý...
+                          </>
+                        ) : (
+                          "Cập nhật"
+                        )}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsHotfixing(false);
+                          setNewUrl("");
+                          setHotfixStatus(null);
+                        }}
+                        disabled={isUpdating}
+                        className="px-3 py-2 text-slate-500 text-xs font-medium hover:text-slate-700 transition-colors"
+                      >
+                        Huỷ
+                      </button>
+                    </div>
+                    {hotfixStatus && (
+                      <p
+                        className={`mt-2 text-[10px] font-bold ${hotfixStatus.type === "success" ? "text-emerald-500" : "text-rose-500"}`}
+                      >
+                        {hotfixStatus.type === "success" ? "✓ " : "❌ "}
+                        {hotfixStatus.msg}
+                      </p>
+                    )}
+                    <p className="mt-2 text-[10px] text-indigo-400 italic">
+                      * URL mới sẽ được validate và upload lên Cloudinary ngay
+                      lập tức.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 flex items-center gap-3">
