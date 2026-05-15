@@ -1,6 +1,36 @@
 {
   "records": [
     {
+      "id": "auto-1778675400052-4w0sz",
+      "slot": "evening",
+      "accountId": "env-default",
+      "triggeredAt": "2026-05-13T12:30:00.052Z",
+      "topic": "",
+      "topicLabel": "So sánh Anh-Mỹ đời thực",
+      "content": "Ở Mỹ là 'Apartment' sang Anh phải gọi là 'Flat'.\n\nCùng là căn hộ nhưng mỗi nơi gọi một kiểu. Hay như khoai tây chiên: Mỹ gọi là 'Fries', Anh lại gọi là 'Chips'. Học để không bị 'đơ' khi đi du lịch nhé.\n\nBạn thích giọng Anh hay giọng Mỹ hơn?\n\n#britishviamerican, #englishvocabulary, #travelenglish",
+      "threadsContent": "Ở Mỹ là 'Apartment' sang Anh phải gọi là 'Flat'.\n\nCùng là căn hộ nhưng mỗi nơi gọi một kiểu. Hay như khoai tây chiên: Mỹ gọi là 'Fries', Anh lại gọi là 'Chips'. Học để không bị 'đơ' khi đi du lịch nhé.\n\nBạn thích giọng Anh hay giọng Mỹ hơn?",
+      "igCaption": "Ở Mỹ là 'Apartment' sang Anh phải gọi là 'Flat'.\n\nCùng là căn hộ nhưng mỗi nơi gọi một kiểu. Hay như khoai tây chiên: Mỹ gọi là 'Fries', Anh lại gọi là 'Chips'. Học để không bị 'đơ' khi đi du lịch nhé.\n\nBạn thích giọng Anh hay giọng Mỹ hơn?\n\n#britishviamerican, #englishvocabulary, #travelenglish",
+      "facebook": {
+        "status": "posted",
+        "postId": "1028548237005575_122111834607240014",
+        "permalinkUrl": "https://www.facebook.com/122098518699240014/posts/122111834607240014",
+        "postedAt": "2026-05-13T13:00:12.832Z"
+      },
+      "threads": {
+        "status": "posted",
+        "postId": "17915902035366644",
+        "postedAt": "2026-05-13T13:02:22.979Z"
+      },
+      "instagram": {
+        "status": "posted",
+        "postId": "18202171342345857",
+        "permalinkUrl": "https://www.instagram.com/p/DYR6RSKmFA7/",
+        "postedAt": "2026-05-13T13:04:32.824Z"
+      },
+      "overallStatus": "completed",
+      "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1778141714/Gemini_Generated_Image_75wkv275wkv275wk_cv8vkf.png"
+    },
+    {
       "id": "auto-1778589000051-vv5uu",
       "slot": "evening",
       "accountId": "env-default",
@@ -211,5 +241,5 @@
       "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1778141720/Gemini_Generated_Image_v50xtgv50xtgv50x_stycei.png"
     }
   ],
-  "lastUpdated": "2026-05-12T13:04:30.534Z"
+  "lastUpdated": "2026-05-13T13:04:32.831Z"
 }

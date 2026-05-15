@@ -113,10 +113,12 @@
       "threadsContent": "Ở Mỹ là 'Apartment' sang Anh phải gọi là 'Flat'.\n\nCùng là căn hộ nhưng mỗi nơi gọi một kiểu. Hay như khoai tây chiên: Mỹ gọi là 'Fries', Anh lại gọi là 'Chips'. Học để không bị 'đơ' khi đi du lịch nhé.\n\nBạn thích giọng Anh hay giọng Mỹ hơn?",
       "igCaption": "Ở Mỹ là 'Apartment' sang Anh phải gọi là 'Flat'.\n\nCùng là căn hộ nhưng mỗi nơi gọi một kiểu. Hay như khoai tây chiên: Mỹ gọi là 'Fries', Anh lại gọi là 'Chips'. Học để không bị 'đơ' khi đi du lịch nhé.\n\nBạn thích giọng Anh hay giọng Mỹ hơn?\n\n#britishviamerican, #englishvocabulary, #travelenglish",
       "igImageUrl": "https://res.cloudinary.com/dgd1d0crq/image/upload/v1778141714/Gemini_Generated_Image_75wkv275wkv275wk_cv8vkf.png",
-      "status": "pending",
+      "status": "used",
       "accountId": "env-default",
       "id": "pool_1778150699876_lq5kn",
-      "importedAt": "2026-05-07T10:44:59.876Z"
+      "importedAt": "2026-05-07T10:44:59.876Z",
+      "usedAt": "2026-05-13T12:30:00.062Z",
+      "recordId": "auto-1778675400052-4w0sz"
     },
     {
       "date": "2026-05-14",
@@ -405,5 +407,5 @@
       "importedAt": "2026-05-07T10:44:59.876Z"
     }
   ],
-  "lastUpdated": "2026-05-12T12:30:00.058Z"
+  "lastUpdated": "2026-05-13T12:30:00.062Z"
 }

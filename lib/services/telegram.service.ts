@@ -49,6 +49,14 @@ export class TelegramService {
             }),
           },
         );
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          console.error(
+            "[TelegramService] sendPhoto failed:",
+            res.status,
+            errorData,
+          );
+        }
         return res.ok;
       } else {
         // Gửi tin nhắn văn bản
@@ -64,6 +72,14 @@ export class TelegramService {
             }),
           },
         );
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          console.error(
+            "[TelegramService] sendMessage failed:",
+            res.status,
+            errorData,
+          );
+        }
         return res.ok;
       }
     } catch (err) {
@@ -73,17 +89,25 @@ export class TelegramService {
   }
 
   /** Thông báo khi bài đăng thành công */
-  async notifySuccess(platform: string, permalink?: string): Promise<void> {
+  async notifySuccess(
+    platform: string,
+    permalink?: string,
+    photoUrl?: string,
+  ): Promise<void> {
     if (!this.isConfigured) return;
     const msg = `✅ <b>Đã đăng lên ${platform}!</b>\n${permalink ? `<a href="${permalink}">Xem bài viết</a>` : ""}`;
-    await this.sendPreview({ text: msg });
+    await this.sendPreview({ text: msg, photoUrl });
   }
 
   /** Thông báo khi có lỗi */
-  async notifyError(platform: string, error: string): Promise<void> {
+  async notifyError(
+    platform: string,
+    error: string,
+    photoUrl?: string,
+  ): Promise<void> {
     if (!this.isConfigured) return;
     const msg = `❌ <b>Lỗi đăng bài ${platform}:</b>\n<code>${error}</code>`;
-    await this.sendPreview({ text: msg });
+    await this.sendPreview({ text: msg, photoUrl });
   }
 }
 

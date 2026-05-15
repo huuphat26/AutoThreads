@@ -238,7 +238,7 @@ ${finalRecord.igCaption}
 ⏰ <i>Đăng lúc 20:00. Hãy kiểm tra & Hotfix nếu cần!</i>`;
 
   // Gửi ảnh kèm thông báo (Telegram caption giới hạn 1024, nếu dài quá sẽ gửi text riêng)
-  if (detailedText.length < 1000) {
+  if (detailedText.length < 900) {
     telegramService
       .sendPreview({ text: detailedText, photoUrl: resolvedImageUrl })
       .catch((e) => console.error("Telegram error:", e));
@@ -250,7 +250,7 @@ ${finalRecord.igCaption}
         photoUrl: resolvedImageUrl,
       })
       .then(() => telegramService.sendPreview({ text: detailedText }))
-      .catch((e) => console.error("Telegram error:", e));
+      .catch((e) => console.error("Telegram error (Long Prep):", e));
   }
 
   return finalRecord;
@@ -351,12 +351,18 @@ export async function executePlatformPosts(
         postedAt: new Date().toISOString(),
       };
       telegramService
-        .notifySuccess(step.label, result.permalink || undefined)
+        .notifySuccess(
+          step.label,
+          result.permalink || undefined,
+          record.igImageUrl,
+        )
         .catch(() => {});
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       record[step.key] = { status: "failed", errorMessage: msg };
-      telegramService.notifyError(step.label, msg).catch(() => {});
+      telegramService
+        .notifyError(step.label, msg, record.igImageUrl)
+        .catch(() => {});
     }
 
     upsertAutoRecord(record);
