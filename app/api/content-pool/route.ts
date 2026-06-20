@@ -9,10 +9,12 @@ import {
 import { getAutoRecord, upsertAutoRecord } from "@/lib/auto-post-store";
 import { ContentPoolStatus } from "@/types";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  await initAllStores();
   const { searchParams } = new URL(req.url);
   const statusFilter = searchParams.get("status") as ContentPoolStatus | null;
   const accountFilter = searchParams.get("accountId");
@@ -54,6 +56,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    await initAllStores();
     const body = await req.json();
     const { id, igImageUrl } = body as { id?: string; igImageUrl?: string };
     if (!id || !igImageUrl) {
@@ -102,6 +105,7 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
+  await initAllStores();
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const clearAll = searchParams.get("clearAll");

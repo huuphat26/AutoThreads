@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getAllManualPosts } from "@/lib/services/threads-manual-store";
 import type { ScheduledPost, AutoPostRecord, ThreadsManualPost } from "@/types";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export async function GET() {
   try {
+    await initAllStores();
     const autoRecords = getAllAutoRecords();
     const manualPosts = getAllManualPosts();
 

@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { importPoolItems, previewPoolImport } from "@/lib/content-pool";
 import { ContentPoolItem, AutoPostSlot } from "@/types";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await initAllStores();
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const accountId = (formData.get("accountId") as string | null) || undefined;
@@ -46,9 +48,33 @@ export async function POST(req: NextRequest) {
     }) as unknown[][];
 
     const headerRow = (rows[0] || []) as string[];
-    const isDayBased =
-      headerRow[0]?.toLowerCase() === "day" ||
-      headerRow[0]?.toLowerCase() === "ngày";
+    
+    // Map headers to column indices
+    const headerMap = new Map<string, number>();
+    headerRow.forEach((val, idx) => {
+      if (val) headerMap.set(String(val).trim().toLowerCase(), idx);
+    });
+
+    const getColIndex = (keys: string[]): number => {
+      for (const key of keys) {
+        const k = key.toLowerCase();
+        for (const [header, idx] of headerMap.entries()) {
+          if (header === k || header.includes(k)) {
+            return idx;
+          }
+        }
+      }
+      return -1;
+    };
+
+    const idxDay = getColIndex(["day", "date", "ngày"]);
+    const idxTopic = getColIndex(["topic", "chủ đề", "title", "tiêu đề"]);
+    const idxHook = getColIndex(["hook"]);
+    const idxContent = getColIndex(["content", "nội dung", "caption", "body"]);
+    const idxCTA = getColIndex(["cta"]);
+    const idxHashtags = getColIndex(["hashtags", "hashtag"]);
+    const idxImageUrl = getColIndex(["url image", "image url", "image_url", "ảnh", "hình ảnh"]);
+    const idxImagePrompt = getColIndex(["image_prompt", "image prompt", "prompt"]);
 
     const items: Omit<ContentPoolItem, "id" | "importedAt">[] = [];
     const rowErrors: Array<{ row: number; message: string }> = [];
@@ -70,58 +96,63 @@ export async function POST(req: NextRequest) {
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      if (!row || (!row[0] && !row[1])) continue; // skip empty rows
+      if (!row || row.length === 0) continue; // skip empty rows
       const rowNumber = i + 1;
 
-      let rawDate = "";
-      let slot: AutoPostSlot = "evening";
-      let topicLabel = "";
-      let caption = "";
-      let hashtags = "";
-      let rawImageUrl = "";
-      let imagePrompt: string | undefined = undefined;
+      // Extract raw strings from row based on column indices
+      const getVal = (idx: number): string => {
+        if (idx === -1 || idx >= row.length) return "";
+        return String(row[idx] ?? "").trim();
+      };
 
-      if (isDayBased) {
-        // --- NEW FORMAT (Day-based) ---
-        // 0=Day (Date or Num) | 1=Topic | 2=Hook | 3=Content | 4=CTA | 5=Hashtags | 6=Url Image
-        const rawDay = String(row[0] ?? "").trim();
-        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDay)) {
-          // Parse DD/MM/YYYY
-          const [d, m, y] = rawDay.split("/").map(Number);
-          rawDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        } else if (/^\d{4}-\d{2}-\d{2}/.test(rawDay)) {
-          rawDate = rawDay.split(" ")[0];
-        } else {
-          // Offset based
-          const dayNum = parseInt(rawDay || "1");
+      const rawDay = getVal(idxDay);
+      if (!rawDay && !getVal(idxContent)) continue; // skip empty rows
+
+      let rawDate = "";
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDay)) {
+        // Parse DD/MM/YYYY
+        const [d, m, y] = rawDay.split("/").map(Number);
+        rawDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      } else if (/^\d{4}-\d{2}-\d{2}/.test(rawDay)) {
+        rawDate = rawDay.split(" ")[0];
+      } else {
+        // Offset based
+        const dayNum = parseInt(rawDay || "1");
+        if (!isNaN(dayNum)) {
           const d = new Date(today);
           d.setDate(d.getDate() + (dayNum - 1));
           rawDate = d.toISOString().split("T")[0];
+        } else {
+          pushRowError(rowNumber, `Ngày không hợp lệ "${rawDay}"`);
+          continue;
         }
+      }
 
-        slot = "evening"; // Forced evening as requested
-        topicLabel = String(row[1] ?? "").trim();
-        const hook = String(row[2] ?? "").trim();
-        const body = String(row[3] ?? "").trim();
-        const cta = String(row[4] ?? "").trim();
+      const slot: AutoPostSlot = "evening"; // Forced evening as requested
 
-        // Ghép nội dung theo thứ tự: Hook -> Content -> CTA
-        caption = [hook, body, cta].filter(Boolean).join("\n\n");
-        hashtags = String(row[5] ?? "").trim();
-        rawImageUrl = String(row[6] ?? "").trim();
-        imagePrompt = undefined; // Column G is Url Image, no prompt in this format
+      const hook = getVal(idxHook);
+      const content = getVal(idxContent);
+      const cta = getVal(idxCTA);
+      const hashtags = getVal(idxHashtags);
+      const rawImageUrl = getVal(idxImageUrl);
+      let imagePrompt = idxImagePrompt !== -1 ? getVal(idxImagePrompt) : undefined;
+      if (imagePrompt === "") imagePrompt = undefined;
+
+      // Set topicLabel to Topic/Title column if present, otherwise fall back to Hook (the headline)
+      let topicLabel = "";
+      const idxTopic = getColIndex(["topic", "chủ đề", "title", "tiêu đề"]);
+      if (idxTopic !== -1) {
+        topicLabel = getVal(idxTopic);
       } else {
-        // --- STANDARD FORMAT ---
-        // 0=Date | 1=Slot | 5=Title | 8=Caption | 9=Hashtags | 10=Image_URL | 11=Image_Prompt
-        rawDate = String(row[0] ?? "").trim();
+        topicLabel = hook || "Daily English";
+      }
 
-        slot = "evening";
-
-        topicLabel = String(row[5] ?? "").trim();
-        caption = String(row[8] ?? "").trim();
-        hashtags = String(row[9] ?? "").trim();
-        rawImageUrl = String(row[10] ?? "").trim();
-        imagePrompt = String(row[11] ?? "").trim() || undefined;
+      // Construct caption (Hook -> Content -> CTA or just content)
+      let caption = "";
+      if (idxHook !== -1 || idxContent !== -1 || idxCTA !== -1) {
+        caption = [hook, content, cta].filter(Boolean).join("\n\n");
+      } else {
+        caption = getVal(idxContent); // Fallback to content column
       }
 
       const igImageUrl: string | undefined =

@@ -7,16 +7,41 @@ import fs from "fs";
 import path from "path";
 import type { AutoPostRecord, AutoPostHistory } from "@/types";
 
-const HISTORY_FILE = path.join(process.cwd(), "data", "auto-post-history.json");
+const isVercel = process.env.VERCEL === "1";
+
+const HISTORY_FILE = isVercel
+  ? path.join("/tmp", "auto-post-history.json")
+  : path.join(process.cwd(), "data", "auto-post-history.json");
+
+const STATIC_HISTORY_FILE = path.join(process.cwd(), "data", "auto-post-history.json");
+
+async function syncToKV(history: AutoPostHistory): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    await kv.set("auto-post-history", history);
+  } catch (e) {
+    console.error("[KV] Failed to sync auto-post-history:", e);
+  }
+}
+
+function kvSyncFireAndForget(history: AutoPostHistory): void {
+  if (!isVercel) return;
+  syncToKV(history).catch((e) => console.error("[KV] Sync error:", e));
+}
 
 // ─── Helpers ──────────────────────────────────────────────────
 
 function readHistory(): AutoPostHistory {
   try {
-    if (!fs.existsSync(HISTORY_FILE)) {
+    let fileToRead = HISTORY_FILE;
+    if (isVercel && !fs.existsSync(fileToRead)) {
+      fileToRead = STATIC_HISTORY_FILE;
+    }
+    if (!fs.existsSync(fileToRead)) {
       return { records: [], lastUpdated: new Date().toISOString() };
     }
-    const raw = fs.readFileSync(HISTORY_FILE, "utf-8");
+    const raw = fs.readFileSync(fileToRead, "utf-8");
     return JSON.parse(raw) as AutoPostHistory;
   } catch {
     return { records: [], lastUpdated: new Date().toISOString() };
@@ -27,6 +52,22 @@ function writeHistory(history: AutoPostHistory): void {
   history.lastUpdated = new Date().toISOString();
   fs.mkdirSync(path.dirname(HISTORY_FILE), { recursive: true });
   fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+  kvSyncFireAndForget(history);
+}
+
+export async function initAutoPostHistoryFromKV(): Promise<void> {
+  if (!isVercel) return;
+  try {
+    const { kv } = await import("@vercel/kv");
+    const history = await kv.get<AutoPostHistory>("auto-post-history");
+    if (history) {
+      fs.mkdirSync(path.dirname(HISTORY_FILE), { recursive: true });
+      fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+      console.log("[KV] Loaded auto-post-history from KV");
+    }
+  } catch (e) {
+    console.error("[KV] Failed to load auto-post-history:", e);
+  }
 }
 
 // ─── Public API ───────────────────────────────────────────────

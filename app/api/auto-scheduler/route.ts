@@ -17,6 +17,7 @@ import { getAllAutoRecords } from "@/lib/auto-post-store";
 import { getIGImagePool } from "@/lib/ig-image-pool";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
 import type { AutoPostSlot } from "@/types";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 type AutoSchedulerAction = "retry-slot" | "dismiss-slot" | "hotfix-image";
 type AutoSchedulerPlatform = "facebook" | "threads" | "instagram";
@@ -50,6 +51,7 @@ function parsePlatforms(value: unknown): AutoSchedulerPlatform[] | null {
 
 // ── GET: Trạng thái + lịch sử ───────────────────────────────────
 export async function GET(req: NextRequest) {
+  await initAllStores();
   const { searchParams } = req.nextUrl;
   const view = searchParams.get("view");
 
@@ -97,6 +99,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  await initAllStores();
   const rawBody: unknown = await req.json().catch(() => null);
   if (!rawBody || typeof rawBody !== "object") {
     return NextResponse.json(
@@ -277,6 +280,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    await initAllStores();
     const body = await req.json();
     const action: "start" | "stop" | "schedule-once" = body.action;
 
@@ -347,6 +351,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
+    await initAllStores();
     const body = await req.json();
     const {
       recordId,

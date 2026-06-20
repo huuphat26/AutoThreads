@@ -15,7 +15,13 @@ import type {
   PlatformCredentials,
 } from "@/types";
 
-const STORE_FILE = path.join(process.cwd(), "data", "accounts.json");
+const isVercel = process.env.VERCEL === "1";
+
+const STORE_FILE = isVercel
+  ? path.join("/tmp", "accounts.json")
+  : path.join(process.cwd(), "data", "accounts.json");
+
+const STATIC_STORE_FILE = path.join(process.cwd(), "data", "accounts.json");
 
 const COLOR_PRESETS = [
   "#10b981",
@@ -31,8 +37,6 @@ const COLOR_PRESETS = [
 ];
 
 const ENV_TAG_ACCOUNT_PREFIX = "env-tag-";
-
-const isVercel = process.env.VERCEL === "1";
 
 async function syncToKV(store: AccountStore): Promise<void> {
   if (!isVercel) return;
@@ -74,10 +78,14 @@ function humanizeTag(tag: string): string {
 
 function readStore(): AccountStore {
   try {
-    if (!fs.existsSync(STORE_FILE)) {
+    let fileToRead = STORE_FILE;
+    if (isVercel && !fs.existsSync(fileToRead)) {
+      fileToRead = STATIC_STORE_FILE;
+    }
+    if (!fs.existsSync(fileToRead)) {
       return { accounts: [], lastUpdated: new Date().toISOString() };
     }
-    const raw = fs.readFileSync(STORE_FILE, "utf-8");
+    const raw = fs.readFileSync(fileToRead, "utf-8");
     return JSON.parse(raw) as AccountStore;
   } catch {
     return { accounts: [], lastUpdated: new Date().toISOString() };

@@ -9,9 +9,13 @@ import fs from "fs";
 import path from "path";
 import type { ContentPoolItem, ContentPoolStore, AutoPostSlot } from "@/types";
 
-const POOL_FILE = path.join(process.cwd(), "data", "content-pool.json");
-
 const isVercel = process.env.VERCEL === "1";
+
+const POOL_FILE = isVercel
+  ? path.join("/tmp", "content-pool.json")
+  : path.join(process.cwd(), "data", "content-pool.json");
+
+const STATIC_POOL_FILE = path.join(process.cwd(), "data", "content-pool.json");
 
 async function syncToKV(store: ContentPoolStore): Promise<void> {
   if (!isVercel) return;
@@ -32,10 +36,14 @@ function kvSyncFireAndForget(store: ContentPoolStore): void {
 
 export function readPool(): ContentPoolStore {
   try {
-    if (!fs.existsSync(POOL_FILE)) {
+    let fileToRead = POOL_FILE;
+    if (isVercel && !fs.existsSync(fileToRead)) {
+      fileToRead = STATIC_POOL_FILE;
+    }
+    if (!fs.existsSync(fileToRead)) {
       return { items: [], lastUpdated: new Date().toISOString() };
     }
-    const raw = fs.readFileSync(POOL_FILE, "utf-8");
+    const raw = fs.readFileSync(fileToRead, "utf-8");
     return JSON.parse(raw) as ContentPoolStore;
   } catch {
     return { items: [], lastUpdated: new Date().toISOString() };

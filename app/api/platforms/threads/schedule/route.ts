@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllManualPosts, upsertManualPost, deleteManualPost } from "@/lib/services/threads-manual-store";
 import { getThreadsService } from "@/lib/services/service-resolver";
 import type { ThreadsManualPost } from "@/types";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export async function GET() {
   try {
+    await initAllStores();
     const posts = getAllManualPosts();
     const stats = {
       total: posts.length,
@@ -25,6 +27,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    await initAllStores();
     const body = await req.json();
     const { content, mediaType, imageUrl, scheduledAt, accountId } = body;
 
@@ -73,6 +76,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    await initAllStores();
     const { searchParams } = req.nextUrl;
     const id = searchParams.get("id");
     if (id) {

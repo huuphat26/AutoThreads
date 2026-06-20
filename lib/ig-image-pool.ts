@@ -7,9 +7,13 @@
 import fs from "fs";
 import path from "path";
 
-const POOL_FILE = path.join(process.cwd(), "data", "ig-auto-images.json");
-
 const isVercel = process.env.VERCEL === "1";
+
+const POOL_FILE = isVercel
+  ? path.join("/tmp", "ig-auto-images.json")
+  : path.join(process.cwd(), "data", "ig-auto-images.json");
+
+const STATIC_POOL_FILE = path.join(process.cwd(), "data", "ig-auto-images.json");
 
 async function syncToKV(pool: ImagePool): Promise<void> {
   if (!isVercel) return;
@@ -39,7 +43,14 @@ interface ImagePool {
 
 function readPool(): ImagePool {
   try {
-    const raw = fs.readFileSync(POOL_FILE, "utf-8");
+    let fileToRead = POOL_FILE;
+    if (isVercel && !fs.existsSync(fileToRead)) {
+      fileToRead = STATIC_POOL_FILE;
+    }
+    if (!fs.existsSync(fileToRead)) {
+      return { lastUsedIndex: -1, images: [] };
+    }
+    const raw = fs.readFileSync(fileToRead, "utf-8");
     return JSON.parse(raw) as ImagePool;
   } catch {
     // Fallback nếu file bị mất
@@ -49,6 +60,7 @@ function readPool(): ImagePool {
 
 function writePool(pool: ImagePool): void {
   try {
+    fs.mkdirSync(path.dirname(POOL_FILE), { recursive: true });
     fs.writeFileSync(POOL_FILE, JSON.stringify(pool, null, 2), "utf-8");
     kvSyncFireAndForget(pool);
   } catch (err) {
@@ -62,6 +74,7 @@ export async function initIGImagePoolFromKV(): Promise<void> {
     const { kv } = await import("@vercel/kv");
     const pool = await kv.get<ImagePool>("ig-images");
     if (pool) {
+      fs.mkdirSync(path.dirname(POOL_FILE), { recursive: true });
       fs.writeFileSync(POOL_FILE, JSON.stringify(pool, null, 2), "utf-8");
       console.log("[KV] Loaded ig-images from KV");
     }

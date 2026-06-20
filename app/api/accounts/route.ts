@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllAccountsSafe, updateAccount, toSafe } from "@/lib/account-store";
 import { readPool } from "@/lib/content-pool";
 import { canUsePrivilegedRoute } from "@/lib/server/request-auth";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,6 +19,7 @@ function json(data: unknown, status = 200) {
 
 // ── GET ────────────────────────────────────────────────────────
 export async function GET() {
+  await initAllStores();
   const accounts = getAllAccountsSafe();
 
   // Đính kèm pendingCount cho mỗi account
@@ -41,6 +43,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    await initAllStores();
     const body = await req.json();
     const { id, ...data } = body;
 

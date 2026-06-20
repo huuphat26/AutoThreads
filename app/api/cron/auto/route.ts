@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { triggerAutoPost } from "@/lib/services/auto-scheduler";
-import { initAccountStoreFromKV } from "@/lib/account-store";
-import { initContentPoolFromKV } from "@/lib/content-pool";
-import { initIGImagePoolFromKV } from "@/lib/ig-image-pool";
+import { initAllStores } from "@/lib/services/store-initializer";
 
 export const dynamic = "force-dynamic";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
 async function initStores(): Promise<void> {
-  await initAccountStoreFromKV();
-  await initContentPoolFromKV();
-  await initIGImagePoolFromKV();
+  await initAllStores();
 }
 
 export async function GET(request: NextRequest) {
