@@ -77,8 +77,6 @@ export function ManualPostSection({
         <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
           <ComposeForm
             content={content}
-            keywords={keywords}
-            generating={generating}
             loading={loading}
             error={error}
             success={success}
@@ -87,12 +85,8 @@ export function ManualPostSection({
             isScheduled={isScheduled}
             scheduledTime={scheduledTime}
             onContentChange={onContentChange}
-            onKeywordsChange={onKeywordsChange}
-            onMediaTypeChange={onMediaTypeChange}
-            onImageUrlChange={onImageUrlChange}
             onIsScheduledChange={onIsScheduledChange}
             onScheduledTimeChange={onScheduledTimeChange}
-            onGenerate={onGenerate}
             onPost={onPost}
           />
         </div>

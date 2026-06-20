@@ -3,9 +3,9 @@ import { getThreadsService } from "@/lib/services/service-resolver";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
-  const { postId } = params;
+  const { postId } = await params;
   const { searchParams } = req.nextUrl;
   const detail = searchParams.get("detail") === "true";
   const accountId = searchParams.get("accountId") || undefined;

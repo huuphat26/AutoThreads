@@ -304,7 +304,6 @@ export async function PATCH(req: NextRequest) {
         slot,
         prepTime,
         postTime,
-        platforms,
       );
       const platformsLabel = platforms ? platforms.join(",") : "FB→Threads→IG";
       return NextResponse.json({
