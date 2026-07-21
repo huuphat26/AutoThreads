@@ -93,8 +93,32 @@ export function InstagramMonitorBlock({
   }, [ig.accountId]);
 
   useEffect(() => {
-    fetchAccountInfo();
-  }, [fetchAccountInfo]);
+    let active = true;
+    const params = ig.accountId
+      ? { params: { accountId: ig.accountId } }
+      : undefined;
+    axios
+      .get<IGData>("/api/platforms/instagram", params)
+      .then((res) => {
+        if (active) setData(res.data);
+      })
+      .catch(() => {
+        if (active) {
+          setData({
+            connected: false,
+            account: null,
+            token: null,
+            error: "Không thể kết nối",
+          });
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [ig.accountId]);
 
   useEffect(() => {
     ig.ensureFetched();

@@ -49,12 +49,7 @@ export function ThreadsMonitorBlock() {
   >([]);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  const {
-    customPrompt: _cp,
-
-    ensureManualFetched,
-    accountId,
-  } = useDashboard();
+  const { ensureManualFetched, accountId } = useDashboard();
 
   const fetchProfileData = useCallback(async () => {
     setProfileLoading(true);
@@ -88,8 +83,44 @@ export function ThreadsMonitorBlock() {
   }, [accountId]);
 
   useEffect(() => {
-    fetchProfileData();
-  }, [fetchProfileData]);
+    let active = true;
+    const params = accountId ? { params: { accountId } } : undefined;
+    axios
+      .get<{
+        success: boolean;
+        data: ProfileData;
+        error?: string;
+      }>("/api/threads/user", params)
+      .then((res) => {
+        if (!active) return;
+        if (res.data.success) {
+          setData(res.data.data);
+        } else {
+          setData({
+            profile: null,
+            token: null,
+            quota: null,
+            profileError: res.data.error,
+          });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setData({
+            profile: null,
+            token: null,
+            quota: null,
+            profileError: "Không thể kết nối",
+          });
+        }
+      })
+      .finally(() => {
+        if (active) setProfileLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [accountId]);
 
   useEffect(() => {
     ensureManualFetched();
@@ -108,21 +139,21 @@ export function ThreadsMonitorBlock() {
         const accounts = (accountsJson.data ?? []).filter(
           (acc) => acc.hasThreads,
         );
-        const rows = await Promise.all(
+
+        const summaries = await Promise.all(
           accounts.map(async (acc) => {
             try {
-              const { data: json } = await axios.get<{
+              const res = await axios.get<{
                 success: boolean;
                 data: ProfileData;
-              }>("/api/threads/user", {
-                params: { accountId: acc.id },
-              });
-              const profile = json.data?.profile;
+              }>("/api/threads/user", { params: { accountId: acc.id } });
+
+              const profile = res.data.data?.profile;
               return {
                 id: acc.id,
                 name: acc.name,
                 color: acc.color,
-                connected: Boolean(json.success && profile),
+                connected: Boolean(res.data.success && profile),
                 displayName: profile?.name || profile?.username || "Threads",
                 pictureUrl: profile?.threads_profile_picture_url || null,
                 link: profile?.username
@@ -145,7 +176,7 @@ export function ThreadsMonitorBlock() {
           }),
         );
 
-        if (!cancelled) setAccountSummaries(rows);
+        if (!cancelled) setAccountSummaries(summaries);
       } catch {
         if (!cancelled) setAccountSummaries([]);
       }
@@ -157,7 +188,6 @@ export function ThreadsMonitorBlock() {
     };
   }, [accountId]);
 
-  const profile = data?.profile;
   const token = data?.token;
 
   return (

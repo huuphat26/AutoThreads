@@ -85,7 +85,6 @@ export async function generateContent(
  */
 export async function generateIGCaption(
   fullPost: string,
-  topicLabel?: string,
 ): Promise<string> {
   const provider = createProvider();
 

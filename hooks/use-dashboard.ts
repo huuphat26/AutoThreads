@@ -545,6 +545,7 @@ export function useDashboard() {
     // actions
     handleGenerate,
     handlePost,
+    handleDeletePost,
     // loading flags
     loading,
     generating: aiProvider.id === "puter" ? puterGenerating : generating,

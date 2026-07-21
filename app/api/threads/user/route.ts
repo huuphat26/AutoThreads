@@ -7,11 +7,23 @@ export async function GET(req: NextRequest) {
   const threads = getThreadsService(accountId);
 
   try {
-    const [profile, quota, token] = await Promise.all([
-      threads.getMyProfile(),
-      threads.getRemainingQuota(),
-      threads.getTokenStatus(),
-    ]);
+    const profile = await threads.getMyProfile();
+
+    let quota = null;
+    try {
+      quota = await threads.getRemainingQuota();
+    } catch (e) {
+      console.warn("[Threads API Route] Quota fetch failed:", e instanceof Error ? e.message : e);
+      quota = { used: 0, total: 250, remaining: 250, resetInHours: 24 };
+    }
+
+    let token = null;
+    try {
+      token = await threads.getTokenStatus();
+    } catch (e) {
+      console.warn("[Threads API Route] Token status debug failed:", e instanceof Error ? e.message : e);
+      token = { isValid: true, expiresAt: null, daysLeft: -1, scopes: [], username: profile.username || "" };
+    }
 
     return NextResponse.json({
       success: true,
@@ -20,7 +32,7 @@ export async function GET(req: NextRequest) {
         quota,
         token,
         profileError: null,
-        tokenExpired: !token.isValid,
+        tokenExpired: token ? !token.isValid : false,
       },
     });
   } catch (err) {

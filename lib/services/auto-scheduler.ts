@@ -199,11 +199,6 @@ export async function startContentPrep(
     };
     upsertAutoRecord(failedRecord);
     
-    // Thông báo lỗi ngay lập tức qua Telegram
-    telegramService.sendPreview({
-      text: `🚨 <b>[ALERT] CHUẨN BỊ THẤT BẠI [${slot}]</b>\n<b>Chủ đề:</b> ${initialRecord.topicLabel}\n<b>Lỗi:</b> ❌ Không có hình ảnh hợp lệ.\n\n<i>Hệ thống không thể tự lấy ảnh. Bạn hãy vào Dashboard để <b>Hotfix</b> ngay trước 20:00!</i>`
-    }).catch(e => console.error("Telegram alert error:", e));
-
     return failedRecord;
   }
 
@@ -221,37 +216,7 @@ export async function startContentPrep(
   upsertAutoRecord(finalRecord);
   markPoolItemUsed(poolItem.id, recordId);
 
-  // 3. Gửi Telegram Bot để thông báo & xem trước
-  const detailedText = `📦 <b>[PREP] Chuẩn bị bài [${slot}]</b>
-<b>Chủ đề:</b> ${finalRecord.topicLabel}
-<b>Account:</b> <code>${finalRecord.accountId}</code>
-
-<b>FB Content:</b>
-${finalRecord.content}
-
-<b>Threads Content:</b>
-${finalRecord.threadsContent}
-
-<b>IG Caption:</b>
-${finalRecord.igCaption}
-
-⏰ <i>Đăng lúc 20:00. Hãy kiểm tra & Hotfix nếu cần!</i>`;
-
-  // Gửi ảnh kèm thông báo (Telegram caption giới hạn 1024, nếu dài quá sẽ gửi text riêng)
-  if (detailedText.length < 900) {
-    telegramService
-      .sendPreview({ text: detailedText, photoUrl: resolvedImageUrl })
-      .catch((e) => console.error("Telegram error:", e));
-  } else {
-    // Gửi ảnh trước, nội dung sau để tránh bị cắt hoặc lỗi 400
-    telegramService
-      .sendPreview({
-        text: `🖼 <b>Ảnh cho bài [${slot}]</b>\nChủ đề: ${finalRecord.topicLabel}`,
-        photoUrl: resolvedImageUrl,
-      })
-      .then(() => telegramService.sendPreview({ text: detailedText }))
-      .catch((e) => console.error("Telegram error (Long Prep):", e));
-  }
+  console.log(`[AutoScheduler] ✅ [PREP] Hoàn tất chuẩn bị nội dung cho [${slot}].`);
 
   return finalRecord;
 }

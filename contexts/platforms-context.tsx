@@ -86,7 +86,7 @@ function getDefaultPlatform(platform: keyof PlatformsData): PlatformAccount {
 async function fetchFacebook(): Promise<PlatformAccount> {
   try {
     const res = await axios.get<FBResponse>("/api/platforms/facebook");
-    if (res.data.success && res.data.connected && res.data.page) {
+    if (res.data.connected && res.data.page) {
       return {
         connected: true,
         name: res.data.page.name,
@@ -105,10 +105,10 @@ async function fetchFacebook(): Promise<PlatformAccount> {
 async function fetchInstagram(): Promise<PlatformAccount> {
   try {
     const res = await axios.get<IGResponse>("/api/platforms/instagram");
-    if (res.data.success && res.data.connected && res.data.account) {
+    if (res.data.connected && res.data.account) {
       return {
         connected: true,
-        name: res.data.account.username,
+        name: res.data.account.username || res.data.account.name || "Instagram",
         pictureUrl: res.data.account.profilePicture,
         followersCount: res.data.account.followersCount || 0,
         likesCount: 0,
@@ -123,12 +123,12 @@ async function fetchInstagram(): Promise<PlatformAccount> {
 async function fetchThreads(): Promise<PlatformAccount> {
   try {
     const res = await axios.get<ThreadsResponse>("/api/threads/user");
-    if (res.data.success && res.data.data?.profile) {
+    if (res.data?.success && res.data?.data?.profile) {
       const profile = res.data.data.profile;
       return {
         connected: true,
-        name: profile.name || profile.username,
-        pictureUrl: profile.threads_profile_picture_url,
+        name: profile.name || profile.username || "Threads",
+        pictureUrl: profile.threads_profile_picture_url ?? null,
         followersCount: profile.followers_count || 0,
         likesCount: 0,
       };
@@ -177,8 +177,27 @@ function usePlatformsProvider() {
   }, [fetchPlatforms]);
 
   useEffect(() => {
-    fetchPlatforms();
-  }, [fetchPlatforms]);
+    let active = true;
+    Promise.all([fetchFacebook(), fetchInstagram(), fetchThreads()])
+      .then(([fb, ig, th]) => {
+        if (active) setData({ facebook: fb, instagram: ig, threads: th });
+      })
+      .catch(() => {
+        if (active) {
+          setData({
+            facebook: getDefaultPlatform("facebook"),
+            instagram: getDefaultPlatform("instagram"),
+            threads: getDefaultPlatform("threads"),
+          });
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return { data, loading, refetch };
 }

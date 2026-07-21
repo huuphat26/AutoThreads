@@ -1,7 +1,7 @@
 // ============================================
 // AUTO THREADS — Gemini Image Generation (Imagen)
 // ============================================
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 
 export async function generateGeminiImage(
   prompt: string,

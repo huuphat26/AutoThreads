@@ -67,32 +67,35 @@ export function FacebookMonitorBlock({
   const [pageLoading, setPageLoading] = useState(true);
   const fb = useFacebookDashboard(aiProviderId, aiModel);
 
-  const fetchPageInfo = useCallback(async () => {
-    setPageLoading(true);
-    try {
-      const params = fb.accountId
-        ? { params: { accountId: fb.accountId } }
-        : undefined;
-      const { data: json } = await axios.get<FBData>(
-        "/api/platforms/facebook",
-        params,
-      );
-      setData(json);
-    } catch {
-      setData({
-        connected: false,
-        page: null,
-        token: null,
-        error: "Không thể kết nối",
-      });
-    } finally {
-      setPageLoading(false);
-    }
-  }, [fb.accountId]);
+
 
   useEffect(() => {
-    fetchPageInfo();
-  }, [fetchPageInfo]);
+    let active = true;
+    const params = fb.accountId
+      ? { params: { accountId: fb.accountId } }
+      : undefined;
+    axios
+      .get<FBData>("/api/platforms/facebook", params)
+      .then((res) => {
+        if (active) setData(res.data);
+      })
+      .catch(() => {
+        if (active) {
+          setData({
+            connected: false,
+            page: null,
+            token: null,
+            error: "Không thể kết nối",
+          });
+        }
+      })
+      .finally(() => {
+        if (active) setPageLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [fb.accountId]);
 
   useEffect(() => {
     fb.ensureFetched();

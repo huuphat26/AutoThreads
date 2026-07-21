@@ -28,36 +28,33 @@ if [ -z "$CODE" ]; then
   exit 1
 fi
 
-if [[ "$CODE" == THAA* ]]; then
-  echo "⚠️ Bạn đang truyền token (bắt đầu bằng THAA...), không phải authorization code."
-  echo "➡️ Hãy lấy giá trị 'code' từ callback URL sau khi authorize Threads."
-  exit 1
-fi
-
 CLIENT_ID="${THREADS_APP_ID:-}"
 CLIENT_SECRET="${THREADS_APP_SECRET:-}"
 REDIRECT_URI="${2:-${THREADS_REDIRECT_URI:-${NEXT_PUBLIC_APP_URL:-}}}"
 
-if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REDIRECT_URI" ]; then
-  echo "❌ Thiếu cấu hình. Cần có THREADS_APP_ID, THREADS_APP_SECRET và REDIRECT_URI."
-  echo "   - Có thể truyền REDIRECT_URI ở tham số thứ 2"
-  echo "   - Hoặc đặt THREADS_REDIRECT_URI trong .env"
-  exit 1
+if [[ "$CODE" == THAA* ]]; then
+  echo "ℹ️ Bạn đã truyền trực tiếp Threads Access Token, đang tiến hành gia hạn 60 ngày..."
+  SHORT_TOKEN="$CODE"
+  USER_INFO=$(curl -s "https://graph.threads.net/v1.0/me?fields=id,username&access_token=$SHORT_TOKEN")
+  USER_ID=$(echo "$USER_INFO" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null || true)
+else
+  if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REDIRECT_URI" ]; then
+    echo "❌ Thiếu cấu hình. Cần có THREADS_APP_ID, THREADS_APP_SECRET và REDIRECT_URI."
+    exit 1
+  fi
+
+  echo "🔄 Đổi authorization code lấy short-lived token..."
+  RESPONSE=$(curl -s -X POST "https://graph.threads.net/oauth/access_token" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    --data-urlencode "client_id=$CLIENT_ID" \
+    --data-urlencode "client_secret=$CLIENT_SECRET" \
+    --data-urlencode "grant_type=authorization_code" \
+    --data-urlencode "redirect_uri=$REDIRECT_URI" \
+    --data-urlencode "code=$CODE")
+
+  SHORT_TOKEN=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token','ERROR'))")
+  USER_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('user_id','ERROR'))")
 fi
-
-echo "🔄 Đổi authorization code lấy short-lived token..."
-RESPONSE=$(curl -s -X POST "https://graph.threads.net/oauth/access_token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  --data-urlencode "client_id=$CLIENT_ID" \
-  --data-urlencode "client_secret=$CLIENT_SECRET" \
-  --data-urlencode "grant_type=authorization_code" \
-  --data-urlencode "redirect_uri=$REDIRECT_URI" \
-  --data-urlencode "code=$CODE")
-
-echo "Short-lived token response: $RESPONSE"
-
-SHORT_TOKEN=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('access_token','ERROR'))")
-USER_ID=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('user_id','ERROR'))")
 ERROR_SUBCODE=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print((d.get('error') or {}).get('error_subcode',''))")
 
 if [ "$SHORT_TOKEN" = "ERROR" ]; then

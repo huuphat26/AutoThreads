@@ -19,8 +19,19 @@ export function useAccounts() {
   }, []);
 
   useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts]);
+    let active = true;
+    fetch("/api/accounts", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((json) => {
+        if (active && json.success) setAccounts(json.data);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const updateAccount = async (
     id: string,

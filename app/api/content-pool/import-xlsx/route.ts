@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
       if (idxTopic !== -1) {
         topicLabel = getVal(idxTopic);
       } else {
-        topicLabel = hook || "Daily English";
+        topicLabel = hook || "Ép Xanh";
       }
 
       // Construct caption (Hook -> Content -> CTA or just content)

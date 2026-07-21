@@ -203,12 +203,16 @@ export function AutoSchedulerMonitor() {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
-    if (initialFetched.current) return;
-    initialFetched.current = true;
-    fetchData(true);
-    intervalRef.current = setInterval(() => fetchData(false), 30_000);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      if (initialFetched.current) return;
+      initialFetched.current = true;
+      fetchData(true);
+      intervalRef.current = setInterval(() => fetchData(false), 30_000);
+    }, 0);
+
     return () => {
+      clearTimeout(timer);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,12 +232,15 @@ export function AutoSchedulerMonitor() {
     const sortFromQuery = parseAttentionSort(params.get("sort"));
     const focusFromQuery = params.get("focus") === "1";
 
-    if (statusFromQuery) setStatusFilter(statusFromQuery);
-    if (platformFromQuery) setPlatformFilter(platformFromQuery);
-    if (sortFromQuery) setAttentionSort(sortFromQuery);
-    if (focusFromQuery) setFocusAttention(true);
+    const timer = setTimeout(() => {
+      if (statusFromQuery) setStatusFilter(statusFromQuery);
+      if (platformFromQuery) setPlatformFilter(platformFromQuery);
+      if (sortFromQuery) setAttentionSort(sortFromQuery);
+      if (focusFromQuery) setFocusAttention(true);
+      setQueryReady(true);
+    }, 0);
 
-    setQueryReady(true);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -428,12 +435,16 @@ export function AutoSchedulerMonitor() {
   useEffect(() => {
     if (!focusAttention) return;
 
-    setStatusFilter("attention");
-    setPlatformFilter("all");
-    attentionPanelRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const timer = setTimeout(() => {
+      setStatusFilter("attention");
+      setPlatformFilter("all");
+      attentionPanelRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [focusAttention]);
 
   // REMOVED: Auto-trigger AI generation (User request: Monitor only, no UI action)

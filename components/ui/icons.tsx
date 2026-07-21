@@ -20,7 +20,7 @@ import {
   ArrowRight,
   Users,
   Trash2,
-  Image,
+  Image as ImageIcon,
   Search,
   ClipboardList,
   Loader2,
@@ -124,7 +124,7 @@ export function TrashIcon({ className = "w-4 h-4" }: IconProps) {
 }
 
 export function PhotoIcon({ className = "w-4 h-4" }: IconProps) {
-  return <Image className={className} />;
+  return <ImageIcon className={className} />;
 }
 
 export function MagnifyingGlassIcon({ className = "w-4 h-4" }: IconProps) {

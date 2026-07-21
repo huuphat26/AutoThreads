@@ -46,7 +46,6 @@ export function FacebookComposeForm({
   onContentChange,
   onIsScheduledChange,
   onScheduledTimeChange,
-  onGenerate,
   onPost,
 }: Props) {
   const canPost =

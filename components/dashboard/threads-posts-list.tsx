@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import type { ThreadsPost, ThreadsMediaInsights } from "@/types";
 import { RefreshIcon, DocumentIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
@@ -73,10 +74,31 @@ function ThreadsPostItem({ post }: { post: ThreadsPost }) {
     }
   }, [post.id]);
 
-  // Tự động tải insights khi item được render
   useEffect(() => {
-    fetchInsights();
-  }, [fetchInsights]);
+    if (!post.id) return;
+    let active = true;
+    axios
+      .get<{ success: boolean; data: ThreadsMediaInsights }>(
+        `/api/threads/post/${post.id}`,
+      )
+      .then((res) => {
+        if (!active) return;
+        if (res.data.success) {
+          setInsights(res.data.data);
+        } else {
+          setInsightsFailed(true);
+        }
+      })
+      .catch(() => {
+        if (active) setInsightsFailed(true);
+      })
+      .finally(() => {
+        if (active) setInsightsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [post.id]);
 
   const mediaIcon =
     post.media_type === "IMAGE"
@@ -169,13 +191,15 @@ export function ThreadsPostsList({
   // Auto-load khi component mount lần đầu
   useEffect(() => {
     onFetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onFetch]);
 
-  // Reset hiển thị khi danh sách mới được tải
-  useEffect(() => {
-    if (posts.length > 0) setVisibleCount(STEP);
-  }, [posts.length]);
+  const [prevLength, setPrevLength] = useState(posts.length);
+  if (posts.length !== prevLength) {
+    setPrevLength(posts.length);
+    if (posts.length > 0) {
+      setVisibleCount(STEP);
+    }
+  }
 
   const visible = posts.slice(0, visibleCount);
   const remaining = posts.length - visibleCount;

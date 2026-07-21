@@ -82,8 +82,22 @@ export function PostCard({ post, onDelete }: Props) {
   }, [post.threadsPostId]);
 
   useEffect(() => {
-    if (canShowInsights) fetchInsights();
-  }, [canShowInsights, fetchInsights]);
+    if (!canShowInsights || !post.threadsPostId) return;
+    let active = true;
+    fetch(`/api/threads/post/${post.threadsPostId}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (active && json.success && json.data?.insights) {
+          setInsights(json.data.insights);
+        }
+      })
+      .finally(() => {
+        if (active) setInsightsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [canShowInsights, post.threadsPostId]);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">

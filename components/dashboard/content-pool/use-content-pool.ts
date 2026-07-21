@@ -101,8 +101,31 @@ export function useContentPool(filterStatus: string, accountId?: string) {
   }, [fetchData, fetchAllPending]);
 
   useEffect(() => {
-    refreshAll();
-  }, [refreshAll]);
+    let active = true;
+    const params1 = new URLSearchParams();
+    if (filterStatus) params1.set("status", filterStatus);
+    if (accountId) params1.set("accountId", accountId);
+
+    const params2 = new URLSearchParams({ status: "pending" });
+    if (accountId) params2.set("accountId", accountId);
+
+    Promise.all([
+      fetch(`/api/content-pool${params1.toString() ? `?${params1.toString()}` : ""}`).then((r) => r.json()),
+      fetch(`/api/content-pool?${params2.toString()}`).then((r) => r.json()),
+    ])
+      .then(([j1, j2]) => {
+        if (!active) return;
+        if (j1.success) setData(j1.data);
+        if (j2.success) setAllPending(j2.data.items ?? []);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [filterStatus, accountId]);
 
   // ── Bulk image generation ────────────────────────────────────
   const todayItemsNeedingImages = allPending.filter(
@@ -152,7 +175,11 @@ export function useContentPool(filterStatus: string, accountId?: string) {
     const puter = typeof window !== "undefined" ? window.puter : undefined;
     if (!puter) return;
     autoStartedRef.current = true;
-    handleBulkGenerate(todayItemsNeedingImages);
+    const items = [...todayItemsNeedingImages];
+    const timer = setTimeout(() => {
+      handleBulkGenerate(items);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [todayItemsNeedingImages.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Upload xlsx ──────────────────────────────────────────────
